@@ -1,3 +1,3 @@
 module.exports = {
-    ...require('./database.config')
-}
+  ...require("./database.config"),
+};

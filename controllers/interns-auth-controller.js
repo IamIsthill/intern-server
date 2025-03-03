@@ -3,11 +3,11 @@ const {
   findInternByEmail,
   loginIntern,
   findInternByPhone,
-} = require("../services/interns.auth");
+} = require("../services/interns-auth-services");
 const {
   registerInternValidator,
   loginInternValidator,
-} = require("../validations/internValidators");
+} = require("../validations/interns-validators");
 const { BadRequestError } = require("../utils/errors");
 
 const registerInternController = async (req, res, next) => {

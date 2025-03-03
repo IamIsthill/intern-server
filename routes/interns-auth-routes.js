@@ -6,7 +6,7 @@ const {
   checkEmailAvailability,
   loginInternController,
   checkPhoneAvailability,
-} = require("../controllers/internsHttp");
+} = require("../controllers/interns-auth-controller");
 
 router.post("/register", registerInternController);
 router.post("/login", loginInternController);

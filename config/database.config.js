@@ -1,7 +1,7 @@
-require('dotenv').config()
+require("dotenv").config();
 
-const DATABASE_URI = process.env.DATABASE_URI
+const DATABASE_URI = process.env.DATABASE_URI;
 
 module.exports = {
-    DATABASE_URI
-}
+  DATABASE_URI,
+};
