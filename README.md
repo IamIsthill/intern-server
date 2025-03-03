@@ -49,11 +49,11 @@ Get started with {Project Name} by {write the first step a user needs to start u
 
     {Optional: Include a code sample or screenshot that helps your users complete this step}
 
-2. {Write the step here.}
+2. Setup the `.env` at the root of the project
+  ```bash
+  DATABASE_URI = your-db-connection 
+  ```
 
-    a. {Substep 1}
-
-    b. {Substep 2}
 
 ### Configure {Project Name}
 
