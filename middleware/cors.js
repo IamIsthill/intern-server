@@ -10,6 +10,5 @@ if (DEVELOPMENT) {
 }
 
 export const Cors = (options = corsOptions) => {
-    console.log(options)
     return cors(options)
 }

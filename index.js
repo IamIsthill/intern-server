@@ -1,10 +1,9 @@
-const mongoose = require('mongoose')
 import mongoose from 'mongoose'
 import express from 'express'
 import { connectDb } from './database'
 import { Cors } from './middleware'
 
-const app = express()
+export const app = express()
 const port = 3000
 
 connectDb()
@@ -26,8 +25,3 @@ mongoose.connection.once('open', () => {
 mongoose.connection.on('error', err => {
     console.log(err)
 })
-
-
-module.exports = {
-    app
-}
