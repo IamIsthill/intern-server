@@ -14,7 +14,7 @@ describe('Cors Middleware', () => {
 
     it('set the correct CORS headers in DEV true', async () => {
         vi.stubEnv('DEVELOPMENT', 'true')
-        const { Cors } = await import('../../middleware')
+        const { Cors } = await import('../../middleware/cors.js')
 
         app.use(Cors())
         app.get('/', (req, res) => {
@@ -28,7 +28,7 @@ describe('Cors Middleware', () => {
 
     it('restrict CORS when DEV is false', async () => {
         vi.stubEnv('DEVELOPMENT', 'false')
-        const { Cors } = await import('../../middleware')
+        const { Cors } = await import('../../middleware/cors.js')
 
         app.use(Cors());
 

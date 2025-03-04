@@ -7,7 +7,7 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import { router as internAuthRouter } from "./routes/interns-auth-routes.js";
 import { Cors } from "./middleware/cors.js";
 
-const app = express();
+export const app = express();
 const port = 3000;
 
 connectDb();

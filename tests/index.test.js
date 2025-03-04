@@ -7,14 +7,20 @@ describe('Integration Testing', () => {
         it('allows all origin in dev mode', async () => {
             vi.resetModules()
             vi.stubEnv('DEVELOPMENT', 'true')
-            const { app } = await import('../index')
+            const { app } = await import('../server.js')
+            app.get('/', (req, res) => {
+                res.json({ message: 'foo' })
+            })
             const response = await request(app).get('/')
             expect(response.headers['access-control-allow-origin']).toBe('*')
         })
         it('restrict CORS when DEV is false', async () => {
             vi.resetModules()
             vi.stubEnv('DEVELOPMENT', 'false')
-            const { app } = await import('../index')
+            const { app } = await import('../server.js')
+            app.get('/', (req, res) => {
+                res.json({ message: 'foo' })
+            })
             const response = await request(app).get('/');
             expect(response.headers['access-control-allow-origin']).toBe(undefined);
         })

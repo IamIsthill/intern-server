@@ -34,5 +34,10 @@ const internSchema = new mongoose.Schema({
     default: null,
   },
 });
-
-export const Intern = mongoose.model("Intern", internSchema);
+export let Intern
+if (mongoose.models.Intern) {
+  Intern = mongoose.model('Intern')
+} else {
+  Intern = mongoose.model("Intern", internSchema)
+}
+// export const Intern = mongoose.model("Intern", internSchema)
