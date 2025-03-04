@@ -10,6 +10,7 @@ import {
 } from "../validations/interns-validators.js";
 import { BadRequestError } from "../utils/errors.js";
 
+//controller for registering intern, has validations if email or phone already exists
 export const registerInternController = async (req, res, next) => {
   try {
     const { error, value } = registerInternValidator.validate(req.body);
@@ -33,7 +34,7 @@ export const registerInternController = async (req, res, next) => {
     next(error);
   }
 };
-
+// controller for logging in intern
 export const loginInternController = async (req, res, next) => {
   try {
     const { error, value } = loginInternValidator.validate(req.body);
@@ -48,6 +49,8 @@ export const loginInternController = async (req, res, next) => {
     next(error);
   }
 };
+
+//controller for checking email and phone availability
 export const checkEmailAvailability = async (req, res, next) => {
   try {
     const { email } = req.query;
