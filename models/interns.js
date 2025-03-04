@@ -8,8 +8,8 @@ const internSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    minlength: 11,
-    maxlength: 11,
+    minumum: 11,
+    maximum: 11,
   },
   school: { type: String, required: true },
   internshipHours: { type: Number, required: true },
@@ -36,4 +36,3 @@ const internSchema = new mongoose.Schema({
 });
 
 export const Intern = mongoose.model("Intern", internSchema);
-

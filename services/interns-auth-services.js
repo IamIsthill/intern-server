@@ -12,10 +12,6 @@ export const registerIntern = async ({
   email,
   password,
 }) => {
-  const existingUser = await Intern.findOne({ $or: [{ email }, { phone }] });
-  if (existingUser) {
-    throw new Error("Email or phone already in use");
-  }
   const hashedPassword = await bcryptjs.hash(password, 10);
   const intern = await Intern.create({
     firstName,
@@ -27,7 +23,6 @@ export const registerIntern = async ({
     email,
     password: hashedPassword,
   });
-
   return intern;
 };
 
@@ -55,6 +50,6 @@ export const loginIntern = async ({ email, password }) => {
   return { message: "Login successful", token };
 };
 
-export const findInternByPhone = async (phone) => {
+export const findInternByPhone = async ({ phone }) => {
   return await Intern.findOne({ phone });
 };

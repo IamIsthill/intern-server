@@ -1,6 +1,6 @@
-import 'dotenv/config'
+import "dotenv/config";
 import mongoose from "mongoose";
-import express from 'express'
+import express from "express";
 import compression from "compression";
 import { connectDb } from "./database/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -10,7 +10,6 @@ const app = express();
 const port = 3000;
 
 connectDb();
-
 
 app.use(compression());
 app.use(express.json());

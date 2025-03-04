@@ -3,11 +3,11 @@ import {
   findInternByEmail,
   loginIntern,
   findInternByPhone,
-} from "../services/interns-auth-services.js"
+} from "../services/interns-auth-services.js";
 import {
   registerInternValidator,
   loginInternValidator,
-} from "../validations/interns-validators.js"
+} from "../validations/interns-validators.js";
 import { BadRequestError } from "../utils/errors.js";
 
 export const registerInternController = async (req, res, next) => {
