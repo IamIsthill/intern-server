@@ -1,14 +1,12 @@
-const isBool = (bool) => {
-    if (bool) {
-        if (bool === 'false') {
-            return false
-        }
+const toBool = (bool) => {
+    if (bool == 'true') {
         return true
-    } else {
+    }
+    else {
         return false
     }
 }
 
 module.exports = {
-    isBool
+    toBool
 }

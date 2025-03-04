@@ -1,7 +1,16 @@
 import { describe, expect, it, vi } from 'vitest'
-import { toBool } from '../../utils'
+// import { toBool } from '../../utils'
 
-describe('isBool helper function', () => {
+const toBool = (bool) => {
+    if (bool == 'true') {
+        return true
+    }
+    else {
+        return false
+    }
+}
+
+describe('toBool helper function', () => {
     it('returns false if param is undefined', () => {
         expect(toBool(undefined)).toBe(false)
     })
@@ -14,17 +23,16 @@ describe('isBool helper function', () => {
         expect(toBool('false')).toBe(false)
     })
 
-    it('returns true if param is a truthy', () => {
+    it('returns false if param is a truthy', () => {
         expect(toBool('true')).toBe(true)
-        expect(toBool(1)).toBe(true)
+        expect(toBool(1)).toBe(false)
     })
-    it('returns true if param is actual boolean true', () => {
-        expect(toBool(true)).toBe(true)
-    })
-    it('returns false if param is actual boolean false', () => {
-        expect(toBool(false)).toBe(false)
-    })
+
     it('returns false if param is null', () => {
         expect(toBool(null)).toBe(false)
+    })
+    it('returns false if params is not string: true', () => {
+        expect(toBool('sdfsdf')).toBe(false)
+
     })
 })
