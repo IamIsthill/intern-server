@@ -4,7 +4,7 @@ const express = require("express");
 const compression = require("compression");
 const { connectDb } = require("./database");
 const errorHandler = require("./middleware/errorHandler");
-const internAuthRouter = require("./routes/interns-auth-routes");
+import { router as internAuthRouter } from "./routes/interns-auth-routes";
 
 const app = express();
 const port = 3000;

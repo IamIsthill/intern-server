@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+export const router = express.Router();
 
 const {
   registerInternController,
@@ -13,4 +13,3 @@ router.post("/login", loginInternController);
 router.get("/check-email", checkEmailAvailability);
 router.get("/check-phone", checkPhoneAvailability);
 
-module.exports = router;

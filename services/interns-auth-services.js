@@ -1,5 +1,5 @@
+import { Intern } from "../models/interns";
 const bcryptjs = require("bcryptjs");
-const Intern = require("../models/interns");
 const jwt = require("jsonwebtoken");
 
 const registerIntern = async ({

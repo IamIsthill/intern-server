@@ -1,4 +1,4 @@
-const { connectDb } = require('../../database')
+import { connectDb } from '../../database'
 import { describe, expect, it, beforeEach, vi } from 'vitest'
 import mongoose from 'mongoose'
 
