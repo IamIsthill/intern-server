@@ -10,7 +10,7 @@ const {
 } = require("../validations/interns-validators");
 const { BadRequestError } = require("../utils/errors");
 
-const registerInternController = async (req, res, next) => {
+export const registerInternController = async (req, res, next) => {
   try {
     const { error, value } = registerInternValidator.validate(req.body);
     if (error) {
@@ -34,7 +34,7 @@ const registerInternController = async (req, res, next) => {
   }
 };
 
-const loginInternController = async (req, res, next) => {
+export const loginInternController = async (req, res, next) => {
   try {
     const { error, value } = loginInternValidator.validate(req.body);
     if (error) {
@@ -48,7 +48,7 @@ const loginInternController = async (req, res, next) => {
     next(error);
   }
 };
-const checkEmailAvailability = async (req, res, next) => {
+export const checkEmailAvailability = async (req, res, next) => {
   try {
     const { email } = req.query;
 
@@ -69,7 +69,7 @@ const checkEmailAvailability = async (req, res, next) => {
   }
 };
 
-const checkPhoneAvailability = async (req, res, next) => {
+export const checkPhoneAvailability = async (req, res, next) => {
   try {
     const { phone } = req.query;
 
@@ -87,11 +87,4 @@ const checkPhoneAvailability = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
-
-module.exports = {
-  registerInternController,
-  loginInternController,
-  checkEmailAvailability,
-  checkPhoneAvailability,
 };
