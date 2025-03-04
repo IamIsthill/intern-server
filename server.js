@@ -1,15 +1,16 @@
-require("dotenv").config();
-const mongoose = require("mongoose");
-const express = require("express");
-const compression = require("compression");
-const { connectDb } = require("./database");
-const errorHandler = require("./middleware/errorHandler");
-import { router as internAuthRouter } from "./routes/interns-auth-routes";
+import 'dotenv/config'
+import mongoose from "mongoose";
+import express from 'express'
+import compression from "compression";
+import { connectDb } from "./database/index.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+import { router as internAuthRouter } from "./routes/interns-auth-routes.js";
 
 const app = express();
 const port = 3000;
 
 connectDb();
+
 
 app.use(compression());
 app.use(express.json());

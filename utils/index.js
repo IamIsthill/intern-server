@@ -1,1 +1,1 @@
-export * from './isBool'
+export * from './isBool.js'

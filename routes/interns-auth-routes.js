@@ -1,12 +1,11 @@
-const express = require("express");
+import express from 'express'
 export const router = express.Router();
-
-const {
+import {
   registerInternController,
   checkEmailAvailability,
   loginInternController,
-  checkPhoneAvailability,
-} = require("../controllers/interns-auth-controller");
+  checkPhoneAvailability
+} from '../controllers/interns-auth-controller.js';
 
 router.post("/register", registerInternController);
 router.post("/login", loginInternController);

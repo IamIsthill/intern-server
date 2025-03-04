@@ -1,14 +1,14 @@
-const {
+import {
   registerIntern,
   findInternByEmail,
   loginIntern,
   findInternByPhone,
-} = require("../services/interns-auth-services");
-const {
+} from "../services/interns-auth-services.js"
+import {
   registerInternValidator,
   loginInternValidator,
-} = require("../validations/interns-validators");
-const { BadRequestError } = require("../utils/errors");
+} from "../validations/interns-validators.js"
+import { BadRequestError } from "../utils/errors.js";
 
 export const registerInternController = async (req, res, next) => {
   try {

@@ -1,6 +1,6 @@
-const joi = require("joi");
+import joi from 'joi'
 
-const registerInternValidator = joi.object({
+export const registerInternValidator = joi.object({
   firstName: joi.string().required(),
   lastName: joi.string().required(),
   age: joi.number().required(),
@@ -13,9 +13,9 @@ const registerInternValidator = joi.object({
   supervisor: joi.string(),
 });
 
-const loginInternValidator = joi.object({
+export const loginInternValidator = joi.object({
   email: joi.string().required(),
   password: joi.string().required(),
 });
 
-module.exports = { registerInternValidator, loginInternValidator };
+

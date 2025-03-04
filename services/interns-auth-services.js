@@ -1,8 +1,8 @@
-import { Intern } from "../models/interns";
-const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import { Intern } from "../models/interns.js";
+import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-const registerIntern = async ({
+export const registerIntern = async ({
   firstName,
   lastName,
   age,
@@ -31,11 +31,11 @@ const registerIntern = async ({
   return intern;
 };
 
-const findInternByEmail = async (email) => {
+export const findInternByEmail = async (email) => {
   return await Intern.findOne({ email });
 };
 
-const loginIntern = async ({ email, password }) => {
+export const loginIntern = async ({ email, password }) => {
   const intern = await findInternByEmail(email);
   if (!intern) {
     throw new Error("User not found");
@@ -55,13 +55,6 @@ const loginIntern = async ({ email, password }) => {
   return { message: "Login successful", token };
 };
 
-const findInternByPhone = async (phone) => {
+export const findInternByPhone = async (phone) => {
   return await Intern.findOne({ phone });
-};
-
-module.exports = {
-  registerIntern,
-  findInternByEmail,
-  loginIntern,
-  findInternByPhone,
 };
