@@ -1,9 +1,6 @@
-const { toBool } = require('../utils')
-require('dotenv').config()
+import 'dotenv/config'
+import { toBool } from '../utils'
 
-const DEV = toBool(process.env.DEV)
+export const DEVELOPMENT = toBool(process.env.DEVELOPMENT)
+export * from './database.config'
 
-module.exports = {
-    ...require('./database.config'),
-    DEV
-}

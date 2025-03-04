@@ -1,3 +1,1 @@
-module.exports = {
-    ...require('./cors')
-}
+export * from './cors'

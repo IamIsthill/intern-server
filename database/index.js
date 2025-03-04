@@ -1,3 +1,1 @@
-module.exports = {
-    ...require('./connectDb')
-}
+export * from './connectDb'

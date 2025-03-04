@@ -1,3 +1,1 @@
-module.exports = {
-    ...require('./isBool')
-}
+export * from './isBool'

@@ -1,18 +1,15 @@
-const cors = require('cors')
-const { DEV } = require('../config')
+import cors from 'cors'
+import { DEVELOPMENT } from '../config'
 
 const corsOptions = {
     origin: [], // Change to whitelisted origin once na oks na
     optionsSuccessfulStatus: 200
 }
-if (DEV) {
+if (DEVELOPMENT) {
     corsOptions.origin = '*' // Only for dev, use allow all
 }
 
-const Cors = (options = corsOptions) => {
+export const Cors = (options = corsOptions) => {
+    console.log(options)
     return cors(options)
-}
-
-module.exports = {
-    Cors
 }
