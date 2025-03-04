@@ -1,1 +1,1 @@
-export * from './connectDb'
+export * from './connectDb.js'

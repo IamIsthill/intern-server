@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const internSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
