@@ -5,6 +5,7 @@ GET {{host}}/admin/find
 # Get a token from the endpoint as login
 # Parameter: { email: string, password: string }
 # Response: { message: string, token: string}
+# Content-Type: application/json
 POST {{host}}/auth/login/admin
 Content-Type: application/json
 
