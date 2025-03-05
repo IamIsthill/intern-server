@@ -15,8 +15,9 @@ const adminSchema = new mongoose.Schema({
         unique: true
     },
     password: {
-        minLenght: 8,
+        minLength: 8,
         type: String,
+        required: true
     },
     accountType: {
         type: String,
