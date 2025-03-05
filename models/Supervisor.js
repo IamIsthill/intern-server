@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Department } from "./Department";
+import { Department } from "./Department.js";
 
 const supervisorSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
