@@ -1,2 +1,14 @@
 @host = http://localhost:3000
 GET {{host}}/admin/find
+
+### Admin Login
+# Get a token from the endpoint as login
+# Parameter: { email: string, password: string }
+# Response: { message: string, token: string}
+POST {{host}}/auth/login/admin
+Content-Type: application/json
+
+{
+    "email": "admin@admin.com",
+    "password": "12345678"
+}
