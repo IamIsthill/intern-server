@@ -8,6 +8,7 @@ import {
 } from "../controllers/interns-auth-controller.js";
 
 router.post("/register", registerInternController);
-router.post("/login", loginInternController);
+router.post("/login/intern", loginInternController);
 router.get("/check-email", checkEmailAvailability);
 router.get("/check-phone", checkPhoneAvailability);
+
