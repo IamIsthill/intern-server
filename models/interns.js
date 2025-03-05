@@ -1,5 +1,11 @@
 import mongoose from "mongoose";
 
+const dateTimeSchema = new mongoose.Schema({
+  date: { type: Date },
+  timeIn: { type: String },
+  timeOut: { type: String },
+});
+
 const internSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -33,6 +39,13 @@ const internSchema = new mongoose.Schema({
     ref: "Supervisor",
     default: null,
   },
+  status: {
+    type: String,
+    enum: ["active", "inactive"],
+    default: "active",
+  },
+  dateTime: [dateTimeSchema],
+  default: [],
 });
 
 export const Intern = mongoose.model("Intern", internSchema);
