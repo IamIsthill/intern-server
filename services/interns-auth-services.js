@@ -12,9 +12,12 @@ export const registerIntern = async ({
   internshipHours,
   email,
   password,
+  timeEntries = null,
+  totalHours,
 }) => {
   // hashes first the password via bcryptjs in rounds of 10
   const hashedPassword = await bcryptjs.hash(password, 10);
+
   const intern = await Intern.create({
     firstName,
     lastName,
@@ -24,16 +27,23 @@ export const registerIntern = async ({
     internshipHours,
     email,
     password: hashedPassword,
+    timeEntries: timeEntries
+      ? timeEntries.map((entry) => ({
+          timeIn: entry.timeIn ? new Date(entry.timeIn) : null,
+          timeOut: entry.timeOut ? new Date(entry.timeOut) : null,
+        }))
+      : [],
+    totalHours,
   });
+
   return intern;
 };
 
-// find internby email to be used by checking email availability
+// Rest of the code remains the same
 export const findInternByEmail = async (email) => {
   return await Intern.findOne({ email });
 };
 
-//intern login throws the jwt token after logging in in backend, storing happens in our frontend
 export const loginIntern = async ({ email, password }) => {
   const intern = await findInternByEmail(email);
   if (!intern) {
@@ -54,7 +64,6 @@ export const loginIntern = async ({ email, password }) => {
   return { message: "Login successful", token };
 };
 
-// to be used by checking phone availability
 export const findInternByPhone = async ({ phone }) => {
   return await Intern.findOne({ phone });
 };

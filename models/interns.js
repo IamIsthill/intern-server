@@ -1,11 +1,5 @@
 import mongoose from "mongoose";
 
-const dateTimeSchema = new mongoose.Schema({
-  date: { type: Date },
-  timeIn: { type: String },
-  timeOut: { type: String },
-});
-
 const internSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -14,8 +8,8 @@ const internSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    minumum: 11,
-    maximum: 11,
+    minlength: 11,
+    maxlength: 11,
   },
   school: { type: String, required: true },
   internshipHours: { type: Number, required: true },
@@ -42,10 +36,65 @@ const internSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ["active", "inactive"],
-    default: "active",
+    default: "inactive",
   },
-  dateTime: [dateTimeSchema],
-  default: [],
+  timeEntries: {
+    type: [
+      {
+        timeIn: {
+          type: Date,
+          default: null,
+        },
+        timeOut: {
+          type: Date,
+          default: null,
+        },
+      },
+    ],
+    default: [],
+  },
+  totalHours: {
+    type: Number,
+    default: 0,
+    get: function () {
+      if (!this.timeEntries || this.timeEntries.length === 0) {
+        return 0;
+      }
+
+      let totalHours = 0;
+      this.timeEntries.forEach((entry) => {
+        if (entry.timeIn && entry.timeOut) {
+          const timeIn = new Date(entry.timeIn);
+          const timeOut = new Date(entry.timeOut);
+          const hours = (timeOut - timeIn) / (1000 * 60 * 60);
+          totalHours += hours;
+        }
+      });
+
+      return Number(totalHours.toFixed(2));
+    },
+  },
+});
+
+// Add a pre-save middleware to calculate totalHours before saving
+internSchema.pre("save", function (next) {
+  if (!this.timeEntries || this.timeEntries.length === 0) {
+    this.totalHours = 0;
+    return next();
+  }
+
+  let totalHours = 0;
+  this.timeEntries.forEach((entry) => {
+    if (entry.timeIn && entry.timeOut) {
+      const timeIn = new Date(entry.timeIn);
+      const timeOut = new Date(entry.timeOut);
+      const hours = (timeOut - timeIn) / (1000 * 60 * 60);
+      totalHours += hours;
+    }
+  });
+
+  this.totalHours = Number(totalHours.toFixed(2));
+  next();
 });
 
 export const Intern = mongoose.model("Intern", internSchema);

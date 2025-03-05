@@ -1,4 +1,4 @@
-import joi from 'joi'
+import joi from "joi";
 
 export const registerInternValidator = joi.object({
   firstName: joi.string().required(),
@@ -11,11 +11,22 @@ export const registerInternValidator = joi.object({
   password: joi.string().required(),
   department: joi.string(),
   supervisor: joi.string(),
+  department: joi.string(),
+  supervisor: joi.string(),
+  status: joi.string().valid("active", "inactive"),
+  timeEntries: joi
+    .array()
+    .items(
+      joi.object({
+        timeIn: joi.date().iso().allow(null).optional(),
+        timeOut: joi.date().iso().allow(null).optional(),
+      })
+    )
+    .optional(),
+  totalHours: joi.number().optional(),
 });
 
 export const loginInternValidator = joi.object({
   email: joi.string().required(),
   password: joi.string().required(),
 });
-
-
