@@ -1,7 +1,7 @@
 import { Department } from "../../models/Department";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import httpMocks from 'node-mocks-http'
-import { createDepartmentController } from "../../controllers/department.controller";
+import { createDepartmentController, getAllDepartments } from "../../controllers/department.controller";
 
 class Factory {
     constructor() {
@@ -89,6 +89,36 @@ describe('createDepartmentController', () => {
 
 
 
+    })
+})
+
+describe('get all departments controller', () => {
+    let req, res, next, departments
+    beforeEach(() => {
+        req = httpMocks.createRequest()
+        res = httpMocks.createResponse()
+        next = vi.fn()
+        departments = [{
+            name: 'IT'
+        },
+        {
+            name: 'IS'
+        }]
+    })
+    it('returns 200 if departments is an empty array', async () => {
+        vi.spyOn(Department, 'find').mockResolvedValue([])
+        await getAllDepartments(req, res, next)
+
+        expect(res.statusCode).toBe(200)
+        expect(res._getJSONData()).toEqual({ departments: [] })
+
+    })
+    it('returns 200 if department has content', async () => {
+        vi.spyOn(Department, 'find').mockResolvedValue(departments)
+        await getAllDepartments(req, res, next)
+
+        expect(res.statusCode).toBe(200)
+        expect(res._getJSONData()).toEqual({ departments: departments })
     })
 })
 
