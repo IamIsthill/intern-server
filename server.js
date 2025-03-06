@@ -2,7 +2,7 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import express from "express";
 import compression from "compression";
-import { connectDb } from "./database/index.js";
+import { connectDb, startApp, onDbError } from "./database/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { Cors } from "./middleware/cors.js";
 import { authenticateJWT } from "./middleware/auth.js";
@@ -27,13 +27,7 @@ app.use('/tasks', taskRouter)
 app.use(errorHandler);
 
 
-mongoose.connection.once("open", () => {
-  console.log("Connected to database");
-  app.listen(port, () => {
-    console.log(`Intern System Server running on port ${port}`);
-  });
-});
+startApp(app, port)
+onDbError()
 
-mongoose.connection.on("error", (err) => {
-  console.log(err);
-});
+
