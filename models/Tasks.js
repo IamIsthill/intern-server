@@ -1,14 +1,16 @@
-import mongoose from mongoose;
+import mongoose from 'mongoose';
 
 const tasksSchema = new mongoose.Schema({
     supervisor: { type: mongoose.Schema.Types.ObjectId, ref: "Supervisor" },
     title: { type: String, required: true },
     description: { type: String, required: true },
-    status: { type: String,
-         required: true,
-         enum: ["pending", "in-progress", "completed", "backlogs"],
-         default: "pending",},
-    deadline: { type: Date},
+    status: {
+        type: String,
+        required: true,
+        enum: ["pending", "in-progress", "completed", "backlogs"],
+        default: "pending",
+    },
+    deadline: { type: Date },
     assignedInterns: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -16,5 +18,10 @@ const tasksSchema = new mongoose.Schema({
         },
     ],
 });
+export let Tasks
 
-export const Tasks = mongoose.model("Tasks", tasksSchema);
+if (mongoose.models.Tasks) {
+    Tasks = mongoose.model('Tasks')
+} else {
+    Tasks = mongoose.model("Tasks", tasksSchema);
+}
