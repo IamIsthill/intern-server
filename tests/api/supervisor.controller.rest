@@ -1,0 +1,19 @@
+@host = http://localhost:3000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YzZiMmZkODkxOTE1M2Y2ZDRkZWVjZiIsImVtYWlsIjoiZm9vQGZvby5jb20iLCJpYXQiOjE3NDEyMzIwMTMsImV4cCI6MTc0MTMxODQxM30.KAdSRNJC5pTul7r1ksbuLgPhwMm3Zro9SxcVhrh_3vY
+### Setup
+# Get a token first
+POST {{host}}/auth/login/intern
+Content-Type: application/json
+
+{
+    "email": "foo@foo.com",
+    "password": "12345678"
+}
+
+### Get all existing supervisors
+# Get an array of tasks assigned to intern
+# add the internId as a query parameter
+# Response: { departments: objects[]}
+GET {{host}}/supervisors/all
+Authorization: Bearer {{token}}
+

@@ -21,6 +21,11 @@ const supervisorSchema = new mongoose.Schema({
     },
   ],
   department: { type: mongoose.Schema.Types.ObjectId, ref: "Department" },
+  accountType: {
+    type: String,
+    required: true,
+    default: 'supervisor'
+  }
 });
 
 export let Supervisor

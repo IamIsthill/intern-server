@@ -29,9 +29,9 @@ export const registerIntern = async ({
     password: hashedPassword,
     timeEntries: timeEntries
       ? timeEntries.map((entry) => ({
-          timeIn: entry.timeIn ? new Date(entry.timeIn) : null,
-          timeOut: entry.timeOut ? new Date(entry.timeOut) : null,
-        }))
+        timeIn: entry.timeIn ? new Date(entry.timeIn) : null,
+        timeOut: entry.timeOut ? new Date(entry.timeOut) : null,
+      }))
       : [],
     totalHours,
   });
@@ -56,7 +56,7 @@ export const loginIntern = async ({ email, password }) => {
   }
 
   const token = jwt.sign(
-    { id: intern._id, email: intern.email },
+    { id: intern._id, email: intern.email, accountType: intern.accountType },
     process.env.JWT_SECRET,
     { expiresIn: "1d" }
   );

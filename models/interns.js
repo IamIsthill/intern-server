@@ -53,6 +53,11 @@ const internSchema = new mongoose.Schema({
     ],
     default: [],
   },
+  accountType: {
+    type: String,
+    required: true,
+    default: 'intern'
+  },
   totalHours: {
     type: Number,
     default: 0,

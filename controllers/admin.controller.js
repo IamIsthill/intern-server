@@ -50,7 +50,8 @@ export const adminLoginController = async (req, res, next) => {
 
         const token = jwt.sign({
             id: admin._id,
-            email: admin.email
+            email: admin.email,
+            accountType: admin.accountType
         }, JWT_SECRET, { expiresIn: 60 * 60 })
 
         return res.status(200).json({ message: "Login Successful", token: token })
