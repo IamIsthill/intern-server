@@ -12,14 +12,9 @@ Content-Type: application/json
 
 ### Find all tasks assigned to Intern
 # Get an array of tasks assigned to intern
-# Parameter: { internId: string }
+# add the internId as a query parameter
 # Response: { tasks: objects[]}
-# Content-Type: application/json
 # 
-GET {{host}}/tasks/intern
-Content-Type: application/json
+GET {{host}}/tasks/intern?internId=1
 Authorization: Bearer {{token}}
 
-{
-    "internId": "1"
-}

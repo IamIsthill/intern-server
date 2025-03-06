@@ -43,8 +43,7 @@ describe('getTasksByInternController endpoint', () => {
     })
 
     it('returns 200 and empty array if intern was not in tasks assignedinterns', async () => {
-        req.body = params
-        // vi.spyOn(Tasks, 'find').mockResolvedValue([])
+        req.query = params
 
         findTasksByInternId.mockResolvedValue([])
         await getTasksByInternIdController(req, res, next)
@@ -53,11 +52,11 @@ describe('getTasksByInternController endpoint', () => {
         expect(res._getJSONData()).toEqual({
             tasks: []
         })
-        expect(findTasksByInternId).toHaveBeenCalledWith(req.body.internId)
+        expect(findTasksByInternId).toHaveBeenCalledWith(req.query.internId)
     })
 
     it('returns 200 and an array of interns if intern was found in tasks', async () => {
-        req.body = params
+        req.query = params
         findTasksByInternId.mockResolvedValue([task])
         await getTasksByInternIdController(req, res, next)
 
@@ -66,6 +65,6 @@ describe('getTasksByInternController endpoint', () => {
             tasks: expect.any(Array)
         })
         expect(res._getJSONData().tasks.length).toBeGreaterThan(0)
-        expect(findTasksByInternId).toHaveBeenCalledWith(req.body.internId)
+        expect(findTasksByInternId).toHaveBeenCalledWith(req.query.internId)
     })
 })

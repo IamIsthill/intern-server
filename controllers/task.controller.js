@@ -9,7 +9,7 @@ const internTasksValidator = Joi.object({
 
 export const getTasksByInternIdController = async (req, res, next) => {
     try {
-        const { error, value } = internTasksValidator.validate(req.body)
+        const { error, value } = internTasksValidator.validate(req.query)
 
         if (error) {
             const errorMessages = error.details.map(detail => detail.message)
