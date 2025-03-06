@@ -22,7 +22,6 @@ describe('GET /supervisors', () => {
         Supervisor.find.mockResolvedValue(mockSupervisors)
 
         const response = await request(app).get('/supervisors/all')
-        console.log(response.body)
 
         expect(response.status).toBe(200)
         expect(response.body.supervisors).toEqual(mockSupervisors)
