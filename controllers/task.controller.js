@@ -1,6 +1,6 @@
-import { Tasks } from "../models/Tasks";
+import { Tasks } from "../models/Tasks.js";
 import Joi from "joi";
-import { findTasksByInternId } from "../services/tasks.services";
+import { findTasksByInternId } from "../services/tasks.services.js";
 
 const internTasksValidator = Joi.object({
     internId: Joi.string().required()
