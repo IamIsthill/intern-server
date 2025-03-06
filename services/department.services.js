@@ -1,4 +1,4 @@
-import { Department } from "../models/Department"
+import { Department } from "../models/Department.js"
 
 export const findDepartmentByName = async (departmentName) => {
     return await Department.findOne({ department: departmentName })

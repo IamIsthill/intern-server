@@ -1,12 +1,12 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YzZiMmZkODkxOTE1M2Y2ZDRkZWVjZiIsImVtYWlsIjoiZm9vQGZvby5jb20iLCJpYXQiOjE3NDEyMzIwMTMsImV4cCI6MTc0MTMxODQxM30.KAdSRNJC5pTul7r1ksbuLgPhwMm3Zro9SxcVhrh_3vY
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Yzg0MmViZDQ5MmE3MzQ2YzRhNDQwNyIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0MTI2NzQ1NiwiZXhwIjoxNzQxMjcxMDU2fQ.Lp8A_OctqksydWISyk8eZfyIAwfWkdzLSHejv2Nh2Zg
 ### Setup
 # Get a token first
-POST {{host}}/auth/login/intern
+POST {{host}}/auth/login/admin
 Content-Type: application/json
 
 {
-    "email": "foo@foo.com",
+    "email": "admin@admin.com",
     "password": "12345678"
 }
 
@@ -16,4 +16,31 @@ Content-Type: application/json
 # Response: { departments: objects[]}
 GET {{host}}/supervisors/all
 Authorization: Bearer {{token}}
+
+### Register a supervisor account
+# The new user is returned
+POST {{host}}/supervisors/register
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "firstName": "foo", 
+    "lastName": "bar", 
+    "age": 30,
+    "email": "supervisorsssss@supervisorss.com",
+    "password": "12345678",
+    "department": "IT"
+}
+
+# Sample response
+{
+  "firstName": "foo",
+  "lastName": "bar",
+  "age": 30,
+  "email": "supervisorsssss@supervisorss.com",
+  "assignedInterns": [],
+  "department": "67c9a564d9a683703619e4b4",
+  "accountType": "supervisor",
+  "_id": "67c9a565d9a683703619e4b6"
+}
 
