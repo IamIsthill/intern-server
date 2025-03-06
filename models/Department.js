@@ -6,4 +6,9 @@ const departmentSchema = new mongoose.Schema({
 
 })
 
-export const Department = mongoose.model('Department', departmentSchema)
+export let Department
+if (mongoose.models.Department) {
+    Department = mongoose.model('Department')
+} else {
+    Department = mongoose.model('Department', departmentSchema)
+}

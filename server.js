@@ -8,6 +8,8 @@ import { Cors } from "./middleware/cors.js";
 import { authenticateJWT } from "./middleware/auth.js";
 import { taskRouter } from "./routes/task.routes.js";
 import { adminRouter } from "./routes/admin.routes.js";
+import { supervisorRouter } from "./routes/supervisor.routes.js";
+import { departmentRouter } from "./routes/department.routes.js";
 import { router as internAuthRouter } from "./routes/interns-auth-routes.js";
 
 
@@ -24,6 +26,8 @@ app.use("/auth", internAuthRouter);
 app.use(authenticateJWT)
 app.use("/admin", adminRouter);
 app.use('/tasks', taskRouter)
+app.use('/supervisors', supervisorRouter)
+app.use('/departments', departmentRouter)
 app.use(errorHandler);
 
 

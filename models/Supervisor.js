@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { Department } from "./Department.js";
 
 const supervisorSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -24,4 +23,10 @@ const supervisorSchema = new mongoose.Schema({
   department: { type: mongoose.Schema.Types.ObjectId, ref: "Department" },
 });
 
-export const Supervisor = mongoose.model("Supervisor", supervisorSchema);
+export let Supervisor
+
+if (mongoose.models.Supervisor) {
+  Supervisor = mongoose.model('Supervisor')
+} else {
+  Supervisor = mongoose.model("Supervisor", supervisorSchema);
+}
