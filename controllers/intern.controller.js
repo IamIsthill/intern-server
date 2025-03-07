@@ -15,6 +15,10 @@ const getInternBySupervisorValidator = Joi.object({
     supervisor: Joi.string().required()
 })
 
+export const findInterns = async (param) => {
+    return await Intern.find(param).select('-password', '-__v',)
+
+}
 
 
 export const getInternsBySupervisor = async (req, res, next) => {
@@ -26,7 +30,7 @@ export const getInternsBySupervisor = async (req, res, next) => {
             return res.status(400).json({ message: errorMessages.join(', ') })
         }
 
-        const interns = await Intern.find(value).select('-password', '-__v',)
+        const interns = await findInterns(value)
 
         return res.status(200).json({ interns: interns })
     } catch (err) {
