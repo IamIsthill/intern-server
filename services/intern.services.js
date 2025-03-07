@@ -4,11 +4,11 @@ import { Intern } from "../models/interns.js"
 export const findInterns = async (param) => {
     if (param.supervisor) {
         try {
-            param.supervisor = mongoose.Types.ObjectId.createFromTime(param.supervisor)
-        } catch (_) {
+            param.supervisor = new mongoose.Types.ObjectId(param.supervisor)
+        } catch (err) {
+            console.log(err)
             return []
         }
     }
     return await Intern.find(param).select(['-password', '-__v'])
-
 }

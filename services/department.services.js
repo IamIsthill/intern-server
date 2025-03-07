@@ -1,7 +1,7 @@
 import { Department } from "../models/Department.js"
 
 export const findDepartmentByName = async (departmentName) => {
-    return await Department.findOne({ department: departmentName })
+    return await Department.findOne({ name: departmentName })
 }
 
 export const createDepartment = async (departmentName) => {

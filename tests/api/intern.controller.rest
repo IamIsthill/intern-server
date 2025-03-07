@@ -18,7 +18,7 @@ Authorization: Bearer {{token}}
 
 ### Get interns by interns
 # Get an array of interns
-GET {{host}}/interns/find?supervisor=12
+GET {{host}}/interns/find?supervisor=67c9a2d9d0868ed1eed359cd
 Authorization: Bearer {{token}}
 
 ### Sample response

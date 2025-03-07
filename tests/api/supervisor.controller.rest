@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YzlhMmQ5ZDA4NjhlZDFlZWQzNTljZCIsImVtYWlsIjoic3VwZXJ2aXNvckBzdXBlcnZpc29yLmNvbSIsImFjY291bnRUeXBlIjoic3VwZXJ2aXNvciIsImlhdCI6MTc0MTMxNjE2OSwiZXhwIjoxNzQxMzE5NzY5fQ.gCmbvMj2JRcVkpTLe7MqpDo0qHr0M4PY3pZ_yGlPg4E
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Yzg0MmViZDQ5MmE3MzQ2YzRhNDQwNyIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0MTMyNjYxOSwiZXhwIjoxNzQxMzMwMjE5fQ.3Z9ODbStEwWJ3gf5TAkCKjIRjP9-sFQCMUOeq_JNoeI
 ### Setup
 ### Login as supervisor
 # Returns a token
@@ -7,7 +7,7 @@ POST {{host}}/auth/login/supervisor
 Content-Type: application/json
 
 {
-    "email": "supervisor@supervisor.com",
+    "email": "sup@sup.com",
     "password": "12345678"
 }
 
@@ -36,7 +36,7 @@ Authorization: Bearer {{token}}
     "firstName": "foo", 
     "lastName": "bar", 
     "age": 30,
-    "email": "supervisorssssss@susosrss.com",
+    "email": "sup@sup.com",
     "password": "12345678",
     "department": "IT"
 }
@@ -46,7 +46,7 @@ Authorization: Bearer {{token}}
   "firstName": "foo",
   "lastName": "bar",
   "age": 30,
-  "email": "supervisorsssss@supervisorss.com",
+  "email": "sup@sup.com",
   "assignedInterns": [],
   "department": "67c9a564d9a683703619e4b4",
   "accountType": "supervisor",
