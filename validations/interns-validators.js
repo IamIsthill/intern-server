@@ -30,3 +30,7 @@ export const loginInternValidator = joi.object({
   email: joi.string().required(),
   password: joi.string().required(),
 });
+
+export const getInternBySupervisorValidator = joi.object({
+  supervisor: joi.string().required()
+})

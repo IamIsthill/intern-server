@@ -1,23 +1,14 @@
-import { Intern } from '../models/interns.js'
-import Joi from 'joi'
+import { findInterns } from '../services/intern.services.js'
+import { getInternBySupervisorValidator } from '../validations/interns-validators.js'
 
 export const getAllInterns = async (req, res, next) => {
     try {
-        const interns = await Intern.find({}).select('-password')
+        const interns = await findInterns({})
 
         return res.status(200).json({ interns: interns })
     } catch (err) {
         next(err)
     }
-}
-
-const getInternBySupervisorValidator = Joi.object({
-    supervisor: Joi.string().required()
-})
-
-export const findInterns = async (param) => {
-    return await Intern.find(param).select('-password', '-__v',)
-
 }
 
 

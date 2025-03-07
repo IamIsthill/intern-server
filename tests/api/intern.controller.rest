@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YzZiMmZkODkxOTE1M2Y2ZDRkZWVjZiIsImVtYWlsIjoiZm9vQGZvby5jb20iLCJpYXQiOjE3NDEyMzIwMTMsImV4cCI6MTc0MTMxODQxM30.KAdSRNJC5pTul7r1ksbuLgPhwMm3Zro9SxcVhrh_3vY
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YzZiMmZkODkxOTE1M2Y2ZDRkZWVjZiIsImVtYWlsIjoiZm9vQGZvby5jb20iLCJhY2NvdW50VHlwZSI6ImludGVybiIsImlhdCI6MTc0MTMwOTQ1MiwiZXhwIjoxNzQxMzk1ODUyfQ.-J32kf_cMRuqD4RuFuUAMp0inbHpxkLfTkmHm3L8t8M
 ### Setup
 # Get a token first
 POST {{host}}/auth/login/intern
@@ -16,3 +16,12 @@ Content-Type: application/json
 GET {{host}}/interns/all
 Authorization: Bearer {{token}}
 
+### Get interns by interns
+# Get an array of interns
+GET {{host}}/interns/find?supervisor=12
+Authorization: Bearer {{token}}
+
+### Sample response
+{
+  "interns": []
+}
