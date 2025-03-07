@@ -8,3 +8,8 @@ export const registerSupervisorValidator = Joi.object({
     department: Joi.string().required(),
     email: Joi.string().email()
 })
+
+export const loginSupervisorValidator = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().required().min(8)
+})

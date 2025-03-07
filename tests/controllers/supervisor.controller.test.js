@@ -3,7 +3,7 @@ import request from 'supertest'
 import { Supervisor } from '../../models/Supervisor.js'
 import { app } from '../../server.js'
 import { Department } from '../../models/Department.js'
-import { createSupervisor } from '../../services/supervisor.services.js'
+import { createSupervisor, findSupervisorByEmail, loginSupervisor } from '../../services/supervisor.services.js'
 
 vi.mock('../../services/supervisor.services.js')
 vi.mock('../../models/Supervisor.js')
@@ -131,5 +131,96 @@ describe('POST /supervisors/register', () => {
         const res = await request(app).post(url)
 
         expect(res.statusCode).toBe(400)
+    })
+})
+
+describe('POST /auth/login/supervisor', () => {
+    const url = "/auth/login/supervisor"
+    let user, params
+
+    beforeEach(() => {
+        user = {
+            email: "supervisor@supervisor.com",
+            password: "$2a$10$eXhvW5rq00IxotvTG0SuKejd4fAXeTe.UNaybJc6O/HzxH2nIB9fe",
+            accountType: "supervisor"
+        }
+        params = {
+            email: "supervisor@supervisor.com",
+            password: "12345678"
+        }
+    })
+
+    it('returns 400 if params was not supplied', async () => {
+        const res = await request(app).post(url)
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+    })
+    it('returns 400 if email param is invalid', async () => {
+        params.email = 'invalid email'
+        const res = await request(app).post(url).send(params)
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: "\"email\" must be a valid email"
+        }))
+    })
+    it('returns 400 if password is not a string', async () => {
+        params.password = 12345678
+        const res = await request(app).post(url).send(params)
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: "\"password\" must be a string"
+        }))
+    })
+    it('returns 400 if user was not found', async () => {
+        params.email = 'fake@fake.com'
+        Supervisor.findOne.mockReturnValue({
+            lean: vi.fn().mockResolvedValue(null)
+        })
+        const res = await request(app).post(url).send(params)
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: "No user found"
+        }))
+
+    })
+
+    it('returns 400 if password was incorrect', async () => {
+        params.password = 'wrong password'
+        // Supervisor.findOne.mockReturnValue({
+        //     lean: vi.fn().mockResolvedValue(user)
+        // })
+        findSupervisorByEmail.mockResolvedValue(user)
+        loginSupervisor.mockRejectedValue(new Error('Invalid credentials'))
+        const res = await request(app).post(url).send(params)
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: "Invalid credentials"
+        }))
+
+    })
+
+    it('returns 200 and token if login if successful', async () => {
+        Supervisor.findOne.mockReturnValue({
+            lean: vi.fn().mockResolvedValue(user)
+        })
+        loginSupervisor.mockResolvedValue({
+            message: "Login Successful",
+            token: "Good token"
+        })
+
+        const res = await request(app).post(url).send(params)
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: "Login Successful",
+            token: expect.any(String)
+        }))
     })
 })
