@@ -3,7 +3,9 @@ import request from 'supertest'
 import { Supervisor } from '../../models/Supervisor.js'
 import { app } from '../../server.js'
 import { Department } from '../../models/Department.js'
+import { createSupervisor } from '../../services/supervisor.services.js'
 
+vi.mock('../../services/supervisor.services.js')
 vi.mock('../../models/Supervisor.js')
 vi.mock('../../models/Department.js')
 vi.mock('../../database/index.js', () => ({
@@ -40,14 +42,7 @@ describe('GET /supervisors/all', () => {
 
 describe('POST /supervisors/register', () => {
     const url = '/supervisors/register'
-    const user = {
-        firstName: 'foo',
-        lastName: 'bar',
-        age: 12,
-        password: '12345678',
-        department: 'IT',
-        email: 'foo@bar.com'
-    }
+
     it('returns 400 and error message if required params was not passed', async () => {
         const res = await request(app).post(url)
 
@@ -56,6 +51,7 @@ describe('POST /supervisors/register', () => {
             message: expect.any(String)
         })
     })
+
     describe('returns 400 if params is not valid', () => {
         let user
         beforeEach(() => {
@@ -105,13 +101,23 @@ describe('POST /supervisors/register', () => {
             })
         })
     })
+
     it('returns 201 and the created user if successful', async () => {
+        const user = {
+            firstName: 'foo',
+            lastName: 'bar',
+            age: 12,
+            password: '12345678',
+            department: 'IT',
+            email: 'foo@bar.com'
+        }
         Department.findOne.mockResolvedValue({
             _id: '12'
         })
-        Supervisor.create.mockReturnValue({
-            select: vi.fn().mockResolvedValue(user)
-        })
+        createSupervisor.mockResolvedValue(user)
+        // Supervisor.create.mockReturnValue({
+        //     select: vi.fn().mockResolvedValue(user)
+        // })
 
         const res = await request(app).post(url).send(user)
 

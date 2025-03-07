@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Yzg0MmViZDQ5MmE3MzQ2YzRhNDQwNyIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0MTI2NzQ1NiwiZXhwIjoxNzQxMjcxMDU2fQ.Lp8A_OctqksydWISyk8eZfyIAwfWkdzLSHejv2Nh2Zg
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Yzg0MmViZDQ5MmE3MzQ2YzRhNDQwNyIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0MTMwODAyNSwiZXhwIjoxNzQxMzExNjI1fQ.T6yPG7cimpYE8Q-DMsB1lGENB92JuzDbdrSxvOdmzVY
 ### Setup
 # Get a token first
 POST {{host}}/auth/login/admin
@@ -27,11 +27,11 @@ Authorization: Bearer {{token}}
     "firstName": "foo", 
     "lastName": "bar", 
     "age": 30,
-    "email": "supervisorsssss@supervisorss.com",
+    "email": "supervisorssssss@susosrss.com",
     "password": "12345678",
     "department": "IT"
 }
-
+###
 # Sample response
 {
   "firstName": "foo",

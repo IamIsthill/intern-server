@@ -40,3 +40,13 @@ describe('GET /interns/all', () => {
         expect(res.status).toBe(500)
     })
 })
+
+describe('GET /interns/find', () => {
+    const url = '/interns/find'
+    it('returns 400 if required params was not passed in query', async () => {
+
+    })
+    it('returns 200 and empty array if no intern was found via supervisor')
+    it('returns 200 and an array of interns if they are found via supervisor')
+    it('handle errors')
+})
