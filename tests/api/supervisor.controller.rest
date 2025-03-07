@@ -1,14 +1,23 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Yzg0MmViZDQ5MmE3MzQ2YzRhNDQwNyIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0MTMwODAyNSwiZXhwIjoxNzQxMzExNjI1fQ.T6yPG7cimpYE8Q-DMsB1lGENB92JuzDbdrSxvOdmzVY
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YzlhMmQ5ZDA4NjhlZDFlZWQzNTljZCIsImVtYWlsIjoic3VwZXJ2aXNvckBzdXBlcnZpc29yLmNvbSIsImFjY291bnRUeXBlIjoic3VwZXJ2aXNvciIsImlhdCI6MTc0MTMxNjE2OSwiZXhwIjoxNzQxMzE5NzY5fQ.gCmbvMj2JRcVkpTLe7MqpDo0qHr0M4PY3pZ_yGlPg4E
 ### Setup
-# Get a token first
-POST {{host}}/auth/login/admin
+### Login as supervisor
+# Returns a token
+POST {{host}}/auth/login/supervisor
 Content-Type: application/json
 
 {
-    "email": "admin@admin.com",
+    "email": "supervisor@supervisor.com",
     "password": "12345678"
 }
+
+#  Sample Response
+# {
+#   "message": "Login Successful",
+#   "token": "A string"
+# }
+
+
 
 ### Get all existing supervisors
 # Get an array of tasks assigned to intern
