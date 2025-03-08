@@ -23,7 +23,10 @@ describe('GET /supervisors/all', () => {
             { name: 'John Doe', department: 'HR' },
             { name: 'Jane Smith', department: 'IT' }
         ]
-        Supervisor.find.mockResolvedValue(mockSupervisors)
+        // Supervisor.find.mockResolvedValue(mockSupervisors)
+        Supervisor.find.mockReturnValue({
+            select: vi.fn().mockResolvedValue(mockSupervisors)
+        })
 
         const response = await request(app).get('/supervisors/all')
 
