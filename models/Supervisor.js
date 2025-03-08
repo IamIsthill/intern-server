@@ -20,6 +20,11 @@ const supervisorSchema = new mongoose.Schema({
       ref: "intern",
     },
   ],
+  status: {
+    type: String,
+    enum: ["active", "inactive"],
+    default: "active",
+  },
   department: { type: mongoose.Schema.Types.ObjectId, ref: "Department" },
   accountType: {
     type: String,
