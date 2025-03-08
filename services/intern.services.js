@@ -6,7 +6,6 @@ export const findInterns = async (param) => {
         try {
             param.supervisor = new mongoose.Types.ObjectId(param.supervisor)
         } catch (err) {
-            console.log(err)
             return []
         }
     }

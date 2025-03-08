@@ -21,7 +21,7 @@ export const getInternsBySupervisor = async (req, res, next) => {
             return res.status(400).json({ message: errorMessages.join(', ') })
         }
 
-        const interns = await findInterns(value)
+        const interns = await findInterns({ supervisor: value.supervisor })
 
         return res.status(200).json({ interns: interns })
     } catch (err) {
