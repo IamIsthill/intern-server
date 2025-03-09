@@ -1,70 +1,66 @@
 import { describe, expect, vi, it, beforeEach } from "vitest";
-import httpMocks from 'node-mocks-http'
+import request from 'supertest'
 import { Tasks } from "../../models/Tasks.js";
-import { getTasksByInternIdController } from "../../controllers/task.controller.js";
-import { findTasksByInternId } from "../../services/tasks.services.js";
-import mongoose from 'mongoose'
+import mongoose, { Mongoose } from 'mongoose'
 
-vi.mock("../../services/tasks.services", () => ({
-    findTasksByInternId: vi.fn(),
-}));
+vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
+const { app } = await import('../../server.js')
+vi.mock('../../middleware/auth.js', () => ({
+    authenticateJWT: (req, res, next) => next()
+}))
 
-describe('getTasksByInternController endpoint', () => {
-    let req, res, next, params, task
 
-    beforeEach(() => {
-        req = httpMocks.createRequest()
-        res = httpMocks.createResponse()
-        next = vi.fn()
-        params = {
-            internId: "67c8fb3b8362f38125c12b66"
-        }
+describe('GET /tasks/intern', () => {
+    const url = '/tasks/intern'
+    let internId = '67c8fb3b8362f38125c12b66'
+    let task = {
+        supervisor: '67c8fb3b8362f38125c12b66',
+        title: 'foo',
+        description: 'foo',
+        status: 'pending',
+        deadline: new Date(),
+        assignedInterns: [
+            mongoose.Types.ObjectId.createFromTime(internId)
+        ]
+    }
+    beforeEach(async () => {
+        vi.restoreAllMocks()
+        await Tasks.deleteMany()
+        await Tasks.create(task)
 
-        task = {
-            supervisor: '67c8fb3b8362f38125c12b66',
-            title: 'foo',
-            description: 'foo',
-            status: 'pending',
-            deadline: new Date(),
-            assignedInterns: [
-                mongoose.Types.ObjectId.createFromTime('67c8fb3b8362f38125c12b66')
-            ]
-        }
+
     })
+    it('internId --> 200 and {tasks: array of tasks}', async () => {
+        const res = await request(app).get(`${url}?internId=${internId}`)
 
-    it('returns 400 if required params is missing', async () => {
-        await getTasksByInternIdController(req, res, next)
+        expect(res.statusCode).toBe(200)
+        expect(res.body.tasks).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                supervisor: expect.any(String),
+                title: expect.any(String),
+                description: expect.any(String),
+                status: 'pending' || 'in-progress' || 'completed' || 'backlogs',
+                deadline: expect.any(String),
+                assignedInterns: expect.arrayContaining([
+                    expect.any(String)
+                ])
+            })
+        ]))
 
-        expect(res.statusCode).toBe(400)
-        expect(next).toHaveBeenCalledTimes(0)
-        expect(res._getJSONData()).toEqual({
+    })
+    it('valid internedId but no tasks --> 200 and {tasks: []}', async () => {
+        const lostIntern = new mongoose.Types.ObjectId().toString()
+        const res = await request(app).get(`${url}?internId=${lostIntern}`)
+
+        expect(res.status).toBe(200)
+        expect(res.body.interns).toEqual(expect.arrayContaining([]))
+    })
+    it('invalid params --> 400 and {message: }', async () => {
+        const res = await request(app).get(`${url}?notvalid=1233`)
+
+        expect(res.status).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
             message: expect.any(String)
-        })
-    })
-
-    it('returns 200 and empty array if intern was not in tasks assignedinterns', async () => {
-        req.query = params
-
-        findTasksByInternId.mockResolvedValue([])
-        await getTasksByInternIdController(req, res, next)
-
-        expect(res.statusCode).toBe(200)
-        expect(res._getJSONData()).toEqual({
-            tasks: []
-        })
-        expect(findTasksByInternId).toHaveBeenCalledWith(req.query.internId)
-    })
-
-    it('returns 200 and an array of interns if intern was found in tasks', async () => {
-        req.query = params
-        findTasksByInternId.mockResolvedValue([task])
-        await getTasksByInternIdController(req, res, next)
-
-        expect(res.statusCode).toBe(200)
-        expect(res._getJSONData()).toEqual({
-            tasks: expect.any(Array)
-        })
-        expect(res._getJSONData().tasks.length).toBeGreaterThan(0)
-        expect(findTasksByInternId).toHaveBeenCalledWith(req.query.internId)
+        }))
     })
 })
