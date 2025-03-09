@@ -14,7 +14,7 @@ export const findTasksByInternId = async (internId) => {
 export const createTasksValidator = (req) => {
     const validator = Joi.object({
         title: Joi.string().required(),
-        description: Joi.string().default(""),
+        description: Joi.string(),
         deadline: Joi.date().default(null),
         assignedInterns: Joi.alternatives().try(
             Joi.array().items(Joi.string().hex()),

@@ -144,9 +144,30 @@ describe('POST /tasks', () => {
     })
 
     it('invalid params --> 400 and {message: }', async () => {
-        const res = await request(app).post(url).send()
+        delete mockTask.description
+        const res = await request(app).post(url).send(mockTask)
 
         expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+    })
+
+    it('unauthorized user --> 401', async () => {
+        vi.resetModules()
+        const auth = await import('../../middleware/auth.js')
+        vi.spyOn(auth, 'authenticateJWT').mockImplementation((req, res, next) => {
+            req.user = {
+                id: '67c8fb3b8362f38125c12b66',
+                accountType: 'intern'
+            }
+            next()
+        })
+        const { app } = await import('../../server.js')
+
+        const res = await request(app).post(url).send(mockTask)
+
+        expect(res.statusCode).toBe(401)
         expect(res.body).toEqual(expect.objectContaining({
             message: expect.any(String)
         }))

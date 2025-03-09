@@ -9,7 +9,6 @@ const internTasksValidator = Joi.object({
 
 export const getTasksByInternIdController = async (req, res, next) => {
     try {
-        console.log(req.query)
         const { error, value } = internTasksValidator.validate(req.query)
 
         if (error) {
