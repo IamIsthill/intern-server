@@ -1,0 +1,27 @@
+@host = http://localhost:3000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YzZiMmZkODkxOTE1M2Y2ZDRkZWVjZiIsImVtYWlsIjoiZm9vQGZvby5jb20iLCJhY2NvdW50VHlwZSI6ImludGVybiIsImlhdCI6MTc0MTMwOTQ1MiwiZXhwIjoxNzQxMzk1ODUyfQ.-J32kf_cMRuqD4RuFuUAMp0inbHpxkLfTkmHm3L8t8M
+### Setup
+# Get a token first
+POST {{host}}/auth/login/intern
+Content-Type: application/json
+
+{
+    "email": "foo@foo.com",
+    "password": "12345678"
+}
+
+### Get all existing interns
+# Get an array of interns
+# Response: { interns: objects[]}
+GET {{host}}/interns/all
+Authorization: Bearer {{token}}
+
+### Get interns by interns
+# Get an array of interns
+GET {{host}}/interns/find?supervisor=67c9a2d9d0868ed1eed359cd
+Authorization: Bearer {{token}}
+
+### Sample response
+{
+  "interns": []
+}

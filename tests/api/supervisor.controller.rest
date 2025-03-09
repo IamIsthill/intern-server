@@ -1,0 +1,55 @@
+@host = http://localhost:3000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Yzg0MmViZDQ5MmE3MzQ2YzRhNDQwNyIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0MTMyNjYxOSwiZXhwIjoxNzQxMzMwMjE5fQ.3Z9ODbStEwWJ3gf5TAkCKjIRjP9-sFQCMUOeq_JNoeI
+### Setup
+### Login as supervisor
+# Returns a token
+POST {{host}}/auth/login/supervisor
+Content-Type: application/json
+
+{
+    "email": "sup@sup.com",
+    "password": "12345678"
+}
+
+#  Sample Response
+# {
+#   "message": "Login Successful",
+#   "token": "A string"
+# }
+
+
+
+### Get all existing supervisors
+# Get an array of tasks assigned to intern
+# add the internId as a query parameter
+# Response: { departments: objects[]}
+GET {{host}}/supervisors/all
+Authorization: Bearer {{token}}
+
+### Register a supervisor account
+# The new user is returned
+POST {{host}}/supervisors/register
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "firstName": "foo", 
+    "lastName": "bar", 
+    "age": 30,
+    "email": "sup@sup.com",
+    "password": "12345678",
+    "department": "IT"
+}
+###
+# Sample response
+{
+  "firstName": "foo",
+  "lastName": "bar",
+  "age": 30,
+  "email": "sup@sup.com",
+  "assignedInterns": [],
+  "department": "67c9a564d9a683703619e4b4",
+  "accountType": "supervisor",
+  "_id": "67c9a565d9a683703619e4b6"
+}
+
