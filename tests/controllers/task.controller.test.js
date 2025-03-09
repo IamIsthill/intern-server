@@ -1,4 +1,4 @@
-import { describe, expect, vi, it, beforeEach } from "vitest";
+import { describe, expect, vi, it, beforeEach, afterAll, afterEach } from "vitest";
 import request from 'supertest'
 import { Tasks } from "../../models/Tasks.js";
 import mongoose, { Mongoose } from 'mongoose'
@@ -6,7 +6,13 @@ import mongoose, { Mongoose } from 'mongoose'
 vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
 const { app } = await import('../../server.js')
 vi.mock('../../middleware/auth.js', () => ({
-    authenticateJWT: (req, res, next) => next()
+    authenticateJWT: (req, res, next) => {
+        req.user = {
+            id: '67c8fb3b8362f38125c12b66',
+            accountType: 'supervisor'
+        }
+        next()
+    }
 }))
 
 
@@ -17,19 +23,22 @@ describe('GET /tasks/intern', () => {
         supervisor: '67c8fb3b8362f38125c12b66',
         title: 'foo',
         description: 'foo',
-        status: 'pending',
         deadline: new Date(),
-        assignedInterns: [
-            mongoose.Types.ObjectId.createFromTime(internId)
+        assignedInterns: [{
+            internId: mongoose.Types.ObjectId.createFromTime(internId)
+        }
         ]
     }
     beforeEach(async () => {
         vi.restoreAllMocks()
         await Tasks.deleteMany()
         await Tasks.create(task)
-
-
     })
+
+    afterAll(async () => {
+        await Tasks.deleteMany()
+    })
+
     it('internId --> 200 and {tasks: array of tasks}', async () => {
         const res = await request(app).get(`${url}?internId=${internId}`)
 
@@ -39,10 +48,12 @@ describe('GET /tasks/intern', () => {
                 supervisor: expect.any(String),
                 title: expect.any(String),
                 description: expect.any(String),
-                status: 'pending' || 'in-progress' || 'completed' || 'backlogs',
                 deadline: expect.any(String),
                 assignedInterns: expect.arrayContaining([
-                    expect.any(String)
+                    expect.objectContaining({
+                        internId: expect.any(String),
+                        status: 'pending' || 'in-progress' || 'completed' || 'backlogs',
+                    })
                 ])
             })
         ]))
@@ -59,6 +70,83 @@ describe('GET /tasks/intern', () => {
         const res = await request(app).get(`${url}?notvalid=1233`)
 
         expect(res.status).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+    })
+})
+
+describe('POST /tasks', () => {
+    const url = '/tasks'
+
+    let mockTask
+
+    beforeEach(async () => {
+        vi.resetAllMocks()
+        mockTask = {
+            title: 'foo',
+            description: 'foo',
+            deadline: new Date(),
+        }
+        // await Tasks.create(mockTask)
+    })
+
+    afterEach(async () => {
+        await Tasks.deleteMany()
+    })
+
+
+    it('valid params, no interns yet --> 200 and created task', async () => {
+        const res = await request(app).post(url).send(mockTask)
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual(expect.objectContaining({
+            title: expect.any(String),
+            description: expect.any(String),
+            deadline: expect.any(String),
+            assignedInterns: expect.arrayContaining([])
+        }))
+    })
+
+    it('valid params with internId --> 200 and created task', async () => {
+        const mockIntern1 = new mongoose.Types.ObjectId().toString()
+        mockTask.assignedInterns = mockIntern1
+        const res = await request(app).post(url).send(mockTask)
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual(expect.objectContaining({
+            title: expect.any(String),
+            description: expect.any(String),
+            deadline: expect.any(String),
+            assignedInterns: expect.arrayContaining([expect.objectContaining({
+                internId: expect.any(String),
+                status: expect.any(String)
+            })])
+        }))
+    })
+
+    it('valid params with array of Interns --> 200 and created task', async () => {
+        const mockIntern1 = new mongoose.Types.ObjectId().toString()
+        const mockIntern2 = new mongoose.Types.ObjectId().toString()
+        mockTask.assignedInterns = [mockIntern1, mockIntern2]
+        const res = await request(app).post(url).send(mockTask)
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual(expect.objectContaining({
+            title: expect.any(String),
+            description: expect.any(String),
+            deadline: expect.any(String),
+            assignedInterns: expect.arrayContaining([expect.objectContaining({
+                internId: expect.any(String),
+                status: expect.any(String)
+            })])
+        }))
+    })
+
+    it('invalid params --> 400 and {message: }', async () => {
+        const res = await request(app).post(url).send()
+
+        expect(res.statusCode).toBe(400)
         expect(res.body).toEqual(expect.objectContaining({
             message: expect.any(String)
         }))
