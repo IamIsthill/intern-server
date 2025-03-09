@@ -13,9 +13,9 @@ export const findTasksByInternId = async (internId) => {
 
 export const createTasksValidator = (req) => {
     const validator = Joi.object({
-        title: Joi.string(),
-        description: Joi.string(),
-        deadline: Joi.date(),
+        title: Joi.string().required(),
+        description: Joi.string().default(""),
+        deadline: Joi.date().default(null),
         assignedInterns: Joi.alternatives().try(
             Joi.array().items(Joi.string().hex()),
             Joi.string()
@@ -26,7 +26,7 @@ export const createTasksValidator = (req) => {
 
     if (error) {
         const errorMessages = error.details.map(detail => detail.message)
-        throw new Error(errorMessages.join(', '))
+        throw new Error(errorMessages.join("\n"))
     }
 
     value.supervisor = new mongoose.Types.ObjectId(req.user.id)
