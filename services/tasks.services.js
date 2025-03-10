@@ -2,14 +2,28 @@ import mongoose from "mongoose"
 import { Tasks } from "../models/Tasks.js"
 import Joi from 'joi'
 
-export const findTasksByInternId = async (internId) => {
+export const findTasksByInternId = async (internId, user) => {
     internId = new mongoose.Types.ObjectId(internId)
-    const tasks = await Tasks.find({
-        assignedInterns: {
-            $elemMatch: { internId: internId }
-        }
-    })
-    return tasks
+
+    if (user.accountType === 'intern') {
+        const tasks = await Tasks.find({
+            assignedInterns: {
+                $elemMatch: { internId: internId }
+            }
+        }).select(['-assignedInterns'])
+        return tasks
+    }
+    else if (user.accountType === 'supervisor') {
+        const tasks = await Tasks.find({
+            supervisor: new mongoose.Types.ObjectId(user.id),
+            assignedInterns: {
+                $elemMatch: { internId: internId }
+            }
+        })
+        return tasks
+    }
+    return []
+
 }
 
 export const createTasksValidator = (req) => {

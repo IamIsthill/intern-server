@@ -16,7 +16,7 @@ export const getTasksByInternIdController = async (req, res, next) => {
             throw new Error(errorMessages.join(', '))
         }
 
-        const allInternTasks = await findTasksByInternId(value.internId)
+        const allInternTasks = await findTasksByInternId(value.internId, req.user)
 
         return res.status(200).json({ tasks: allInternTasks })
     } catch (err) {

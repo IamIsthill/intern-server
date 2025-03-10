@@ -1,4 +1,4 @@
-import { describe, expect, vi, it, beforeEach, afterAll, afterEach } from "vitest";
+import { describe, expect, vi, it, beforeEach, afterAll, afterEach, expectTypeOf } from "vitest";
 import request from 'supertest'
 import { Tasks } from "../../models/Tasks.js";
 import mongoose, { Mongoose } from 'mongoose'
@@ -52,13 +52,14 @@ describe('GET /tasks/intern', () => {
                 assignedInterns: expect.arrayContaining([
                     expect.objectContaining({
                         internId: expect.any(String),
-                        status: 'pending' || 'in-progress' || 'completed' || 'backlogs',
+                        status: expect.toBeOneOf(["pending", "in-progress", "completed", "backlogs"])
                     })
                 ])
             })
         ]))
 
     })
+
     it('valid internedId but no tasks --> 200 and {tasks: []}', async () => {
         const lostIntern = new mongoose.Types.ObjectId().toString()
         const res = await request(app).get(`${url}?internId=${lostIntern}`)
@@ -66,6 +67,7 @@ describe('GET /tasks/intern', () => {
         expect(res.status).toBe(200)
         expect(res.body.interns).toEqual(expect.arrayContaining([]))
     })
+
     it('invalid params --> 400 and {message: }', async () => {
         const res = await request(app).get(`${url}?notvalid=1233`)
 
@@ -73,6 +75,66 @@ describe('GET /tasks/intern', () => {
         expect(res.body).toEqual(expect.objectContaining({
             message: expect.any(String)
         }))
+    })
+
+    it('valid req from intern --> 200 and array without the assigned interns', async () => {
+        vi.resetModules()
+        const auth = await import('../../middleware/auth.js')
+        vi.spyOn(auth, 'authenticateJWT').mockImplementation((req, res, next) => {
+            req.user = {
+                id: '67c8fb3b8362f38125c12b66',
+                accountType: 'intern'
+            }
+            next()
+        })
+        const { app } = await import('../../server.js')
+        const res = await request(app).get(`${url}?internId=${internId}`)
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body.tasks).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                supervisor: expect.any(String),
+                title: expect.any(String),
+                description: expect.any(String),
+                deadline: expect.any(String),
+            })
+        ]))
+
+        res.body.tasks.forEach(task => expect(task).not.toHaveProperty('assignedInterns'))
+    })
+
+    it('valid req from supervisor --> 200 and array with the assigned interns from supervisor', async () => {
+        vi.resetModules()
+        const auth = await import('../../middleware/auth.js')
+        vi.spyOn(auth, 'authenticateJWT').mockImplementation((req, res, next) => {
+            req.user = {
+                id: '67c8fb3b8362f38125c12b66',
+                accountType: 'supervisor'
+            }
+            next()
+        })
+        const { app } = await import('../../server.js')
+        const res = await request(app).get(`${url}?internId=${internId}`)
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body.tasks).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                supervisor: expect.any(String),
+                title: expect.any(String),
+                description: expect.any(String),
+                deadline: expect.any(String),
+                assignedInterns: expect.arrayContaining([
+                    expect.objectContaining({
+                        internId: expect.any(String),
+                        status: 'pending' || 'in-progress' || 'completed' || 'backlogs',
+                        status: expect.toBeOneOf(['pending', 'in-progress', 'completed', 'backlogs'])
+                    })
+                ])
+            })
+        ]))
+        res.body.tasks.forEach(task => {
+            console.log(task)
+        });
     })
 })
 
