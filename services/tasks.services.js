@@ -3,12 +3,13 @@ import { Tasks } from "../models/Tasks.js"
 import Joi from 'joi'
 
 export const findTasksByInternId = async (internId) => {
-    internId = mongoose.Types.ObjectId.createFromTime(internId)
-    return await Tasks.find({
+    internId = new mongoose.Types.ObjectId(internId)
+    const tasks = await Tasks.find({
         assignedInterns: {
             $elemMatch: { internId: internId }
         }
     })
+    return tasks
 }
 
 export const createTasksValidator = (req) => {
