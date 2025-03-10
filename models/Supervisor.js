@@ -17,9 +17,10 @@ const supervisorSchema = new mongoose.Schema({
   assignedInterns: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "intern",
+      ref: "Intern",
     },
   ],
+  default: [],
   status: {
     type: String,
     enum: ["active", "inactive"],
@@ -29,14 +30,14 @@ const supervisorSchema = new mongoose.Schema({
   accountType: {
     type: String,
     required: true,
-    default: 'supervisor'
-  }
+    default: "supervisor",
+  },
 });
 
-export let Supervisor
+export let Supervisor;
 
 if (mongoose.models.Supervisor) {
-  Supervisor = mongoose.model('Supervisor')
+  Supervisor = mongoose.model("Supervisor");
 } else {
   Supervisor = mongoose.model("Supervisor", supervisorSchema);
 }

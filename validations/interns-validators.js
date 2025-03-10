@@ -10,8 +10,8 @@ export const registerInternValidator = joi.object({
   email: joi.string().required(),
   password: joi.string().required(),
   department: joi.string(),
-  supervisor: joi.string(),
-  department: joi.string(),
+  department: joi.string().hex().length(24).required(),
+  supervisor: joi.string().hex().length(24).required(),
   supervisor: joi.string(),
   status: joi.string().valid("active", "inactive"),
   timeEntries: joi
@@ -32,5 +32,5 @@ export const loginInternValidator = joi.object({
 });
 
 export const getInternBySupervisorValidator = joi.object({
-  supervisor: joi.string().required()
-})
+  supervisor: joi.string().required(),
+});
