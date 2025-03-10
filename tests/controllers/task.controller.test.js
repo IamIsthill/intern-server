@@ -97,6 +97,7 @@ describe('GET /tasks/intern', () => {
                 title: expect.any(String),
                 description: expect.any(String),
                 deadline: expect.any(String),
+                status: expect.toBeOneOf(['pending', 'in-progress', 'completed', 'backlogs'])
             })
         ]))
 

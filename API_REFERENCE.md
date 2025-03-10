@@ -79,8 +79,28 @@ GET /tasks/intern
 GET /tasks/intern?internId=67cbecaa3f611eedb0b953f0
 ```
 
-### Response Sample
 
+### Response Sample
+```json
+{
+    "tasks": [
+        {
+            "supervisor": {
+                "firstName": "John",
+                "lastName": "Doe",
+                "email": "john.doe@example.com"
+            },
+            "title": "foo",
+            "description": "bar",
+            "deadline": "2024-03-10T00:00:00.000Z",
+            "status" : "pending"
+        }
+    ]
+}
+```
+
+### Supervisor Response sample
+If the requester has a supervisor access, the json below is the response
 ```json
 {
   "tasks": [
@@ -102,6 +122,7 @@ GET /tasks/intern?internId=67cbecaa3f611eedb0b953f0
     }
   ]
 }
+
 ```
 
 ## Create tasks

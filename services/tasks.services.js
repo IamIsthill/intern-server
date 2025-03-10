@@ -10,7 +10,20 @@ export const findTasksByInternId = async (internId, user) => {
             assignedInterns: {
                 $elemMatch: { internId: internId }
             }
-        }).select(['-assignedInterns'])
+        })
+        if (tasks.length > 0) {
+            tasks.forEach(task => {
+                const assigned = task.assignedInterns.filter((assignedTask) => assignedTask.internId === internId)
+                task.status = ''
+                if (assigned) {
+                    task.status = assigned.status
+                }
+                delete task.assignedInterns
+                return task
+            })
+        }
+        console.log(tasks)
+
         return tasks
     }
     else if (user.accountType === 'supervisor') {
