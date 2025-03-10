@@ -2,31 +2,23 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Supervisor } from "../models/Supervisor.js";
 import { JWT_SECRET } from "../config/index.js";
+import { Intern } from "../models/interns.js";
 
 export const createSupervisor = async (supervisor) => {
-  try {
-    console.log("Creating Supervisor:", supervisor);
+  supervisor.password = await bcrypt.hash(supervisor.password, 10);
+  const response = await Supervisor.create(supervisor);
+  const data = response.toObject();
+  delete data.password;
+  delete data.__v;
 
-    // Step 1: Hash Password
-    console.log("Hashing Password...");
-    supervisor.password = await bcrypt.hash(supervisor.password, 10);
-    console.log("Password Hashed Successfully!");
-
-    // Step 2: Insert into MongoDB
-    const response = await Supervisor.create(supervisor);
-    console.log("Supervisor Created Successfully!", response);
-
-    // Step 3: Clean Response
-    const data = response.toObject();
-    delete data.password;
-    delete data.__v;
-
-    console.log("Final Supervisor Data:", data);
-    return data;
-  } catch (error) {
-    console.error("Error Creating Supervisor:", error);
-    throw error; // Ensure the controller catches it
+  if (supervisor.assignedInterns.length > 0) {
+    await Intern.updateMany(
+      { _id: { $in: supervisor.assignedInterns } }, // Find all interns assigned
+      { $set: { supervisor: response._id } } // Set supervisor field
+    );
   }
+
+  return data;
 };
 
 // export const findSupervisorByEmail = async (email) => {

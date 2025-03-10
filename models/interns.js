@@ -56,7 +56,7 @@ const internSchema = new mongoose.Schema({
   accountType: {
     type: String,
     required: true,
-    default: 'intern'
+    default: "intern",
   },
   totalHours: {
     type: Number,
@@ -101,10 +101,10 @@ internSchema.pre("save", function (next) {
   this.totalHours = Number(totalHours.toFixed(2));
   next();
 });
-export let Intern
+export let Intern;
 if (mongoose.models.Intern) {
-  Intern = mongoose.model('Intern')
+  Intern = mongoose.model("Intern");
 } else {
-  Intern = mongoose.model("Intern", internSchema)
+  Intern = mongoose.model("Intern", internSchema);
 }
 // export const Intern = mongoose.model("Intern", internSchema)
