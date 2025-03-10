@@ -25,7 +25,7 @@ describe('GET /tasks/intern', () => {
         description: 'foo',
         deadline: new Date(),
         assignedInterns: [{
-            internId: mongoose.Types.ObjectId.createFromTime(internId)
+            internId: new mongoose.Types.ObjectId(internId)
         }
         ]
     }
