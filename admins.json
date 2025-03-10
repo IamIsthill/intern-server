@@ -1,0 +1,10 @@
+[
+    {
+      "firstName": "Alice",
+      "lastName": "Smith",
+      "email": "alice@example.com",
+      "password": "$2b$10$auyo/TAtRC640t/7/7RGUeBGmSQwpSzV/th49nE/YDuuuWYJbPxLi",
+      "accountType": "admin"
+    }
+  ]
+  
