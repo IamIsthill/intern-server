@@ -1,0 +1,14 @@
+[
+    {
+      "firstName": "John",
+      "lastName": "Doe",
+      "age": 35,
+      "email": "johnnyenglish@example.com",
+      "password": "$2b$10$Ioy1I/2cFnyf2dXt5HM4qePaE0IB.88VG9lk76.GNuKnr48Sy7wWS",
+      "assignedInterns": ["67c5bd8ac5c14b2bab779e8a"],
+      "status": "active",
+      "department": "67ce44d852ed9460ae35f74e",
+      "accountType": "supervisor"
+    }
+  ]
+  
