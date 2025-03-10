@@ -16,3 +16,15 @@ export const loginSupervisorValidator = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required().min(8),
 });
+
+export const updateSupervisorValidator = Joi.object({
+  firstName: Joi.string().optional(),
+  lastName: Joi.string().optional(),
+  age: Joi.number().integer().min(18).max(150).optional(),
+  email: Joi.string().email().optional(),
+  password: Joi.string().min(8).optional(),
+  department: Joi.string().hex().length(24).optional(),
+  assignedInterns: Joi.array().items(Joi.string().hex().length(24)).optional(),
+  status: Joi.string().valid("active", "inactive").optional(),
+  accountType: Joi.string().optional(),
+});
