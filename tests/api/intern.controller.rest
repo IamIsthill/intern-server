@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YzZiMmZkODkxOTE1M2Y2ZDRkZWVjZiIsImVtYWlsIjoiZm9vQGZvby5jb20iLCJhY2NvdW50VHlwZSI6ImludGVybiIsImlhdCI6MTc0MTMwOTQ1MiwiZXhwIjoxNzQxMzk1ODUyfQ.-J32kf_cMRuqD4RuFuUAMp0inbHpxkLfTkmHm3L8t8M
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Y2JlY2FhM2Y2MTFlZWRiMGI5NTNlZiIsImVtYWlsIjoiZm9vQGZvby5jb20iLCJhY2NvdW50VHlwZSI6ImludGVybiIsImlhdCI6MTc0MTY3ODExNCwiZXhwIjoxNzQxNzY0NTE0fQ.vFDN6YLpYclHbUTzmUXPMa-8IoMQe5UQS7v-mIJkZts
 ### Setup
 # Get a token first
 POST {{host}}/auth/login/intern

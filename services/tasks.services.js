@@ -2,8 +2,12 @@ import mongoose from "mongoose"
 import { Tasks } from "../models/Tasks.js"
 import Joi from 'joi'
 
+const createId = (id = '') => {
+    return new mongoose.Types.ObjectId(id)
+}
+
 export const findTasksByInternId = async (internId, user) => {
-    internId = new mongoose.Types.ObjectId(internId)
+    internId = createId(internId)
 
     if (user.accountType === 'intern') {
         const tasks = await Tasks.find({
@@ -11,20 +15,25 @@ export const findTasksByInternId = async (internId, user) => {
                 $elemMatch: { internId: internId }
             }
         })
+        let newTaskArr = tasks
         if (tasks.length > 0) {
-            tasks.forEach(task => {
-                const assigned = task.assignedInterns.filter((assignedTask) => assignedTask.internId === internId)
-                task.status = ''
-                if (assigned) {
-                    task.status = assigned.status
+            newTaskArr = tasks.map(task => {
+                const intern = task.assignedInterns.find(intern => String(intern.internId) == String(internId))
+
+                const taskObject = task.toObject();
+
+                taskObject.status = ''
+
+                if (intern) {
+                    taskObject.status = intern.status
                 }
-                delete task.assignedInterns
-                return task
+                delete taskObject.assignedInterns
+
+                return taskObject
             })
         }
-        console.log(tasks)
 
-        return tasks
+        return newTaskArr
     }
     else if (user.accountType === 'supervisor') {
         const tasks = await Tasks.find({

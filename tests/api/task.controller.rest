@@ -1,12 +1,12 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Y2E4OTJhY2Q0ODk5OTc4ZDFiNjY2NiIsImVtYWlsIjoic3VwQHN1cC5jb20iLCJhY2NvdW50VHlwZSI6InN1cGVydmlzb3IiLCJpYXQiOjE3NDE1NzI0MjIsImV4cCI6MTc0MTU3NjAyMn0.vXn_paQ48WHRLdm6LdJA4HidoOHCvLCciB2psCgVT_c
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Y2JlY2FhM2Y2MTFlZWRiMGI5NTNlZiIsImVtYWlsIjoiZm9vQGZvby5jb20iLCJhY2NvdW50VHlwZSI6ImludGVybiIsImlhdCI6MTc0MTU5MjQwMCwiZXhwIjoxNzQxNjc4ODAwfQ.ruwAQUyFpvtM5eyimlRJsffo5qX1Ye1VbhuPTTwrjP4
 ### Setup
 # Get a token first
-POST {{host}}/auth/login/supervisor
+POST {{host}}/auth/login/intern
 Content-Type: application/json
 
 {
-    "email": "sup@sup.com",
+    "email": "foo@foo.com",
     "password": "12345678"
 }
 

@@ -25,9 +25,9 @@ describe('GET /tasks/intern', () => {
         description: 'foo',
         deadline: new Date(),
         assignedInterns: [{
-            internId: new mongoose.Types.ObjectId(internId)
-        }
-        ]
+            internId: new mongoose.Types.ObjectId(internId),
+            status: 'pending'
+        }]
     }
     beforeEach(async () => {
         vi.restoreAllMocks()
@@ -79,6 +79,7 @@ describe('GET /tasks/intern', () => {
 
     it('valid req from intern --> 200 and array without the assigned interns', async () => {
         vi.resetModules()
+        vi.restoreAllMocks()
         const auth = await import('../../middleware/auth.js')
         vi.spyOn(auth, 'authenticateJWT').mockImplementation((req, res, next) => {
             req.user = {
@@ -127,14 +128,14 @@ describe('GET /tasks/intern', () => {
                 assignedInterns: expect.arrayContaining([
                     expect.objectContaining({
                         internId: expect.any(String),
-                        status: 'pending' || 'in-progress' || 'completed' || 'backlogs',
+                        // status: 'pending' || 'in-progress' || 'completed' || 'backlogs',
                         status: expect.toBeOneOf(['pending', 'in-progress', 'completed', 'backlogs'])
                     })
                 ])
             })
         ]))
         res.body.tasks.forEach(task => {
-            console.log(task)
+            // console.log(task)
         });
     })
 })
