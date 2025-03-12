@@ -37,11 +37,11 @@ export const updateInternStatus = async (internId) => {
       return { success: false, message: "Intern not found" };
     }
 
-    console.log("Current Status:", intern.status); // ✅ Debugging
+    console.log("Current Status:", intern.status);
 
     // Toggle status properly
     const newStatus = intern.status === "active" ? "inactive" : "active";
-    console.log("New Status:", newStatus); // ✅ Debugging
+    console.log("New Status:", newStatus);
 
     const updatedIntern = await Intern.findByIdAndUpdate(
       internId,

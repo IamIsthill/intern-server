@@ -37,8 +37,8 @@ export const getInternsBySupervisor = async (req, res, next) => {
 
 export const updateInternController = async (req, res, next) => {
   try {
-    console.log("Received ID:", req.params.id); // Debugging
-    console.log("Received Body:", req.body); // Debugging
+    console.log("Received ID:", req.params.id);
+    console.log("Received Body:", req.body);
 
     const { id } = req.params;
     const { status } = req.body;
@@ -50,7 +50,7 @@ export const updateInternController = async (req, res, next) => {
 
     const result = await updateInternStatus(id);
 
-    console.log("Update Result:", result); // Debugging
+    console.log("Update Result:", result);
 
     if (!result.success) {
       return res.status(404).json(result);
