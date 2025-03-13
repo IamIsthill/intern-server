@@ -58,6 +58,11 @@ const internSchema = new mongoose.Schema({
     required: true,
     default: "intern",
   },
+  isApproved: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
+  },
   totalHours: {
     type: Number,
     default: 0,

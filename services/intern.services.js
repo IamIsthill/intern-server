@@ -8,20 +8,20 @@ export const findInterns = async (param) => {
     } catch (err) {
       return [];
     }
-    return await Intern.find(param).select([
-      "firstName",
-      "lastName",
-      "age",
-      "phone",
-      "school",
-      "internshipHours",
-      "email",
-      "department",
-      "status",
-      "supervisor",
-      "totalHours",
-    ]);
   }
+  return await Intern.find(param).select([
+    "firstName",
+    "lastName",
+    "age",
+    "phone",
+    "school",
+    "internshipHours",
+    "email",
+    "department",
+    "status",
+    "supervisor",
+    "totalHours",
+  ]);
 };
 
 const createId = (id = "") => {

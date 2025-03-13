@@ -39,7 +39,8 @@ export const getAllAccounts = async (req, res, next) => {
         { email: { $regex: q } },
         { status: { $regex: q } },
         { accountType: { $regex: q } },
-      ]
+      ],
+      isApproved: 'approved'
     }).select(['firstName', 'lastName', 'email', 'accountType', '_id', 'status']).lean()
     const supervisors = await Supervisor.find({
       $or: [
@@ -59,6 +60,17 @@ export const getAllAccounts = async (req, res, next) => {
     next(err)
   }
 }
+
+export const getRequestingInterns = async (req, res, next) => {
+  try {
+    const interns = await Intern.find({ isApproved: 'pending' }).select(['firstName', 'lastName', 'email', 'accountType', '_id', 'status'])
+    return res.status(200).json({ accounts: interns })
+
+  } catch (err) {
+    next(err)
+  }
+}
+
 // export const adminLoginController = async (req, res, next) => {
 //   try {
 //     const { error, value } = loginAdminValidator.validate(req.body);
