@@ -191,3 +191,104 @@ Authorization: Bearer <your_token>
   "__v": 0
 }
 ```
+
+## Admin Endpoints
+To access the routes on this endpoint, user must have admin access
+
+### Header Parameters
+| Header parameter | Type   | Required? | Description      |
+| ---------------- | ------ | --------- | ---------------- |
+| Content-Type     | string | Required  | application/json |
+| Authorization    | string | Required  | Bearer token     |
+
+### Get all accounts
+An endpoint for fetching all supervisor and intern accounts
+
+#### Endpoint
+```http
+GET /admin/accounts
+```
+
+#### Response sample
+```json
+{
+  [
+    {
+      "_id": "67ca8a80536daacf28d2940e",
+      "firstName": "foo",
+      "lastName": "bar",
+      "email": "supssss@sup.com",
+      "accountType": "supervisor"
+    },
+    {
+      "_id": "67ca8a89536daacf28d29411",
+      "firstName": "foo",
+      "lastName": "bar",
+      "email": "supsssss@sup.com",
+      "accountType": "supervisor"
+    }
+  ]
+}
+```
+### Get all intern request
+An endpoint for fetching the accounts waiting for approval
+
+#### Endpoint
+```http
+GET /admin/accounts/intern-request
+```
+
+#### Response sample
+```json
+{
+  "accounts": [
+    {
+      "_id": "67cbecaa3f611eedb0b953f0",
+      "firstName": "foo",
+      "lastName": "bar",
+      "email": "foo@foos.com",
+      "status": "inactive",
+      "accountType": "intern"
+    }
+  ]
+}
+```
+### Update intern request status
+An endpoint for updating the request status of an intern
+
+#### Endpoint
+```http
+PUT /admin/accounts/intern-request
+```
+
+#### Request body
+
+| Field           | Type                | Required? | Description |
+| --------------- | ------------------- | --------- | ----------- |
+| internId        | string              | Required  | The _id of the intern |
+| isApproved      | boolean             | Required  | True=approved, False=reject |
+
+#### Request Payload Sample
+```json
+{
+  "internId": "67cbecaa3f611eedb0b953f0",
+  "isApproved": true 
+}
+
+```
+
+#### Response sample
+```json
+{
+  "accounts": [
+    {
+      "_id": "67cbecaa3f611eedb0b953f0",
+      "firstName": "foo",
+      "lastName": "bar",
+      "email": "foo@foos.com",
+      "status": "active",
+      "accountType": "intern"
+    }
+  ]
+}
+```
