@@ -2,10 +2,12 @@ import mongoose from "mongoose";
 import {
   findInterns,
   updateInternStatus,
+  fetchInactiveInterns,
 } from "../services/intern.services.js";
 import {
   getInternBySupervisorValidator,
   updateInternStatusValidator,
+  getInactiveInternValidator,
 } from "../validations/interns-validators.js";
 
 export const getAllInterns = async (req, res, next) => {
@@ -67,5 +69,22 @@ export const updateInternController = async (req, res, next) => {
       message: "Internal server error",
       error: err.message,
     });
+  }
+};
+
+export const getInactiveInterns = async (req, res) => {
+  try {
+    const { error } = getInactiveInternValidator.validate(req.query);
+    if (error) {
+      return res
+        .status(400)
+        .json({ success: false, message: error.details[0].message });
+    }
+
+    const result = await fetchInactiveInterns();
+
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

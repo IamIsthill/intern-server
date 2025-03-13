@@ -62,3 +62,23 @@ export const updateInternStatus = async (internId) => {
     };
   }
 };
+
+export const fetchInactiveInterns = async () => {
+  try {
+    const interns = await Intern.find({ status: "inactive" }).select([
+      "firstName",
+      "lastName",
+      "age",
+      "phone",
+      "school",
+      "email",
+      "department",
+      "status",
+    ]);
+
+    return { success: true, count: interns.length, interns };
+  } catch (error) {
+    console.error("Error fetching inactive interns:", error);
+    throw new Error("Failed to fetch inactive interns.");
+  }
+};

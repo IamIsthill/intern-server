@@ -1,5 +1,9 @@
 import joi from "joi";
 
+export const getInactiveInternValidator = joi.object({
+  status: joi.string().valid("inactive").optional(),
+});
+
 export const registerInternValidator = joi.object({
   firstName: joi.string().required(),
   lastName: joi.string().required(),
