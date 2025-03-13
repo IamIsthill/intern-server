@@ -239,7 +239,6 @@ describe('PUT /admin/accounts/intern-request', () => {
     it('valid internId --> updated Intern with isApproved to rejected', async () => {
         const internId = mockInterns[0]['_id'].toString()
         const res = await request(app).put(url).send({ internId: internId, isApproved: false })
-        console.log(res.body)
 
         expect(res.body.account).toEqual(expect.objectContaining({
             _id: expect.any(String),

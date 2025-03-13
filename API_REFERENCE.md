@@ -292,3 +292,46 @@ PUT /admin/accounts/intern-request
   ]
 }
 ```
+## Task Endpoint
+An endpoint for interfacing with the task model
+
+### Header Parameters
+| Header parameter | Type   | Required? | Description      |
+| ---------------- | ------ | --------- | ---------------- |
+| Content-Type     | string | Required  | application/json |
+| Authorization    | string | Required  | Bearer token     |
+
+### Update Task Endpoint
+Allows an intern user to update their respective task status
+
+#### Endpoint
+```http
+PUT /tasks/:taskId
+```
+
+#### Request Params
+| Field           | Type                | Required? | Description |
+| --------------- | ------------------- | --------- | ----------- |
+| taskId      | boolean             | Required  | The _id of the task |
+
+
+#### Request Body
+
+| Field           | Type                | Required? | Description |
+| --------------- | ------------------- | --------- | ----------- |
+| internId        | string              | Required  | The _id of the intern |
+| status      | string             | Required  | The new status of the task |
+
+#### Response Sample
+```json
+{
+  "task": {
+    "_id": "67ce53f7a21d35e947ece076",
+    "title": "Foo",
+    "description": "Foo",
+    "deadline": "2025-03-09T18:08:44.000Z",
+    "__v": 0,
+    "status": "completed"
+  }
+}
+```

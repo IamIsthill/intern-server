@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Y2JlY2FhM2Y2MTFlZWRiMGI5NTNlZiIsImVtYWlsIjoiZm9vQGZvby5jb20iLCJhY2NvdW50VHlwZSI6ImludGVybiIsImlhdCI6MTc0MTU5MjQwMCwiZXhwIjoxNzQxNjc4ODAwfQ.ruwAQUyFpvtM5eyimlRJsffo5qX1Ye1VbhuPTTwrjP4
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Y2JlY2FhM2Y2MTFlZWRiMGI5NTNlZiIsImVtYWlsIjoiZm9vQGZvby5jb20iLCJhY2NvdW50VHlwZSI6ImludGVybiIsImlhdCI6MTc0MTg1MzY1NSwiZXhwIjoxNzQxOTQwMDU1fQ.ySH3JPFo0_FovVHDxIqNAJG5jqXAg0k6fAF9Oy0Fx9c
 ### Setup
 # Get a token first
 POST {{host}}/auth/login/intern
@@ -15,7 +15,7 @@ Content-Type: application/json
 # add the internId as a query parameter
 # Response: { tasks: objects[]}
 # 
-GET {{host}}/tasks/intern?internId=67cbecaa3f611eedb0b953f0
+GET {{host}}/tasks/intern?internId=67cbecaa3f611eedb0b953ef
 Authorization: Bearer {{token}}
 
 ###
@@ -28,6 +28,16 @@ Content-Type: application/json
     "description": "Foo",
     "deadline": "2025-03-10 02:08:44",
     "assignedInterns" : "67cbecaa3f611eedb0b953ef"
+}
+
+###
+PUT {{host}}/tasks/67ce53f7a21d35e947ece076
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "internId": "67cbecaa3f611eedb0b953ef",
+    "status": "completed"
 }
 
 
