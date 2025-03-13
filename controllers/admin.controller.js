@@ -33,7 +33,7 @@ export const getAllAccounts = async (req, res, next) => {
     if (Object.keys(queryObject).length > 0 && !('q' in req.query)) {
       return res.status(200).json({ accounts: [] })
     }
-    const q = req.query.q ? req.query.q : ''
+    const q = req.query.q ? req.query.q.trim() : ''
     const interns = await Intern.find({
       $or: [
         { firstName: { $regex: q } },
