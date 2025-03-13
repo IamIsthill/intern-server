@@ -198,7 +198,7 @@ describe('PUT /admin/accounts/intern-request', () => {
                 internshipHours: 486,
                 email: 'intern@intern.com',
                 password: '12345678',
-                status: 'active',
+                status: 'inactive',
                 accountType: 'intern',
                 isApproved: 'pending'
             },
@@ -212,7 +212,7 @@ describe('PUT /admin/accounts/intern-request', () => {
                 internshipHours: 486,
                 email: 'bar@foo.com',
                 password: '12345678',
-                status: 'active',
+                status: 'inactive',
                 accountType: 'intern',
                 isApproved: 'approved'
             },

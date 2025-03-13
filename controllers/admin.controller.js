@@ -89,7 +89,7 @@ export const approveInternRequest = async (req, res, next) => {
 
     const { internId, isApproved } = value
 
-    const updatedIntern = await Intern.findOneAndUpdate({ _id: createId(internId) }, { isApproved: isApproved ? 'approved' : 'rejected' }, { new: true }).select(['firstName', 'lastName', 'email', 'accountType', '_id', 'status'])
+    const updatedIntern = await Intern.findOneAndUpdate({ _id: createId(internId) }, { isApproved: isApproved ? 'approved' : 'rejected', status: 'active' }, { new: true }).select(['firstName', 'lastName', 'email', 'accountType', '_id', 'status'])
 
     return res.status(200).json({ account: updatedIntern })
   } catch (e) {
