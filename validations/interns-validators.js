@@ -41,8 +41,3 @@ export const updateInternStatusValidator = joi.object({
 export const getInactiveInternValidator = joi.object({
   status: joi.string().valid("inactive").optional(),
 });
-
-export const approveInternValidator = joi.object({
-  id: joi.string().required(),
-  status: joi.string().valid("active", "inactive"),
-});

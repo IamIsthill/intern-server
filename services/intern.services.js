@@ -82,30 +82,3 @@ export const fetchInactiveInterns = async () => {
     throw new Error("Failed to fetch inactive interns.");
   }
 };
-
-export const approveIntern = async (internId) => {
-  try {
-    const intern = await Intern.findById(internId);
-    if (!intern) {
-      return { success: false, message: "Intern not found" };
-    }
-
-    const updatedIntern = await Intern.findByIdAndUpdate(
-      internId,
-      { $set: { status: "active" } },
-      { new: true, runValidators: true }
-    );
-
-    return {
-      success: true,
-      message: `Intern status updated to ${updatedIntern.status}`,
-      intern: updatedIntern,
-    };
-  } catch (err) {
-    console.error("Error updating intern status:", err);
-    return {
-      success: false,
-      message: "An error occurred while updating the status",
-    };
-  }
-};
