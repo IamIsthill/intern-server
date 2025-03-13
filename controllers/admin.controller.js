@@ -78,7 +78,7 @@ const validateInternId = Joi.object({
   isApproved: Joi.boolean()
 })
 
-export const approveIntern = async (req, res, next) => {
+export const approveInternRequest = async (req, res, next) => {
   try {
     const { error, value } = validateInternId.validate(req.body)
 
