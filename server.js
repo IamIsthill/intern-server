@@ -18,24 +18,6 @@ const port = 3000;
 
 connectDb();
 
-console.log(
-  "Staff Auth Routes Loaded:",
-  staffAuthRouter.stack.map((layer) => layer.route?.path)
-);
-
-import bcrypt from "bcryptjs";
-
-const password = "password12345"; // Change this to your desired password
-const saltRounds = 10;
-
-bcrypt.hash(password, saltRounds, (err, hash) => {
-  if (err) {
-    console.error("Error hashing password:", err);
-  } else {
-    console.log("Hashed Password:", hash);
-  }
-});
-
 app.use(compression());
 app.use(express.json());
 app.use(Cors());

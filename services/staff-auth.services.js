@@ -47,7 +47,7 @@ export const loginSupervisorService = async ({ email, password }) => {
   }
 
   const token = jwt.sign(
-    { id: supervisor._id, email: supervisor.email, role: supervisor.role },
+    { id: supervisor._id, email: supervisor.email, accountType: supervisor.accountType },
     JWT_SECRET,
     { expiresIn: "1h" }
   );
