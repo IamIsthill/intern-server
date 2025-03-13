@@ -41,7 +41,8 @@ describe('GET /admin/accounts', () => {
             email: 'intern@intern.com',
             password: '12345678',
             status: 'active',
-            accountType: 'intern'
+            accountType: 'intern',
+            isApproved: 'approved'
         }
 
         await Intern.deleteMany()
@@ -105,4 +106,77 @@ describe('GET /admin/accounts', () => {
         expect(res.statusCode).toBe(401)
     })
 
+})
+
+describe('GET /admin/accounts/intern-request', () => {
+    const url = '/admin/accounts/intern-request'
+    let mockInterns
+
+    beforeEach(async () => {
+        mockInterns = [
+            {
+                firstName: 'foo',
+                lastName: 'bar',
+                age: 15,
+                phone: '12345678909',
+                school: 'dabcat',
+                internshipHours: 486,
+                email: 'intern@intern.com',
+                password: '12345678',
+                status: 'active',
+                accountType: 'intern',
+                isApproved: 'pending'
+            },
+            {
+                firstName: 'bar',
+                lastName: 'foo',
+                age: 15,
+                phone: '12345678919',
+                school: 'dabcat',
+                internshipHours: 486,
+                email: 'bar@foo.com',
+                password: '12345678',
+                status: 'active',
+                accountType: 'intern',
+                isApproved: 'approved'
+            },
+        ]
+
+        await Intern.deleteMany()
+        await Intern.create(mockInterns)
+    })
+
+    it('returns intern accounts[isApproved: pending]', async () => {
+        const res = await request(app).get(url)
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body.accounts).lengthOf(1)
+        expect(res.body.accounts).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                _id: expect.any(String),
+                email: expect.any(String),
+                accountType: expect.any(String),
+                status: expect.toBeOneOf(['active', 'inactive']),
+                firstName: expect.any(String),
+                lastName: expect.any(String),
+            })
+        ]))
+    })
+    it('accessible only to admin', async () => {
+        vi.resetModules()
+        vi.doMock('../../middleware/auth.js', () => ({
+            authenticateJWT: (req, res, next) => {
+                req.user = {
+                    accountType: 'intern'
+                }
+                next()
+            }
+        }))
+        const { app } = await import('../../server.js')
+
+        const res = await request(app).get(url)
+
+        expect(res.statusCode).toBe(401)
+
+    })
 })
