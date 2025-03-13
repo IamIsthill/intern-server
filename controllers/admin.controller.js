@@ -1,6 +1,8 @@
 import { Admin } from "../models/Admin.js";
 import { Intern } from "../models/interns.js";
 import { Supervisor } from "../models/Supervisor.js";
+import { createId } from "../utils/createId.js";
+import Joi from "joi";
 
 
 export const adminFindController = async (req, res, next) => {
@@ -68,6 +70,30 @@ export const getRequestingInterns = async (req, res, next) => {
 
   } catch (err) {
     next(err)
+  }
+}
+
+const validateInternId = Joi.object({
+  internId: Joi.string().length(24),
+  isApproved: Joi.boolean()
+})
+
+export const approveIntern = async (req, res, next) => {
+  try {
+    const { error, value } = validateInternId.validate(req.body)
+
+    if (error) {
+      const messages = error.details.map(detail => detail.message)
+      return res.status(400).json({ message: messages.join("\n") })
+    }
+
+    const { internId, isApproved } = value
+
+    const updatedIntern = await Intern.findOneAndUpdate({ _id: createId(internId) }, { isApproved: isApproved ? 'approved' : 'rejected' }, { new: true }).select(['firstName', 'lastName', 'email', 'accountType', '_id', 'status'])
+
+    return res.status(200).json({ account: updatedIntern })
+  } catch (e) {
+    next(e)
   }
 }
 
