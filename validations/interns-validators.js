@@ -1,9 +1,5 @@
 import joi from "joi";
 
-export const getInactiveInternValidator = joi.object({
-  status: joi.string().valid("inactive").optional(),
-});
-
 export const registerInternValidator = joi.object({
   firstName: joi.string().required(),
   lastName: joi.string().required(),
@@ -38,6 +34,15 @@ export const getInternBySupervisorValidator = joi.object({
 });
 
 export const updateInternStatusValidator = joi.object({
-  id: joi.string(),
+  id: joi.string().required(),
+  status: joi.string().valid("active", "inactive"),
+});
+
+export const getInactiveInternValidator = joi.object({
+  status: joi.string().valid("inactive").optional(),
+});
+
+export const approveInternValidator = joi.object({
+  id: joi.string().required(),
   status: joi.string().valid("active", "inactive"),
 });

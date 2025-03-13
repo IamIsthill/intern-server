@@ -7,3 +7,4 @@ internRouter.get("/all", controller.getAllInterns);
 internRouter.get("/find", controller.getInternsBySupervisor);
 internRouter.put("/update-status/:id", controller.updateInternController);
 internRouter.get("/inactive-interns", controller.getInactiveInterns);
+internRouter.put("/approve/:id", controller.approveInternController);

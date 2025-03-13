@@ -3,11 +3,13 @@ import {
   findInterns,
   updateInternStatus,
   fetchInactiveInterns,
+  approveIntern,
 } from "../services/intern.services.js";
 import {
   getInternBySupervisorValidator,
   updateInternStatusValidator,
   getInactiveInternValidator,
+  approveInternValidator,
 } from "../validations/interns-validators.js";
 
 export const getAllInterns = async (req, res, next) => {
@@ -44,6 +46,18 @@ export const updateInternController = async (req, res, next) => {
 
     const { id } = req.params;
     const { status } = req.body;
+
+    const { error } = updateInternStatusValidator.validate({
+      id: id,
+      status: status,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
+    }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       console.error("Invalid ID:", id);
@@ -87,4 +101,34 @@ export const getInactiveInterns = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
+};
+
+export const approveInternController = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const { error } = approveInternValidator.validate({
+    id: id,
+    status: status,
+  });
+
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message,
+    });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    console.error("Invalid ID:", id);
+    return res.status(400).json({ message: "Invalid ID format" });
+  }
+
+  const result = await approveIntern(id);
+
+  if (!result.success) {
+    return res.status(404).json(result);
+  }
+
+  return res.status(200).json(result);
 };
