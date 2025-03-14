@@ -1,9 +1,6 @@
 import { Admin } from "../models/Admin.js";
-import { Intern } from "../models/interns.js";
-import { Supervisor } from "../models/Supervisor.js";
-import { createId } from "../utils/createId.js";
-import Joi from "joi";
-
+import { findAllAccounts, findAndUpdateIntern, findPendingInternRequest } from "../services/admin.services.js";
+import { approveInternRequestValidator } from '../validations/adminValidator.js'
 
 export const adminFindController = async (req, res, next) => {
   try {
@@ -27,6 +24,8 @@ export const adminFindController = async (req, res, next) => {
   }
 };
 
+
+
 export const getAllAccounts = async (req, res, next) => {
   try {
     const queryObject = req.query
@@ -34,26 +33,8 @@ export const getAllAccounts = async (req, res, next) => {
       return res.status(200).json({ accounts: [] })
     }
     const q = req.query.q ? req.query.q.trim() : ''
-    const interns = await Intern.find({
-      $or: [
-        { firstName: { $regex: q } },
-        { lastName: { $regex: q } },
-        { email: { $regex: q } },
-        { status: { $regex: q } },
-        { accountType: { $regex: q } },
-      ],
-      isApproved: 'approved'
-    }).select(['firstName', 'lastName', 'email', 'accountType', '_id', 'status']).lean()
-    const supervisors = await Supervisor.find({
-      $or: [
-        { firstName: { $regex: q } },
-        { lastName: { $regex: q } },
-        { email: { $regex: q } },
-        { status: { $regex: q } },
-        { accountType: { $regex: q } },
-      ]
-    }).select(['firstName', 'lastName', 'email', 'accountType', '_id', 'status']).lean()
-    const accounts = interns.concat(supervisors)
+
+    const accounts = await findAllAccounts(q)
 
     return res.status(200).json({ accounts: accounts })
 
@@ -65,7 +46,7 @@ export const getAllAccounts = async (req, res, next) => {
 
 export const getRequestingInterns = async (req, res, next) => {
   try {
-    const interns = await Intern.find({ isApproved: 'pending' }).select(['firstName', 'lastName', 'email', 'accountType', '_id', 'status'])
+    const interns = await findPendingInternRequest()
     return res.status(200).json({ accounts: interns })
 
   } catch (err) {
@@ -73,26 +54,20 @@ export const getRequestingInterns = async (req, res, next) => {
   }
 }
 
-const validateInternId = Joi.object({
-  internId: Joi.string().length(24),
-  isApproved: Joi.boolean()
-})
-
 export const approveInternRequest = async (req, res, next) => {
   try {
-    const { error, value } = validateInternId.validate(req.body)
+    const { error, value } = approveInternRequestValidator.validate(req.body)
 
     if (error) {
       const messages = error.details.map(detail => detail.message)
       return res.status(400).json({ message: messages.join("\n") })
     }
 
-    const { internId, isApproved } = value
-
-    const updatedIntern = await Intern.findOneAndUpdate({ _id: createId(internId) }, { isApproved: isApproved ? 'approved' : 'rejected', status: 'active' }, { new: true }).select(['firstName', 'lastName', 'email', 'accountType', '_id', 'status'])
+    const updatedIntern = await findAndUpdateIntern(value.internId, value.isApproved)
 
     return res.status(200).json({ account: updatedIntern })
   } catch (e) {
+    console.log(e)
     next(e)
   }
 }
