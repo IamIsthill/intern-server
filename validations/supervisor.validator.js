@@ -7,7 +7,7 @@ export const registerSupervisorValidator = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8).required(),
   status: Joi.string().valid("active", "inactive").default("active"),
-  department: Joi.string().hex().length(24).required(),
+  department: Joi.string(),
   assignedInterns: Joi.array().items(Joi.string().hex().length(24)).default([]),
   accountType: Joi.string().valid("supervisor").required(),
 });

@@ -292,6 +292,53 @@ PUT /admin/accounts/intern-request
   ]
 }
 ```
+
+### Create intern account endpoint
+An endpoint for the admin to create an intern account
+
+#### Endpoint
+```http
+POST /accounts/intern
+```
+
+#### Request body
+| Field           | Type                | Required? | Description |
+| --------------- | ------------------- | --------- | ----------- |
+| firstName        | string              | Required  |  |
+| lastName      | string             | Required  |  |
+| age      | number             | Required  |  |
+| school      | string             | Required  |  |
+| internshipHours      | number             | Required  |  |
+| email      | string             | Required  |  |
+| password      | number             | Required  |  |
+| department      | string             | Required  | The object id of the department |
+| supervisor      | string             | Required  | The object id of the supervisor |
+| status      | string             | Required  | active or inactive |
+
+#### Response Sample
+```json
+{
+  "message" : "User created successfully",
+  "user" : {
+    "accountType" : "intern",
+    "age" : 22,
+    "department" : null,
+    "email" : "marias@maria.com",
+    "firstName" :  "Charles",
+    "internshipHours" :  21,
+    "isApproved"  :  "pending",
+    "lastName"  :  "Bercasio",
+    "phone" :  "09876543216",
+    "school" : "12123" ,
+    "status" : "inactive",
+    "supervisor" : null,
+    "timeEntries" : [],
+    "totalHours" : 0,
+    "__v" : 0,
+    "_id" : "67d6a7ca0bf047d57a1b0073"
+  }
+}
+```
 ## Task Endpoint
 An endpoint for interfacing with the task model
 

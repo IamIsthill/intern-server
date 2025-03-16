@@ -1,6 +1,10 @@
 import { Admin } from "../models/Admin.js";
+import { Intern } from "../models/interns.js";
 import { findAllAccounts, findAndUpdateIntern, findPendingInternRequest } from "../services/admin.services.js";
 import { approveInternRequestValidator } from '../validations/adminValidator.js'
+import { registerInternValidator } from "../validations/interns-validators.js";
+import { findInternByEmail, findInternByPhone, registerIntern } from "../services/interns-auth-services.js";
+import { createId } from "../utils/createId.js";
 
 export const adminFindController = async (req, res, next) => {
   try {
@@ -23,8 +27,6 @@ export const adminFindController = async (req, res, next) => {
     next(e);
   }
 };
-
-
 
 export const getAllAccounts = async (req, res, next) => {
   try {
@@ -71,6 +73,35 @@ export const approveInternRequest = async (req, res, next) => {
     next(e)
   }
 }
+
+export const createIntern = async (req, res, next) => {
+  try {
+    const { error, value } = registerInternValidator.validate(req.body);
+    if (error) {
+      const errorMessages = error.details.map((detail) => detail.message);
+      return res.status(400).json({ message: errorMessages.join(", ") });
+    }
+    const { email, phone } = value;
+    const existingUser = await findInternByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    const existingPhone = await findInternByPhone(phone);
+    if (existingPhone) {
+      return res.status(400).json({ message: "Phone number already exists" });
+    }
+    value.department = createId(value.department)
+    value.supervisor = createId(value.supervisor)
+    const user = await Intern.create(value)
+    const obj = user.toObject()
+    delete obj.password
+    delete obj.__v
+    res.status(201).json({ message: "User created successfully", user });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // export const adminLoginController = async (req, res, next) => {
 //   try {
