@@ -5,6 +5,7 @@ import { approveInternRequestValidator } from '../validations/adminValidator.js'
 import { registerInternValidator } from "../validations/interns-validators.js";
 import { findInternByEmail, findInternByPhone, registerIntern } from "../services/interns-auth-services.js";
 import { createId } from "../utils/createId.js";
+import { validatePassword } from "../utils/validatePassword.js";
 
 export const adminFindController = async (req, res, next) => {
   try {
@@ -81,6 +82,7 @@ export const createIntern = async (req, res, next) => {
       const errorMessages = error.details.map((detail) => detail.message);
       return res.status(400).json({ message: errorMessages.join(", ") });
     }
+    validatePassword(value.password)
     const { email, phone } = value;
     const existingUser = await findInternByEmail(email);
     if (existingUser) {
@@ -99,6 +101,9 @@ export const createIntern = async (req, res, next) => {
     delete obj.__v
     res.status(201).json({ message: "User created successfully", user });
   } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ message: error.message })
+    }
     next(error);
   }
 };

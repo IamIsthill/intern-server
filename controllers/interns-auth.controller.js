@@ -9,6 +9,7 @@ import {
   loginInternValidator,
 } from "../validations/interns-validators.js";
 import { BadRequestError } from "../utils/errors.js";
+import { validatePassword } from "../utils/validatePassword.js";
 
 //controller for registering intern, has validations if email or phone already exists
 export const registerInternController = async (req, res, next) => {
@@ -19,6 +20,7 @@ export const registerInternController = async (req, res, next) => {
       return res.status(400).json({ message: errorMessages.join(", ") });
     }
     const { email, phone } = value;
+    validatePassword(value.password)
     const existingUser = await findInternByEmail(email);
     if (existingUser) {
       return res.status(400).json({ message: "Email already exists" });
@@ -31,6 +33,9 @@ export const registerInternController = async (req, res, next) => {
     const user = await registerIntern(value);
     res.status(201).json({ message: "User created successfully", user });
   } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ message: error.message })
+    }
     next(error);
   }
 };
