@@ -6,4 +6,9 @@ export const taskRouter = Router()
 
 taskRouter.post('/', validateAccess('supervisor'), taskController.createTask)
 
+<<<<<<< HEAD
+=======
+taskRouter.put('/:taskId', taskController.updateTask)
+
+>>>>>>> staging
 taskRouter.get('/intern', taskController.getTasksByInternIdController)

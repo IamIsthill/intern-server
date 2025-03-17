@@ -1,4 +1,8 @@
 @host = http://localhost:3000
+<<<<<<< HEAD
+=======
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Yzg0MmViZDQ5MmE3MzQ2YzRhNDQwNyIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0MTg0NTgxNywiZXhwIjoxNzQxODQ5NDE3fQ.bqk10Ps4M41eqhUdFJKyGvIU9amN2iIb-vR8gxLM3eA
+>>>>>>> staging
 GET {{host}}/admin/find
 
 ### Admin Login
@@ -6,10 +10,26 @@ GET {{host}}/admin/find
 # Parameter: { email: string, password: string }
 # Response: { message: string, token: string}
 # Content-Type: application/json
+<<<<<<< HEAD
 POST {{host}}/auth/login/admin
+=======
+POST {{host}}/a2kstaffs/login/admin
+>>>>>>> staging
 Content-Type: application/json
 
 {
     "email": "admin@admin.com",
     "password": "12345678"
 }
+<<<<<<< HEAD
+=======
+
+
+###
+GET {{host}}/admin/accounts
+Authorization: Bearer {{token}}
+
+###
+GET {{host}}/admin/accounts/intern-request
+Authorization: Bearer {{token}}
+>>>>>>> staging

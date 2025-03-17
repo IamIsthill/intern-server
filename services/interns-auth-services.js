@@ -35,8 +35,15 @@ export const registerIntern = async ({
       : [],
     totalHours,
   });
+<<<<<<< HEAD
 
   return intern;
+=======
+  const obj = intern.toObject()
+  delete obj.password
+
+  return obj;
+>>>>>>> staging
 };
 
 // Rest of the code remains the same

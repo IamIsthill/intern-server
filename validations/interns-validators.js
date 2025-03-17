@@ -9,10 +9,15 @@ export const registerInternValidator = joi.object({
   internshipHours: joi.number().required(),
   email: joi.string().required(),
   password: joi.string().required(),
+<<<<<<< HEAD
   department: joi.string(),
   supervisor: joi.string(),
   department: joi.string(),
   supervisor: joi.string(),
+=======
+  department: joi.string().hex().length(24),
+  supervisor: joi.string().hex().length(24),
+>>>>>>> staging
   status: joi.string().valid("active", "inactive"),
   timeEntries: joi
     .array()
@@ -32,5 +37,19 @@ export const loginInternValidator = joi.object({
 });
 
 export const getInternBySupervisorValidator = joi.object({
+<<<<<<< HEAD
   supervisor: joi.string().required()
 })
+=======
+  supervisor: joi.string().required(),
+});
+
+export const updateInternStatusValidator = joi.object({
+  id: joi.string().required(),
+  status: joi.string().valid("active", "inactive"),
+});
+
+export const getInactiveInternValidator = joi.object({
+  status: joi.string().valid("inactive").optional(),
+});
+>>>>>>> staging
