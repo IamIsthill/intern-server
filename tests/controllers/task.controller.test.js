@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-import { describe, expect, vi, it, beforeEach, afterAll, afterEach } from "vitest";
-import request from 'supertest'
-import { Tasks } from "../../models/Tasks.js";
-import mongoose, { Mongoose } from 'mongoose'
-=======
 import { describe, expect, vi, it, beforeEach, afterAll, afterEach, expectTypeOf } from "vitest";
 import request from 'supertest'
 import { Tasks } from "../../models/Tasks.js";
 import mongoose, { Mongoose } from 'mongoose'
 import { createId } from "../../utils/createId.js";
->>>>>>> staging
 
 vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
 const { app } = await import('../../server.js')
@@ -33,15 +26,9 @@ describe('GET /tasks/intern', () => {
         description: 'foo',
         deadline: new Date(),
         assignedInterns: [{
-<<<<<<< HEAD
-            internId: mongoose.Types.ObjectId.createFromTime(internId)
-        }
-        ]
-=======
             internId: new mongoose.Types.ObjectId(internId),
             status: 'pending'
         }]
->>>>>>> staging
     }
     beforeEach(async () => {
         vi.restoreAllMocks()
@@ -66,21 +53,13 @@ describe('GET /tasks/intern', () => {
                 assignedInterns: expect.arrayContaining([
                     expect.objectContaining({
                         internId: expect.any(String),
-<<<<<<< HEAD
-                        status: 'pending' || 'in-progress' || 'completed' || 'backlogs',
-=======
                         status: expect.toBeOneOf(["pending", "in-progress", "completed", "backlogs"])
->>>>>>> staging
                     })
                 ])
             })
         ]))
 
     })
-<<<<<<< HEAD
-=======
-
->>>>>>> staging
     it('valid internedId but no tasks --> 200 and {tasks: []}', async () => {
         const lostIntern = new mongoose.Types.ObjectId().toString()
         const res = await request(app).get(`${url}?internId=${lostIntern}`)
@@ -88,10 +67,6 @@ describe('GET /tasks/intern', () => {
         expect(res.status).toBe(200)
         expect(res.body.interns).toEqual(expect.arrayContaining([]))
     })
-<<<<<<< HEAD
-=======
-
->>>>>>> staging
     it('invalid params --> 400 and {message: }', async () => {
         const res = await request(app).get(`${url}?notvalid=1233`)
 
@@ -100,8 +75,6 @@ describe('GET /tasks/intern', () => {
             message: expect.any(String)
         }))
     })
-<<<<<<< HEAD
-=======
 
     it('valid req from intern --> 200 and array without the assigned interns', async () => {
         vi.resetModules()
@@ -164,7 +137,6 @@ describe('GET /tasks/intern', () => {
             // console.log(task)
         });
     })
->>>>>>> staging
 })
 
 describe('POST /tasks', () => {
@@ -264,8 +236,6 @@ describe('POST /tasks', () => {
         }))
     })
 })
-<<<<<<< HEAD
-=======
 
 describe('PUT /tasks/task-id', async () => {
     const url = '/tasks'
@@ -331,4 +301,3 @@ describe('PUT /tasks/task-id', async () => {
     })
 
 })
->>>>>>> staging
