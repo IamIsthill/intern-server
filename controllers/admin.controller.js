@@ -1,9 +1,9 @@
 import { Admin } from "../models/Admin.js";
 import { Intern } from "../models/interns.js";
-import { findAllAccounts, findAndUpdateIntern, findPendingInternRequest } from "../services/admin.services.js";
+import { findAllAccounts, findAndUpdateIntern, findPendingInternRequest, registerIntern } from "../services/admin.services.js";
 import { approveInternRequestValidator } from '../validations/adminValidator.js'
 import { registerInternValidator } from "../validations/interns-validators.js";
-import { findInternByEmail, findInternByPhone, registerIntern } from "../services/interns-auth-services.js";
+import { findInternByEmail, findInternByPhone } from "../services/interns-auth-services.js";
 import { createId } from "../utils/createId.js";
 import { validatePassword } from "../utils/validatePassword.js";
 
@@ -93,12 +93,9 @@ export const createIntern = async (req, res, next) => {
     if (existingPhone) {
       return res.status(400).json({ message: "Phone number already exists" });
     }
-    value.department = createId(value.department)
-    value.supervisor = createId(value.supervisor)
-    const user = await Intern.create(value)
-    const obj = user.toObject()
-    delete obj.password
-    delete obj.__v
+
+    const user = await registerIntern(value)
+
     res.status(201).json({ message: "User created successfully", user });
   } catch (error) {
     if (error instanceof Error) {
