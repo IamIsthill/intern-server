@@ -52,6 +52,38 @@ export const updateSupervisor = async (id, supervisorData) => {
   return data;
 };
 
+export const updateSupervisorStatus = async (supervisorId) => {
+  try {
+    const supervisor = await Supervisor.findById(supervisorId);
+    if (!supervisor) {
+      return { success: false, message: "Supervisor not found" };
+    }
+
+    console.log("Current Status:", supervisor.status);
+
+    const newStatus = supervisor.status === "active" ? "inactive" : "active";
+    console.log("New Status:", newStatus);
+
+    const updatedSupervisor = await Supervisor.findByIdAndUpdate(
+      supervisorId,
+      { $set: { status: newStatus } },
+      { new: true, runValidators: true }
+    );
+
+    return {
+      success: true,
+      message: `Intern status updated to ${updatedSupervisor.status}`,
+      supervisor: updatedSupervisor,
+    };
+  } catch (err) {
+    console.error("Error updating intern status:", err);
+    return {
+      success: false,
+      message: "An error occurred while updating the status",
+    };
+  }
+};
+
 // export const findSupervisorByEmail = async (email) => {
 //   return await Supervisor.findOne({ email: email }).lean();
 // };

@@ -6,3 +6,7 @@ export const supervisorRouter = Router();
 supervisorRouter.get("/all", controller.getAllSupervisors);
 supervisorRouter.post("/register", controller.registerSupervisor);
 supervisorRouter.put("/:id", controller.updateSupervisorController);
+supervisorRouter.put(
+  "/update-status/:id",
+  controller.updateSupervisorStatusController
+);

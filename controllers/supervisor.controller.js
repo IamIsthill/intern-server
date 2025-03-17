@@ -2,6 +2,7 @@ import { Supervisor } from "../models/Supervisor.js";
 import {
   registerSupervisorValidator,
   updateSupervisorValidator,
+  updateSupervisorStatusValidator,
 } from "../validations/supervisor.validator.js";
 import {
   findDepartmentByName,
@@ -10,7 +11,9 @@ import {
 import {
   createSupervisor,
   updateSupervisor,
+  updateSupervisorStatus,
 } from "../services/supervisor.services.js";
+import mongoose from "mongoose";
 
 export const getAllSupervisors = async (req, res, next) => {
   try {
@@ -65,6 +68,53 @@ export const updateSupervisorController = async (req, res, next) => {
     });
   } catch (err) {
     next(err);
+  }
+};
+
+export const updateSupervisorStatusController = async (req, res, next) => {
+  try {
+    console.log("Received ID:", req.params.id);
+    console.log("Received Body:", req.body);
+
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const { error } = updateSupervisorStatusValidator.validate({
+      id: id,
+      status: status,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.error("Invalid ID:", id);
+      return res.status(400).json({ message: "Invalid ID format" });
+    }
+
+    const result = await updateSupervisorStatus(id);
+
+    console.log("Update Result:", result);
+
+    if (!result.success) {
+      return res.status(404).json(result);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Supervisor status successfully updated to '${result.supervisor.status}'`,
+      supervisor: result.supervisor,
+    });
+  } catch (err) {
+    console.error("Error in updateSupervisorStatusController:", err);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
   }
 };
 
