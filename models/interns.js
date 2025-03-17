@@ -56,16 +56,12 @@ const internSchema = new mongoose.Schema({
   accountType: {
     type: String,
     required: true,
-<<<<<<< HEAD
-    default: 'intern'
-=======
     default: "intern",
   },
   isApproved: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending'
->>>>>>> staging
   },
   totalHours: {
     type: Number,
@@ -110,18 +106,10 @@ internSchema.pre("save", function (next) {
   this.totalHours = Number(totalHours.toFixed(2));
   next();
 });
-<<<<<<< HEAD
-export let Intern
-if (mongoose.models.Intern) {
-  Intern = mongoose.model('Intern')
-} else {
-  Intern = mongoose.model("Intern", internSchema)
-=======
 export let Intern;
 if (mongoose.models.Intern) {
   Intern = mongoose.model("Intern");
 } else {
   Intern = mongoose.model("Intern", internSchema);
->>>>>>> staging
 }
 // export const Intern = mongoose.model("Intern", internSchema)

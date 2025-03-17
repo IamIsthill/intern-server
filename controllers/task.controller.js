@@ -1,10 +1,7 @@
 import { Tasks } from "../models/Tasks.js";
 import Joi from "joi";
 import { findTasksByInternId, createTasksValidator } from "../services/tasks.services.js";
-<<<<<<< HEAD
-=======
 import { createId } from "../utils/createId.js";
->>>>>>> staging
 
 const internTasksValidator = Joi.object({
     internId: Joi.string().required()
@@ -20,18 +17,11 @@ export const getTasksByInternIdController = async (req, res, next) => {
             throw new Error(errorMessages.join(', '))
         }
 
-<<<<<<< HEAD
-        const allInternTasks = await findTasksByInternId(value.internId)
-
-        return res.status(200).json({ tasks: allInternTasks })
-    } catch (err) {
-=======
         const allInternTasks = await findTasksByInternId(value.internId, req.user)
 
         return res.status(200).json({ tasks: allInternTasks })
     } catch (err) {
         console.log(err)
->>>>>>> staging
         if (err instanceof Error) {
             return res.status(400).json({ message: err.message })
         }
@@ -53,8 +43,6 @@ export const createTask = async (req, res, next) => {
         }
         next(err)
     }
-<<<<<<< HEAD
-=======
 }
 
 
@@ -94,5 +82,4 @@ export const updateTask = async (req, res, next) => {
         console.log('Updare', err)
         next(err)
     }
->>>>>>> staging
 }

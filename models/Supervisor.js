@@ -17,16 +17,10 @@ const supervisorSchema = new mongoose.Schema({
   assignedInterns: [
     {
       type: mongoose.Schema.Types.ObjectId,
-<<<<<<< HEAD
-      ref: "intern",
-    },
-  ],
-=======
       ref: "Intern",
     },
   ],
   default: [],
->>>>>>> staging
   status: {
     type: String,
     enum: ["active", "inactive"],
@@ -36,16 +30,6 @@ const supervisorSchema = new mongoose.Schema({
   accountType: {
     type: String,
     required: true,
-<<<<<<< HEAD
-    default: 'supervisor'
-  }
-});
-
-export let Supervisor
-
-if (mongoose.models.Supervisor) {
-  Supervisor = mongoose.model('Supervisor')
-=======
     default: "supervisor",
   },
 });
@@ -54,7 +38,6 @@ export let Supervisor;
 
 if (mongoose.models.Supervisor) {
   Supervisor = mongoose.model("Supervisor");
->>>>>>> staging
 } else {
   Supervisor = mongoose.model("Supervisor", supervisorSchema);
 }

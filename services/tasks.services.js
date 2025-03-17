@@ -2,15 +2,6 @@ import mongoose from "mongoose"
 import { Tasks } from "../models/Tasks.js"
 import Joi from 'joi'
 
-<<<<<<< HEAD
-export const findTasksByInternId = async (internId) => {
-    internId = mongoose.Types.ObjectId.createFromTime(internId)
-    return await Tasks.find({
-        assignedInterns: {
-            $elemMatch: { internId: internId }
-        }
-    })
-=======
 const createId = (id = '') => {
     return new mongoose.Types.ObjectId(id)
 }
@@ -55,7 +46,6 @@ export const findTasksByInternId = async (internId, user) => {
     }
     return []
 
->>>>>>> staging
 }
 
 export const createTasksValidator = (req) => {
