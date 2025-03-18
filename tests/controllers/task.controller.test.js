@@ -394,3 +394,39 @@ describe('GET /tasks/supervisor/:id', () => {
         expect(res.body.tasks).toHaveLength(0)
     })
 })
+
+// describe('PUT /tasks/supervisor/:taskId', () => {
+//     const url = '/tasks/supervisor/'
+//     const mockTaskId = createId()
+//     const mockInterns = [createId(), createId()]
+//     let mockTasks
+
+//     beforeEach(async () => {
+//         mockTasks = [
+//             {
+//                 _id: mockTaskId,
+//                 supervisor: createId(),
+//                 title: "Mock",
+//                 description: 'task',
+//                 deadline: new Date(),
+//                 assignedInterns: [
+//                     {
+//                         internId: mockInterns[0],
+//                         status: 'pending'
+//                     },
+//                     {
+//                         internId: mockInterns[1],
+//                         status: 'backlogs'
+//                     }
+//                 ]
+
+//             }
+//         ]
+//         await Tasks.deleteMany()
+//         await Tasks.create(mockTasks)
+//     })
+
+//     it('returns the updated tasks with newly added intern')
+// })
+
+

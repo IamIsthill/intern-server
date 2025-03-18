@@ -56,11 +56,18 @@ The Task Route is used to access the task models
 
 ### Endpoints
 
-## Retrieve tasks by intern id
+### Task Update Endpoint for Supervisor
+An endpoint for a supervisor to update a task
+```http
+PUT /tasks/supervisor
+```
+
+
+### Retrieve tasks by intern id
 
 Returns an array of tasks based on the intern id or an empty array if not found
 
-### Endpoint
+#### Endpoint
 
 ```http
 GET /tasks/intern
@@ -73,14 +80,23 @@ GET /tasks/intern
 | internId        | string | Required  |
 |                 |        |           |
 
-### Request Sample
+#### Request Sample
 
 ```http
 GET /tasks/intern?internId=67cbecaa3f611eedb0b953f0
 ```
 
+#### Request body
 
-### Response Sample
+| Field           | Type                | Required? | Description                                                        |
+| --------------- | ------------------- | --------- | ------------------------------------------------------------------ |
+| title           | string              | Required  | Title of the tasks                                                 |
+| description     | string              | Required  | Description of the task                                            |
+| deadline        | string              | Required  | Task deadline, formatted as an ISO 8601 string                     |
+| assignedInterns | strings[] | Optional  | A single intern ID or an array of intern IDs to assign to the task |
+
+
+#### Response Sample
 ```json
 {
     "tasks": [
@@ -99,7 +115,7 @@ GET /tasks/intern?internId=67cbecaa3f611eedb0b953f0
 }
 ```
 
-### Supervisor Response sample
+#### Supervisor Response sample
 If the requester has a supervisor access, the json below is the response
 ```json
 {

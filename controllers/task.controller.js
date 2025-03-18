@@ -1,12 +1,10 @@
 import { Tasks } from "../models/Tasks.js";
-import Joi from "joi";
-import { findTasksByInternId, createTasksValidator } from "../services/tasks.services.js";
+import { findTasksByInternId, createTasksValidator, findTaskAndUpdate } from "../services/tasks.services.js";
 import { createId } from "../utils/createId.js";
 import { BadRequestError } from "../utils/errors.js";
+import { internTasksValidator, supervisorUpdateTaskValidator, taskBodyValidator, supervisorIdValidator } from "../validations/taskValidator.js";
 
-const internTasksValidator = Joi.object({
-    internId: Joi.string().required()
-})
+
 
 
 export const getTasksByInternIdController = async (req, res, next) => {
@@ -47,14 +45,6 @@ export const createTask = async (req, res, next) => {
 }
 
 
-const taskBodyValidator = Joi.object({
-    taskId: Joi.string().length(24),
-    internId: Joi.string().length(24),
-    status: Joi.string()
-})
-
-
-
 export const updateTask = async (req, res, next) => {
     try {
         req.body.taskId = req.params.taskId
@@ -62,7 +52,7 @@ export const updateTask = async (req, res, next) => {
 
         if (error) {
             const messages = error.details.map(detail => detail.message)
-            return res.status(400).json({ message: messages.join("\n") })
+            throw new BadRequestError(messages.join("\n"))
         }
 
         const internId = createId(value.internId)
@@ -76,10 +66,6 @@ export const updateTask = async (req, res, next) => {
             }
         }, { new: true }).select(['-assignedInterns', '-supervisor'])
 
-        // if (!task) {
-        //     return res.status(200).json({ task: {} })
-        // }
-
         const taskObject = task.toObject()
         taskObject.status = value.status
         return res.status(200).json({ task: taskObject })
@@ -88,9 +74,6 @@ export const updateTask = async (req, res, next) => {
     }
 }
 
-export const supervisorIdValidator = Joi.object({
-    id: Joi.string().hex().length(24).required()
-})
 
 export const getTasksBySupervisorId = async (req, res, next) => {
     try {
@@ -108,5 +91,22 @@ export const getTasksBySupervisorId = async (req, res, next) => {
     } catch (err) {
         next(err)
     }
+}
 
+
+export const supervisorUpdateTask = async (req, res, next) => {
+    try {
+        const { error, value } = supervisorUpdateTaskValidator.validate(req.body)
+
+        if (error) {
+            const messages = error.details.map(detail => detail.message)
+            throw new BadRequestError(messages.join('\n'))
+        }
+
+        const task = await findTaskAndUpdate(value)
+        return res.status(200).json({ task: task })
+    } catch (err) {
+        next(err)
+
+    }
 }
