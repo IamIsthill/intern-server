@@ -9,3 +9,5 @@ taskRouter.post('/', validateAccess('supervisor'), taskController.createTask)
 taskRouter.put('/:taskId', taskController.updateTask)
 
 taskRouter.get('/intern', taskController.getTasksByInternIdController)
+
+taskRouter.get('/supervisor/:id', taskController.getTasksBySupervisorId)

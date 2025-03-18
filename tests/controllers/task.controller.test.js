@@ -303,3 +303,94 @@ describe('PUT /tasks/task-id', async () => {
     })
 
 })
+
+describe('GET /tasks/supervisor/:id', () => {
+    let mockTasks
+    const mockSupervisorId = createId()
+    const url = '/tasks/supervisor'
+
+    beforeEach(async () => {
+        mockTasks = [
+            {
+                _id: createId(),
+                supervisor: mockSupervisorId,
+                title: "Task 1",
+                description: 'task',
+                deadline: new Date(),
+                assignedInterns: [
+                    {
+                        internId: createId(),
+                        status: 'pending'
+                    },
+                    {
+                        internId: createId(),
+                        status: 'backlogs'
+                    }
+                ]
+
+            },
+            {
+                _id: createId(),
+                supervisor: mockSupervisorId,
+                title: "Task 2",
+                description: 'task',
+                deadline: new Date(),
+                assignedInterns: [
+                    {
+                        internId: createId(),
+                        status: 'pending'
+                    },
+                    {
+                        internId: createId(),
+                        status: 'backlogs'
+                    }
+                ]
+
+            }
+        ]
+
+        await Tasks.deleteMany()
+        await Tasks.create(mockTasks)
+    })
+
+    it('returns the tasks array with 200 status code with valid supervisor id', async () => {
+        const res = await request(app).get(`${url}/${mockSupervisorId}`)
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual(expect.objectContaining({
+            tasks: expect.arrayContaining([
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    supervisor: expect.any(String),
+                    title: expect.any(String),
+                    description: expect.any(String),
+                    deadline: expect.any(String),
+                    assignedInterns: expect.any(Array)
+                })
+            ])
+        }))
+        res.body.tasks.forEach(task => {
+            if (task.assignedInterns > 0) {
+                expect(task.assignedInterns).toEqual(expect.arrayContaining([
+                    expect.objectContaining({
+                        _id: expect.any(String),
+                        internId: expect.any(String),
+                        status: expect.toBeOneOf(['pending', 'in-progress', 'completed', 'backlogs']),
+                    })
+                ]))
+            }
+        })
+
+
+    })
+
+    it('returns an empty tasks array with 200 if supervisor is not valid or not found', async () => {
+        const notExisting = createId()
+        const res = await request(app).get(`${url}/${notExisting}`)
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual(expect.objectContaining({
+            tasks: expect.any(Array)
+        }))
+        expect(res.body.tasks).toHaveLength(0)
+    })
+})

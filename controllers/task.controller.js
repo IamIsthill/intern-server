@@ -2,6 +2,7 @@ import { Tasks } from "../models/Tasks.js";
 import Joi from "joi";
 import { findTasksByInternId, createTasksValidator } from "../services/tasks.services.js";
 import { createId } from "../utils/createId.js";
+import { BadRequestError } from "../utils/errors.js";
 
 const internTasksValidator = Joi.object({
     internId: Joi.string().required()
@@ -75,11 +76,37 @@ export const updateTask = async (req, res, next) => {
             }
         }, { new: true }).select(['-assignedInterns', '-supervisor'])
 
+        // if (!task) {
+        //     return res.status(200).json({ task: {} })
+        // }
+
         const taskObject = task.toObject()
         taskObject.status = value.status
         return res.status(200).json({ task: taskObject })
     } catch (err) {
-        console.log('Updare', err)
         next(err)
     }
+}
+
+export const supervisorIdValidator = Joi.object({
+    id: Joi.string().hex().length(24).required()
+})
+
+export const getTasksBySupervisorId = async (req, res, next) => {
+    try {
+        const { error, value } = supervisorIdValidator.validate(req.params)
+
+        if (error) {
+            const messages = error.details.map(detail => detail.message)
+            throw new BadRequestError(messages.join(''))
+        }
+
+        const tasks = await Tasks.find({ supervisor: createId(value.id) }).populate({ path: 'assignedInterns.internId', select: ['firstName', 'lastName', '_id', 'email'] })
+
+        return res.status(200).json({ tasks: tasks })
+
+    } catch (err) {
+        next(err)
+    }
+
 }
