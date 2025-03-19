@@ -21,3 +21,7 @@ export const taskBodyValidator = Joi.object({
 export const supervisorIdValidator = Joi.object({
     id: Joi.string().hex().length(24).required()
 })
+
+export const taskIdValidator = Joi.object({
+    taskId: Joi.string().hex().required().length(24)
+})

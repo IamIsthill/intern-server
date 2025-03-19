@@ -1,8 +1,9 @@
 import { Tasks } from "../models/Tasks.js";
 import { findTasksByInternId, createTasksValidator, findTaskAndUpdate } from "../services/tasks.services.js";
 import { createId } from "../utils/createId.js";
+import { throwError } from "../utils/errors.js";
 import { BadRequestError } from "../utils/errors.js";
-import { internTasksValidator, supervisorUpdateTaskValidator, taskBodyValidator, supervisorIdValidator } from "../validations/taskValidator.js";
+import { internTasksValidator, supervisorUpdateTaskValidator, taskBodyValidator, supervisorIdValidator, taskIdValidator } from "../validations/taskValidator.js";
 
 
 
@@ -35,7 +36,7 @@ export const createTask = async (req, res, next) => {
 
         const task = await Tasks.create(value)
 
-        return res.status(200).json(task)
+        return res.status(201).json(task)
     } catch (err) {
         if (err instanceof Error) {
             return res.status(400).json({ message: err.message })
@@ -108,5 +109,25 @@ export const supervisorUpdateTask = async (req, res, next) => {
     } catch (err) {
         next(err)
 
+    }
+}
+
+
+export const deleteTask = async (req, res, next) => {
+    try {
+        const { error, value } = taskIdValidator.validate(req.params)
+
+        if (error) {
+            throwError(error)
+        }
+
+        const task = await Tasks.findOneAndDelete({ _id: createId(value.taskId) })
+
+        if (!task) {
+            return res.status(400).json({ message: "No task found. Unable to delete." })
+        }
+        return res.sendStatus(204)
+    } catch (err) {
+        next(err)
     }
 }

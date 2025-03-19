@@ -13,5 +13,6 @@ taskRouter.put('/supervisor', validateAccess('supervisor'), taskController.super
 
 taskRouter.get('/supervisor/:id', taskController.getTasksBySupervisorId)
 
-taskRouter.put('/:taskId', taskController.updateTask)
-
+taskRouter.route('/:taskId')
+    .put(taskController.updateTask)
+    .delete(taskController.deleteTask)

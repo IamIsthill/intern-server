@@ -1,8 +1,9 @@
-import { describe, expect, vi, it, beforeEach, afterAll, afterEach, expectTypeOf } from "vitest";
+import { describe, expect, vi, it, beforeEach, afterAll, afterEach, expectTypeOf, beforeAll } from "vitest";
 import request from 'supertest'
 import { Tasks } from "../../models/Tasks.js";
 import mongoose, { Mongoose } from 'mongoose'
 import { createId } from "../../utils/createId.js";
+import { faker } from "@faker-js/faker";
 
 vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
 const { app } = await import('../../server.js')
@@ -164,7 +165,7 @@ describe('POST /tasks', () => {
     it('valid params, no interns yet --> 200 and created task', async () => {
         const res = await request(app).post(url).send(mockTask)
 
-        expect(res.statusCode).toBe(200)
+        expect(res.statusCode).toBe(201)
         expect(res.body).toEqual(expect.objectContaining({
             title: expect.any(String),
             description: expect.any(String),
@@ -178,7 +179,7 @@ describe('POST /tasks', () => {
         mockTask.assignedInterns = mockIntern1
         const res = await request(app).post(url).send(mockTask)
 
-        expect(res.statusCode).toBe(200)
+        expect(res.statusCode).toBe(201)
         expect(res.body).toEqual(expect.objectContaining({
             title: expect.any(String),
             description: expect.any(String),
@@ -196,7 +197,7 @@ describe('POST /tasks', () => {
         mockTask.assignedInterns = [mockIntern1, mockIntern2]
         const res = await request(app).post(url).send(mockTask)
 
-        expect(res.statusCode).toBe(200)
+        expect(res.statusCode).toBe(201)
         expect(res.body).toEqual(expect.objectContaining({
             title: expect.any(String),
             description: expect.any(String),
@@ -239,7 +240,7 @@ describe('POST /tasks', () => {
     })
 })
 
-describe('PUT /tasks/task-id', async () => {
+describe('PUT /tasks/:taskid', async () => {
     const url = '/tasks'
     const mockInternId = createId()
     vi.doMock('../../middleware/auth.js', () => ({
@@ -301,6 +302,64 @@ describe('PUT /tasks/task-id', async () => {
 
         expect(res.statusCode).toBe(500)
     })
+
+})
+
+function taskFaker() {
+    return {
+        _id: createId(),
+        supervisor: createId(),
+        title: faker.book.title(),
+        description: faker.lorem.sentences(),
+        deadline: faker.date.future(),
+        assignedInterns: [{ internId: createId() }, { internId: createId() }]
+    }
+}
+
+async function taskFactory(count = 1) {
+    const tasks = []
+    for (let i = 1; i <= count; i++) {
+        const task = taskFaker()
+        tasks.push(task)
+    }
+    await Tasks.create(tasks)
+    return tasks
+
+}
+
+describe('DELETE /tasks/:taskid', () => {
+    const url = '/tasks'
+    let tasks
+
+    beforeAll(async () => {
+        tasks = await taskFactory(2)
+    })
+
+    it('returns 204 on successful delete with no content', async () => {
+        const task = tasks[0]
+        const res = await request(app).delete(`${url}/${task._id.toString()}`)
+
+        expect(res.statusCode).toBe(204)
+    })
+
+    it('returns 400 if id was not found', async () => {
+        const taskId = createId()
+        const res = await request(app).delete(`${url}/${taskId.toString()}`)
+
+        expect(res.statusCode).toBe(400)
+
+    })
+
+    it('returns 400 if taskid was invalid', async () => {
+        const taskId = 'not-valid'
+        const res = await request(app).delete(`${url}/${taskId.toString()}`)
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+    })
+
 
 })
 
