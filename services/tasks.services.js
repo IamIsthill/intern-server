@@ -15,7 +15,7 @@ export const findTasksByInternId = async (internId, user) => {
             assignedInterns: {
                 $elemMatch: { internId: internId }
             }
-        })
+        }).select(['-__v'])
         let newTaskArr = tasks
         if (tasks.length > 0) {
             newTaskArr = tasks.map(task => {
@@ -42,7 +42,7 @@ export const findTasksByInternId = async (internId, user) => {
             assignedInterns: {
                 $elemMatch: { internId: internId }
             }
-        })
+        }).select(['-__v'])
         return tasks
     }
     return []
