@@ -13,3 +13,8 @@ export class NotFoundError extends Error {
     this.statusCode = 404;
   }
 }
+
+export function throwError(error) {
+  const messages = error.details.map(detail => detail.message)
+  throw new BadRequestError(messages.join('\n'))
+}
