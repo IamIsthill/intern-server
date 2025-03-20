@@ -33,3 +33,7 @@ export const updateSupervisorStatusValidator = Joi.object({
   id: Joi.string().required(),
   status: Joi.string().valid("active", "inactive"),
 });
+
+export const getSupervisorByIdValidator = Joi.object({
+  id: Joi.string().required(),
+});

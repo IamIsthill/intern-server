@@ -3,6 +3,7 @@ import {
   registerSupervisorValidator,
   updateSupervisorValidator,
   updateSupervisorStatusValidator,
+  getSupervisorByIdValidator,
 } from "../validations/supervisor.validator.js";
 import {
   findDepartmentByName,
@@ -12,6 +13,7 @@ import {
   createSupervisor,
   updateSupervisor,
   updateSupervisorStatus,
+  getSupervisorById,
 } from "../services/supervisor.services.js";
 import mongoose from "mongoose";
 
@@ -115,6 +117,37 @@ export const updateSupervisorStatusController = async (req, res, next) => {
       message: "Internal server error",
       error: err.message,
     });
+  }
+};
+
+export const getSupervisorByIdController = async (req, res, next) => {
+  try {
+    const { error, value } = getSupervisorByIdValidator.validate({
+      id: req.params.id,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
+    }
+
+    const supervisor = await getSupervisorById(value.id);
+
+    return res.status(200).json({
+      success: true,
+      data: supervisor,
+    });
+  } catch (error) {
+    if (error.message === "Supervisor not found") {
+      return res.status(404).json({
+        success: false,
+        message: "Supervisor not found",
+      });
+    }
+
+    next(error);
   }
 };
 

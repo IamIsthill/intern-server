@@ -4,8 +4,15 @@ import * as controller from "../controllers/supervisor.controller.js";
 export const supervisorRouter = Router();
 
 supervisorRouter.get("/all", controller.getAllSupervisors);
+supervisorRouter.get(
+  "/get-supervisor/:id",
+  controller.getSupervisorByIdController
+);
 supervisorRouter.post("/register", controller.registerSupervisor);
-supervisorRouter.put("/:id", controller.updateSupervisorController);
+supervisorRouter.put(
+  "/update-supervisor/:id",
+  controller.updateSupervisorController
+);
 supervisorRouter.put(
   "/update-status/:id",
   controller.updateSupervisorStatusController

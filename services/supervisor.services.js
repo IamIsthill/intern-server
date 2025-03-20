@@ -84,6 +84,51 @@ export const updateSupervisorStatus = async (supervisorId) => {
   }
 };
 
+export const getSupervisorById = async (id) => {
+  try {
+    const supervisor = await Supervisor.findById(id)
+      .populate({
+        path: "department",
+        select: "name _id",
+      })
+      .populate({
+        path: "assignedInterns",
+        select: "firstName lastName _id",
+      });
+
+    if (!supervisor) {
+      throw new Error("Supervisor not found");
+    }
+
+    const result = supervisor.toObject();
+
+    if (result.age === undefined || result.age === null) {
+      result.age = 0;
+    }
+
+    if (result.department) {
+      result.departmentName = result.department.name;
+    } else {
+      result.departmentName = "";
+    }
+
+    if (Array.isArray(result.assignedInterns)) {
+      result.assignedInternsFullNames = result.assignedInterns.map(
+        (intern) => ({
+          _id: intern._id,
+          fullName: `${intern.firstName} ${intern.lastName}`,
+        })
+      );
+    } else {
+      result.assignedInternsFullNames = [];
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(`Error fetching supervisor: ${error.message}`);
+  }
+};
+
 // export const findSupervisorByEmail = async (email) => {
 //   return await Supervisor.findOne({ email: email }).lean();
 // };
