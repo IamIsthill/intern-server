@@ -3,6 +3,9 @@ import request from 'supertest'
 import { Intern } from "../../models/interns.js";
 import mongoose from 'mongoose';
 import { sendEmail } from '../../services/mail.js';
+import { faker } from '@faker-js/faker';
+import { RESET_TOKEN } from '../../config/index.js';
+import { createToken } from '../../utils/token.js';
 
 vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
 vi.mock('../../middleware/auth.js', () => ({
@@ -198,5 +201,48 @@ describe('POST /interns/password/reset', () => {
             message: expect.any(String)
         }))
 
+    })
+})
+
+describe('PUT /password/intern/new', () => {
+    const url = '/password/intern/new'
+    const token = createToken({ email: 'foo@foo.com' }, RESET_TOKEN)
+    const password = faker.internet.password({ pattern: /[A-Z]/, prefix: 'a1' })
+    let data
+    beforeEach(() => {
+        data = {
+            password: password,
+            token: token
+        }
+    })
+
+    it('returns 200 and success message on succesful password change', async () => {
+        const res = await request(app).put(url).send(data)
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+    })
+
+    it('invalid token --> 401 and error message', async () => {
+        data.token = faker.internet.jwt()
+        const res = await request(app).put(url).send(data)
+        console.log(res.body)
+
+        expect(res.statusCode).toBe(401)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+    })
+
+    it('invalid password --> 400 and error message', async () => {
+        data.password = "invalid"
+        const res = await request(app).put(url).send(data)
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
     })
 })
