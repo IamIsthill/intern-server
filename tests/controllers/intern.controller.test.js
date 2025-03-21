@@ -2,10 +2,16 @@ import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest'
 import request from 'supertest'
 import { Intern } from "../../models/interns.js";
 import mongoose from 'mongoose';
+import { sendEmail } from '../../services/mail.js';
 
 vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
 vi.mock('../../middleware/auth.js', () => ({
-    authenticateJWT: (req, res, next) => next()
+    authenticateJWT: (req, res, next) => {
+        req.user = {
+            email: 'foo@foo.com'
+        }
+        next()
+    }
 }))
 const { app } = await import('../../server.js')
 
@@ -130,5 +136,38 @@ describe('GET /interns/find', () => {
         const res = await request(app).get(`${url}?${params}`)
 
         expect(res.statusCode).toBe(500)
+    })
+})
+
+vi.mock('../../services/mail.js', () => {
+    return {
+        sendEmail: vi.fn()
+    }
+})
+
+describe('POST /interns/password/reset', () => {
+    const url = '/interns/password/reset'
+
+
+    it('returns 200 upon successful sending of email reset link', async () => {
+
+        const res = await request(app).post(url)
+        expect(sendEmail).toHaveBeenCalledWith(expect.any(String), expect.any(String), expect.any(String));
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+    })
+
+    it('returns 400 upon error on sending of email reset link', async () => {
+        sendEmail.mockRejectedValue(new Error('Cannot send email'))
+        const res = await request(app).post(url)
+
+        expect(sendEmail).toHaveBeenCalledWith(expect.any(String), expect.any(String), expect.any(String));
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+
     })
 })

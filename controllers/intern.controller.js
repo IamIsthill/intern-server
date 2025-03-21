@@ -9,6 +9,10 @@ import {
   updateInternStatusValidator,
   getInactiveInternValidator,
 } from "../validations/interns-validators.js";
+import { RESET_TOKEN } from "../config/index.js";
+import { sendEmail } from '../services/mail.js'
+
+import jwt from 'jsonwebtoken'
 
 export const getAllInterns = async (req, res, next) => {
   try {
@@ -100,3 +104,14 @@ export const getInactiveInterns = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const sendPasswordResetEmail = async (req, res, next) => {
+  try {
+    const token = jwt.sign({ email: req.user.email }, RESET_TOKEN, { expiresIn: '2h' })
+    await sendEmail(req.user.email, 'Reset link', token)
+
+    return res.status(200).json({ message: 'Successfully sent password reset email' })
+  } catch (err) {
+    return res.status(400).json({ message: "Password reset email not sent" })
+  }
+}

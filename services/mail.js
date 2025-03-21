@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer')
+import nodemailer from 'nodemailer';
 import { EMAIL_PASS, EMAIL } from '../config/index.js'
 
 export const transporter = nodemailer.createTransport({
