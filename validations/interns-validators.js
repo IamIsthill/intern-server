@@ -46,3 +46,8 @@ export const getInactiveInternValidator = joi.object({
 export const sendEmailValidator = joi.object({
   email: joi.string().email().required()
 })
+
+export const resetPasswordValidator = joi.object({
+  token: joi.string().required(),
+  password: joi.string().required()
+})

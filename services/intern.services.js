@@ -82,3 +82,7 @@ export const fetchInactiveInterns = async () => {
     throw new Error("Failed to fetch inactive interns.");
   }
 };
+
+export const findInternByEmailAndUpdate = async (email, update) => {
+  return await Intern.findOneAndUpdate({ email: email }, { ...update })
+}

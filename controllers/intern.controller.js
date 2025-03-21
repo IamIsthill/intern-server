@@ -3,19 +3,24 @@ import {
   findInterns,
   updateInternStatus,
   fetchInactiveInterns,
+  findInternByEmailAndUpdate,
 } from "../services/intern.services.js";
 import {
   getInternBySupervisorValidator,
   updateInternStatusValidator,
   getInactiveInternValidator,
-  sendEmailValidator
+  sendEmailValidator,
+  resetPasswordValidator
 } from "../validations/interns-validators.js";
 import { RESET_TOKEN } from "../config/index.js";
 import { sendEmail } from '../services/mail.js'
 import { throwError } from "../utils/errors.js";
+import { createToken } from "../utils/token.js";
 
 import jwt from 'jsonwebtoken'
 import { findInternByEmail } from "../services/interns-auth-services.js";
+import { validatePassword } from "../utils/validatePassword.js";
+import bcrypt from "bcryptjs";
 
 export const getAllInterns = async (req, res, next) => {
   try {
@@ -108,6 +113,7 @@ export const getInactiveInterns = async (req, res) => {
   }
 };
 
+
 export const sendPasswordResetEmail = async (req, res, next) => {
   try {
     const { error, value } = sendEmailValidator.validate(req.body)
@@ -122,12 +128,43 @@ export const sendPasswordResetEmail = async (req, res, next) => {
 
     if (!foundIntern) return res.status(400).json({ message: 'No account found' })
 
-    const token = jwt.sign({ email: email }, RESET_TOKEN, { expiresIn: '2h' })
+    const token = createToken({ email: email }, RESET_TOKEN, '2h')
 
-    sendEmail(email, 'Reset link', `http://localhost:5173/intern/reset/${token}`)
+    await sendEmail(email, 'Reset link', `http://localhost:5173/intern/reset/${token}`)
 
     return res.status(200).json({ message: 'Successfully sent password reset email' })
   } catch (err) {
     return res.status(400).json({ message: "Password reset email not sent" })
+  }
+}
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { error, value } = resetPasswordValidator.validate(req.body)
+
+    if (error) {
+      throwError(error)
+    }
+    const { password, token } = value
+
+    validatePassword(password)
+
+    const data = jwt.verify(token, RESET_TOKEN)
+
+    const hashPassword = await bcrypt.hash(password, 10)
+
+    const foundIntern = await findInternByEmailAndUpdate(data.email, { password: hashPassword })
+
+    if (!foundIntern) return res.status(400).json({ message: "Account not found" })
+
+    return res.status(200).json({ message: "Successfully updated password" })
+  } catch (err) {
+    if (err instanceof jwt.TokenExpiredError || err instanceof jwt.JsonWebTokenError) {
+      return res.status(401).json({ message: err.message })
+    }
+    if (err instanceof Error) {
+      return res.status(400).json({ message: err.message })
+    }
+    next(err)
   }
 }
