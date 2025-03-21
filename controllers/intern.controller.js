@@ -8,11 +8,14 @@ import {
   getInternBySupervisorValidator,
   updateInternStatusValidator,
   getInactiveInternValidator,
+  sendEmailValidator
 } from "../validations/interns-validators.js";
 import { RESET_TOKEN } from "../config/index.js";
 import { sendEmail } from '../services/mail.js'
+import { throwError } from "../utils/errors.js";
 
 import jwt from 'jsonwebtoken'
+import { findInternByEmail } from "../services/interns-auth-services.js";
 
 export const getAllInterns = async (req, res, next) => {
   try {
@@ -107,8 +110,21 @@ export const getInactiveInterns = async (req, res) => {
 
 export const sendPasswordResetEmail = async (req, res, next) => {
   try {
-    const token = jwt.sign({ email: req.user.email }, RESET_TOKEN, { expiresIn: '2h' })
-    await sendEmail(req.user.email, 'Reset link', token)
+    const { error, value } = sendEmailValidator.validate(req.body)
+
+    if (error) {
+      throwError(error)
+    }
+
+    const { email } = value
+
+    const foundIntern = await findInternByEmail(email)
+
+    if (!foundIntern) return res.status(400).json({ message: 'No account found' })
+
+    const token = jwt.sign({ email: email }, RESET_TOKEN, { expiresIn: '2h' })
+
+    sendEmail(email, 'Reset link', `http://localhost:5173/intern/reset/${token}`)
 
     return res.status(200).json({ message: 'Successfully sent password reset email' })
   } catch (err) {

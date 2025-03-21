@@ -146,13 +146,18 @@ vi.mock('../../services/mail.js', () => {
 })
 
 describe('POST /interns/password/reset', () => {
-    const url = '/interns/password/reset'
+    const url = '/password/intern/reset'
+
+    beforeEach(() => {
+        vi.resetAllMocks()
+    })
 
 
     it('returns 200 upon successful sending of email reset link', async () => {
+        const email = 'foo@foo.com'
+        const res = await request(app).post(url).send({ email: email })
 
-        const res = await request(app).post(url)
-        expect(sendEmail).toHaveBeenCalledWith(expect.any(String), expect.any(String), expect.any(String));
+        expect(sendEmail).toHaveBeenCalledWith(email, expect.any(String), expect.any(String));
         expect(res.statusCode).toBe(200)
         expect(res.body).toEqual(expect.objectContaining({
             message: expect.any(String)
@@ -161,9 +166,33 @@ describe('POST /interns/password/reset', () => {
 
     it('returns 400 upon error on sending of email reset link', async () => {
         sendEmail.mockRejectedValue(new Error('Cannot send email'))
-        const res = await request(app).post(url)
+        const email = 'foo@foo.com'
+        const res = await request(app).post(url).send({ email: email })
 
-        expect(sendEmail).toHaveBeenCalledWith(expect.any(String), expect.any(String), expect.any(String));
+        expect(sendEmail).toHaveBeenCalledWith(email, expect.any(String), expect.any(String));
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+
+    })
+    it('returns 400 upon error not found email', async () => {
+        const email = 'invalid@invalid.com'
+        const res = await request(app).post(url).send({ email: email })
+
+        expect(sendEmail).not.toBeCalled()
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+
+    })
+
+    it('returns 400 upon error on not valid email', async () => {
+        const email = 'not an email'
+        const res = await request(app).post(url).send({ email: email })
+
+        expect(sendEmail).not.toBeCalled()
         expect(res.statusCode).toBe(400)
         expect(res.body).toEqual(expect.objectContaining({
             message: expect.any(String)
