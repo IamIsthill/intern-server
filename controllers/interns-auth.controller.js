@@ -20,7 +20,7 @@ export const registerInternController = async (req, res, next) => {
       return res.status(400).json({ message: errorMessages.join(", ") });
     }
     const { email, phone } = value;
-    validatePassword(value.password)
+    validatePassword(value.password);
     const existingUser = await findInternByEmail(email);
     if (existingUser) {
       return res.status(400).json({ message: "Email already exists" });
@@ -34,7 +34,7 @@ export const registerInternController = async (req, res, next) => {
     res.status(201).json({ message: "User created successfully", user });
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(400).json({ message: error.message })
+      return res.status(400).json({ message: error.message });
     }
     next(error);
   }
@@ -47,10 +47,18 @@ export const loginInternController = async (req, res, next) => {
       const errorMessages = error.details.map((detail) => detail.message);
       throw new BadRequestError(errorMessages.join(", "));
     }
+
     const { email, password } = value;
     const { message, token } = await loginIntern({ email, password });
+
     res.status(200).json({ message, token });
   } catch (error) {
+    if (
+      error.message === "Your account is inactive. Please contact the admin."
+    ) {
+      return res.status(403).json({ success: false, message: error.message });
+    }
+
     next(error);
   }
 };

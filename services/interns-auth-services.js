@@ -29,14 +29,14 @@ export const registerIntern = async ({
     password: hashedPassword,
     timeEntries: timeEntries
       ? timeEntries.map((entry) => ({
-        timeIn: entry.timeIn ? new Date(entry.timeIn) : null,
-        timeOut: entry.timeOut ? new Date(entry.timeOut) : null,
-      }))
+          timeIn: entry.timeIn ? new Date(entry.timeIn) : null,
+          timeOut: entry.timeOut ? new Date(entry.timeOut) : null,
+        }))
       : [],
     totalHours,
   });
-  const obj = intern.toObject()
-  delete obj.password
+  const obj = intern.toObject();
+  delete obj.password;
 
   return obj;
 };
@@ -50,6 +50,10 @@ export const loginIntern = async ({ email, password }) => {
   const intern = await findInternByEmail(email);
   if (!intern) {
     throw new Error("User not found");
+  }
+
+  if (intern.status === "inactive") {
+    throw new Error("Your account is inactive. Please contact the admin.");
   }
 
   const isMatch = await bcryptjs.compare(password, intern.password);

@@ -52,6 +52,83 @@ export const updateSupervisor = async (id, supervisorData) => {
   return data;
 };
 
+export const updateSupervisorStatus = async (supervisorId) => {
+  try {
+    const supervisor = await Supervisor.findById(supervisorId);
+    if (!supervisor) {
+      return { success: false, message: "Supervisor not found" };
+    }
+
+    console.log("Current Status:", supervisor.status);
+
+    const newStatus = supervisor.status === "active" ? "inactive" : "active";
+    console.log("New Status:", newStatus);
+
+    const updatedSupervisor = await Supervisor.findByIdAndUpdate(
+      supervisorId,
+      { $set: { status: newStatus } },
+      { new: true, runValidators: true }
+    );
+
+    return {
+      success: true,
+      message: `Intern status updated to ${updatedSupervisor.status}`,
+      supervisor: updatedSupervisor,
+    };
+  } catch (err) {
+    console.error("Error updating intern status:", err);
+    return {
+      success: false,
+      message: "An error occurred while updating the status",
+    };
+  }
+};
+
+export const getSupervisorById = async (id) => {
+  try {
+    const supervisor = await Supervisor.findById(id)
+      .populate({
+        path: "department",
+        select: "name _id",
+      })
+      .populate({
+        path: "assignedInterns",
+        select: "firstName lastName _id",
+      });
+
+    if (!supervisor) {
+      throw new Error("Supervisor not found");
+    }
+
+    const result = supervisor.toObject();
+
+    if (result.age === undefined || result.age === null) {
+      result.age = 0;
+    }
+
+    if (result.department) {
+      result.departmentName = result.department.name;
+    } else {
+      result.departmentName = "";
+    }
+
+    if (Array.isArray(result.assignedInterns)) {
+      result.assignedInternsFullNames = result.assignedInterns.map(
+        (intern) => ({
+          _id: intern._id,
+          fullName: `${intern.firstName} ${intern.lastName}`,
+        })
+      );
+    } else {
+      result.assignedInternsFullNames = [];
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(`Error fetching supervisor: ${error.message}`);
+  }
+};
+
 // export const findSupervisorByEmail = async (email) => {
 //   return await Supervisor.findOne({ email: email }).lean();
 // };

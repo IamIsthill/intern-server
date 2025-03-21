@@ -1,9 +1,23 @@
 import { Admin } from "../models/Admin.js";
 import { Intern } from "../models/interns.js";
-import { findAllAccounts, findAndUpdateIntern, findPendingInternRequest } from "../services/admin.services.js";
-import { approveInternRequestValidator } from '../validations/adminValidator.js'
+import {
+  findAllAccounts,
+  findAndUpdateIntern,
+  findPendingInternRequest,
+  registerIntern,
+  updateAdmin,
+  getAdminById,
+} from "../services/admin.services.js";
+import {
+  approveInternRequestValidator,
+  adminEditProfileValidator,
+  getAdminByIdValidator,
+} from "../validations/adminValidator.js";
 import { registerInternValidator } from "../validations/interns-validators.js";
-import { findInternByEmail, findInternByPhone, registerIntern } from "../services/interns-auth-services.js";
+import {
+  findInternByEmail,
+  findInternByPhone,
+} from "../services/interns-auth-services.js";
 import { createId } from "../utils/createId.js";
 import { validatePassword } from "../utils/validatePassword.js";
 
@@ -31,49 +45,49 @@ export const adminFindController = async (req, res, next) => {
 
 export const getAllAccounts = async (req, res, next) => {
   try {
-    const queryObject = req.query
-    if (Object.keys(queryObject).length > 0 && !('q' in req.query)) {
-      return res.status(200).json({ accounts: [] })
+    const queryObject = req.query;
+    if (Object.keys(queryObject).length > 0 && !("q" in req.query)) {
+      return res.status(200).json({ accounts: [] });
     }
-    const q = req.query.q ? req.query.q.trim() : ''
+    const q = req.query.q ? req.query.q.trim() : "";
 
-    const accounts = await findAllAccounts(q)
+    const accounts = await findAllAccounts(q);
 
-    return res.status(200).json({ accounts: accounts })
-
-
+    return res.status(200).json({ accounts: accounts });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 export const getRequestingInterns = async (req, res, next) => {
   try {
-    const interns = await findPendingInternRequest()
-    return res.status(200).json({ accounts: interns })
-
+    const interns = await findPendingInternRequest();
+    return res.status(200).json({ accounts: interns });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 export const approveInternRequest = async (req, res, next) => {
   try {
-    const { error, value } = approveInternRequestValidator.validate(req.body)
+    const { error, value } = approveInternRequestValidator.validate(req.body);
 
     if (error) {
-      const messages = error.details.map(detail => detail.message)
-      return res.status(400).json({ message: messages.join("\n") })
+      const messages = error.details.map((detail) => detail.message);
+      return res.status(400).json({ message: messages.join("\n") });
     }
 
-    const updatedIntern = await findAndUpdateIntern(value.internId, value.isApproved)
+    const updatedIntern = await findAndUpdateIntern(
+      value.internId,
+      value.isApproved
+    );
 
-    return res.status(200).json({ account: updatedIntern })
+    return res.status(200).json({ account: updatedIntern });
   } catch (e) {
-    console.log(e)
-    next(e)
+    console.log(e);
+    next(e);
   }
-}
+};
 
 export const createIntern = async (req, res, next) => {
   try {
@@ -82,7 +96,7 @@ export const createIntern = async (req, res, next) => {
       const errorMessages = error.details.map((detail) => detail.message);
       return res.status(400).json({ message: errorMessages.join(", ") });
     }
-    validatePassword(value.password)
+    validatePassword(value.password);
     const { email, phone } = value;
     const existingUser = await findInternByEmail(email);
     if (existingUser) {
@@ -93,21 +107,99 @@ export const createIntern = async (req, res, next) => {
     if (existingPhone) {
       return res.status(400).json({ message: "Phone number already exists" });
     }
-    value.department = createId(value.department)
-    value.supervisor = createId(value.supervisor)
-    const user = await Intern.create(value)
-    const obj = user.toObject()
-    delete obj.password
-    delete obj.__v
+
+    const user = await registerIntern(value);
+
     res.status(201).json({ message: "User created successfully", user });
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(400).json({ message: error.message })
+      return res.status(400).json({ message: error.message });
     }
     next(error);
   }
 };
 
+export const updateAdminController = async (req, res, next) => {
+  try {
+    // Get admin ID from request parameters or body
+    const adminId = req.params.id || req.body.id;
+
+    if (!adminId) {
+      return res.status(400).json({
+        success: false,
+        message: "Admin ID is required",
+      });
+    }
+
+    // Validate request body against Joi schema
+    const { error, value } = adminEditProfileValidator.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
+    }
+
+    // Remove id from update data if it exists
+    const updateData = { ...value };
+    delete updateData.id;
+
+    // Check if there's any data to update
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No update data provided",
+      });
+    }
+
+    // Call the update admin logic
+    const updatedAdmin = await updateAdmin(adminId, updateData);
+
+    // Return success response
+    return res.status(200).json({
+      success: true,
+      message: "Admin profile updated successfully",
+      data: updatedAdmin,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
+  }
+};
+
+export const getAdminByIdController = async (req, res, next) => {
+  try {
+    const { error, value } = getAdminByIdValidator.validate({
+      id: req.params.id,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
+    }
+
+    const admin = await getAdminById(value.id);
+
+    return res.status(200).json({
+      success: true,
+      data: admin,
+    });
+  } catch (error) {
+    if (error.message === "Admin not found") {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found",
+      });
+    }
+
+    next(error);
+  }
+};
 // export const adminLoginController = async (req, res, next) => {
 //   try {
 //     const { error, value } = loginAdminValidator.validate(req.body);

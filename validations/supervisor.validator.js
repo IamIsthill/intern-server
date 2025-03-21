@@ -28,3 +28,12 @@ export const updateSupervisorValidator = Joi.object({
   status: Joi.string().valid("active", "inactive").optional(),
   accountType: Joi.string().optional(),
 });
+
+export const updateSupervisorStatusValidator = Joi.object({
+  id: Joi.string().required(),
+  status: Joi.string().valid("active", "inactive"),
+});
+
+export const getSupervisorByIdValidator = Joi.object({
+  id: Joi.string().required(),
+});

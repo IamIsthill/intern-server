@@ -1,8 +1,9 @@
-import { describe, expect, vi, it, beforeEach, afterAll, afterEach, expectTypeOf } from "vitest";
+import { describe, expect, vi, it, beforeEach, afterAll, afterEach, expectTypeOf, beforeAll } from "vitest";
 import request from 'supertest'
 import { Tasks } from "../../models/Tasks.js";
 import mongoose, { Mongoose } from 'mongoose'
 import { createId } from "../../utils/createId.js";
+import { faker } from "@faker-js/faker";
 
 vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
 const { app } = await import('../../server.js')
@@ -162,7 +163,7 @@ describe('POST /tasks', () => {
     it('valid params, no interns yet --> 200 and created task', async () => {
         const res = await request(app).post(url).send(mockTask)
 
-        expect(res.statusCode).toBe(200)
+        expect(res.statusCode).toBe(201)
         expect(res.body).toEqual(expect.objectContaining({
             title: expect.any(String),
             description: expect.any(String),
@@ -176,7 +177,7 @@ describe('POST /tasks', () => {
         mockTask.assignedInterns = mockIntern1
         const res = await request(app).post(url).send(mockTask)
 
-        expect(res.statusCode).toBe(200)
+        expect(res.statusCode).toBe(201)
         expect(res.body).toEqual(expect.objectContaining({
             title: expect.any(String),
             description: expect.any(String),
@@ -194,7 +195,7 @@ describe('POST /tasks', () => {
         mockTask.assignedInterns = [mockIntern1, mockIntern2]
         const res = await request(app).post(url).send(mockTask)
 
-        expect(res.statusCode).toBe(200)
+        expect(res.statusCode).toBe(201)
         expect(res.body).toEqual(expect.objectContaining({
             title: expect.any(String),
             description: expect.any(String),
@@ -237,7 +238,7 @@ describe('POST /tasks', () => {
     })
 })
 
-describe('PUT /tasks/task-id', async () => {
+describe('PUT /tasks/:taskid', async () => {
     const url = '/tasks'
     const mockInternId = createId()
     vi.doMock('../../middleware/auth.js', () => ({
@@ -301,3 +302,188 @@ describe('PUT /tasks/task-id', async () => {
     })
 
 })
+
+function taskFaker() {
+    return {
+        _id: createId(),
+        supervisor: createId(),
+        title: faker.book.title(),
+        description: faker.lorem.sentences(),
+        deadline: faker.date.future(),
+        assignedInterns: [{ internId: createId() }, { internId: createId() }]
+    }
+}
+
+async function taskFactory(count = 1) {
+    const tasks = []
+    for (let i = 1; i <= count; i++) {
+        const task = taskFaker()
+        tasks.push(task)
+    }
+    await Tasks.create(tasks)
+    return tasks
+
+}
+
+describe('DELETE /tasks/:taskid', () => {
+    const url = '/tasks'
+    let tasks
+
+    beforeAll(async () => {
+        tasks = await taskFactory(2)
+    })
+
+    it('returns 204 on successful delete with no content', async () => {
+        const task = tasks[0]
+        const res = await request(app).delete(`${url}/${task._id.toString()}`)
+
+        expect(res.statusCode).toBe(204)
+    })
+
+    it('returns 400 if id was not found', async () => {
+        const taskId = createId()
+        const res = await request(app).delete(`${url}/${taskId.toString()}`)
+
+        expect(res.statusCode).toBe(400)
+
+    })
+
+    it('returns 400 if taskid was invalid', async () => {
+        const taskId = 'not-valid'
+        const res = await request(app).delete(`${url}/${taskId.toString()}`)
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+    })
+
+
+})
+
+describe('GET /tasks/supervisor/:id', () => {
+    let mockTasks
+    const mockSupervisorId = createId()
+    const url = '/tasks/supervisor'
+
+    beforeEach(async () => {
+        mockTasks = [
+            {
+                _id: createId(),
+                supervisor: mockSupervisorId,
+                title: "Task 1",
+                description: 'task',
+                deadline: new Date(),
+                assignedInterns: [
+                    {
+                        internId: createId(),
+                        status: 'pending'
+                    },
+                    {
+                        internId: createId(),
+                        status: 'backlogs'
+                    }
+                ]
+
+            },
+            {
+                _id: createId(),
+                supervisor: mockSupervisorId,
+                title: "Task 2",
+                description: 'task',
+                deadline: new Date(),
+                assignedInterns: [
+                    {
+                        internId: createId(),
+                        status: 'pending'
+                    },
+                    {
+                        internId: createId(),
+                        status: 'backlogs'
+                    }
+                ]
+
+            }
+        ]
+
+        await Tasks.deleteMany()
+        await Tasks.create(mockTasks)
+    })
+
+    it('returns the tasks array with 200 status code with valid supervisor id', async () => {
+        const res = await request(app).get(`${url}/${mockSupervisorId}`)
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual(expect.objectContaining({
+            tasks: expect.arrayContaining([
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    supervisor: expect.any(String),
+                    title: expect.any(String),
+                    description: expect.any(String),
+                    deadline: expect.any(String),
+                    assignedInterns: expect.any(Array)
+                })
+            ])
+        }))
+        res.body.tasks.forEach(task => {
+            if (task.assignedInterns > 0) {
+                expect(task.assignedInterns).toEqual(expect.arrayContaining([
+                    expect.objectContaining({
+                        _id: expect.any(String),
+                        internId: expect.any(String),
+                        status: expect.toBeOneOf(['pending', 'in-progress', 'completed', 'backlogs']),
+                    })
+                ]))
+            }
+        })
+
+
+    })
+
+    it('returns an empty tasks array with 200 if supervisor is not valid or not found', async () => {
+        const notExisting = createId()
+        const res = await request(app).get(`${url}/${notExisting}`)
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual(expect.objectContaining({
+            tasks: expect.any(Array)
+        }))
+        expect(res.body.tasks).toHaveLength(0)
+    })
+})
+
+// describe('PUT /tasks/supervisor/:taskId', () => {
+//     const url = '/tasks/supervisor/'
+//     const mockTaskId = createId()
+//     const mockInterns = [createId(), createId()]
+//     let mockTasks
+
+//     beforeEach(async () => {
+//         mockTasks = [
+//             {
+//                 _id: mockTaskId,
+//                 supervisor: createId(),
+//                 title: "Mock",
+//                 description: 'task',
+//                 deadline: new Date(),
+//                 assignedInterns: [
+//                     {
+//                         internId: mockInterns[0],
+//                         status: 'pending'
+//                     },
+//                     {
+//                         internId: mockInterns[1],
+//                         status: 'backlogs'
+//                     }
+//                 ]
+
+//             }
+//         ]
+//         await Tasks.deleteMany()
+//         await Tasks.create(mockTasks)
+//     })
+
+//     it('returns the updated tasks with newly added intern')
+// })
+
+

@@ -12,6 +12,7 @@ import { departmentRouter } from "./routes/department.routes.js";
 import { internRouter } from "./routes/interns.routes.js";
 import { router as internAuthRouter } from "./routes/interns-auth.routes.js";
 import { router as staffAuthRouter } from "./routes/staff-auth.routes.js";
+import { passwordRouter } from "./routes/password.routes.js";
 
 export const app = express();
 const port = 3000;
@@ -21,6 +22,7 @@ connectDb();
 app.use(compression());
 app.use(express.json());
 app.use(Cors());
+app.use('/password', passwordRouter)
 app.use("/auth", internAuthRouter);
 app.use("/a2kstaffs", staffAuthRouter);
 app.use(authenticateJWT);

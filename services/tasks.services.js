@@ -1,6 +1,7 @@
 import mongoose from "mongoose"
 import { Tasks } from "../models/Tasks.js"
 import Joi from 'joi'
+import { BadRequestError } from "../utils/errors.js"
 
 const createId = (id = '') => {
     return new mongoose.Types.ObjectId(id)
@@ -14,7 +15,7 @@ export const findTasksByInternId = async (internId, user) => {
             assignedInterns: {
                 $elemMatch: { internId: internId }
             }
-        })
+        }).select(['-__v'])
         let newTaskArr = tasks
         if (tasks.length > 0) {
             newTaskArr = tasks.map(task => {
@@ -41,7 +42,7 @@ export const findTasksByInternId = async (internId, user) => {
             assignedInterns: {
                 $elemMatch: { internId: internId }
             }
-        })
+        }).select(['-__v'])
         return tasks
     }
     return []
@@ -79,4 +80,40 @@ export const createTasksValidator = (req) => {
         }]
     }
     return value
+}
+
+export const findTaskAndUpdate = async (value) => {
+    const { assignedInterns } = value
+
+    delete value.assignedInterns
+
+    const task = await Tasks.findOneAndUpdate(createId(value._id), value, { new: true }).select(['-__v']).populate({ path: 'assignedInterns.internId', select: ['firstName', 'lastName', '_id', 'email'] })
+
+
+    if (!task) {
+        throw new BadRequestError('Task not found.')
+    }
+
+    if (assignedInterns.length > 0) {
+        const existingInterns = task.assignedInterns.map(intern => intern.internId._id.toString())
+        if (assignedInterns.length > 0) {
+            assignedInterns.forEach(id => {
+                if (!existingInterns.find(internId => internId === id)) {
+                    task.assignedInterns.push({ internId: createId(id) })
+                }
+            })
+        }
+
+        existingInterns.forEach(intern => {
+            if (!assignedInterns.find(internId => internId == intern)) {
+                task.assignedInterns = task.assignedInterns.filter(assigned => assigned.internId._id.toString() !== intern)
+            }
+        })
+    } else {
+        task.assignedInterns = []
+    }
+
+    await task.save()
+
+    return task
 }

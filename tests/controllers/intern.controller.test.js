@@ -2,10 +2,16 @@ import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest'
 import request from 'supertest'
 import { Intern } from "../../models/interns.js";
 import mongoose from 'mongoose';
+import { sendEmail } from '../../services/mail.js';
 
 vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
 vi.mock('../../middleware/auth.js', () => ({
-    authenticateJWT: (req, res, next) => next()
+    authenticateJWT: (req, res, next) => {
+        req.user = {
+            email: 'foo@foo.com'
+        }
+        next()
+    }
 }))
 const { app } = await import('../../server.js')
 
@@ -130,5 +136,67 @@ describe('GET /interns/find', () => {
         const res = await request(app).get(`${url}?${params}`)
 
         expect(res.statusCode).toBe(500)
+    })
+})
+
+vi.mock('../../services/mail.js', () => {
+    return {
+        sendEmail: vi.fn()
+    }
+})
+
+describe('POST /interns/password/reset', () => {
+    const url = '/password/intern/reset'
+
+    beforeEach(() => {
+        vi.resetAllMocks()
+    })
+
+
+    it('returns 200 upon successful sending of email reset link', async () => {
+        const email = 'foo@foo.com'
+        const res = await request(app).post(url).send({ email: email })
+
+        expect(sendEmail).toHaveBeenCalledWith(email, expect.any(String), expect.any(String));
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+    })
+
+    it('returns 400 upon error on sending of email reset link', async () => {
+        sendEmail.mockRejectedValue(new Error('Cannot send email'))
+        const email = 'foo@foo.com'
+        const res = await request(app).post(url).send({ email: email })
+
+        expect(sendEmail).toHaveBeenCalledWith(email, expect.any(String), expect.any(String));
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+
+    })
+    it('returns 400 upon error not found email', async () => {
+        const email = 'invalid@invalid.com'
+        const res = await request(app).post(url).send({ email: email })
+
+        expect(sendEmail).not.toBeCalled()
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+
+    })
+
+    it('returns 400 upon error on not valid email', async () => {
+        const email = 'not an email'
+        const res = await request(app).post(url).send({ email: email })
+
+        expect(sendEmail).not.toBeCalled()
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toEqual(expect.objectContaining({
+            message: expect.any(String)
+        }))
+
     })
 })
