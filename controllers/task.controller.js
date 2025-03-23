@@ -1,21 +1,15 @@
 import { Tasks } from "../models/Tasks.js";
 import { findTasksByInternId, createTasksValidator, findTaskAndUpdate } from "../services/tasks.services.js";
 import { createId } from "../utils/createId.js";
-import { throwError } from "../utils/errors.js";
-import { BadRequestError } from "../utils/errors.js";
 import { internTasksValidator, supervisorUpdateTaskValidator, taskBodyValidator, supervisorIdValidator, taskIdValidator } from "../validations/taskValidator.js";
+import { Validation } from "../validations/Validation.js";
 
 
 
 
 export const getTasksByInternIdController = async (req, res, next) => {
     try {
-        const { error, value } = internTasksValidator.validate(req.query)
-
-        if (error) {
-            const errorMessages = error.details.map(detail => detail.message)
-            throw new Error(errorMessages.join(', '))
-        }
+        const value = new Validation(internTasksValidator, req.query).validate()
 
         const allInternTasks = await findTasksByInternId(value.internId, req.user)
 
@@ -49,12 +43,7 @@ export const createTask = async (req, res, next) => {
 export const updateTask = async (req, res, next) => {
     try {
         req.body.taskId = req.params.taskId
-        const { error, value } = taskBodyValidator.validate(req.body)
-
-        if (error) {
-            const messages = error.details.map(detail => detail.message)
-            throw new BadRequestError(messages.join("\n"))
-        }
+        const value = new Validation(taskBodyValidator, req.body).validate()
 
         const internId = createId(value.internId)
         const taskId = createId(value.taskId)
@@ -78,12 +67,7 @@ export const updateTask = async (req, res, next) => {
 
 export const getTasksBySupervisorId = async (req, res, next) => {
     try {
-        const { error, value } = supervisorIdValidator.validate(req.params)
-
-        if (error) {
-            const messages = error.details.map(detail => detail.message)
-            throw new BadRequestError(messages.join(''))
-        }
+        const value = new Validation(supervisorIdValidator, req.params).validate()
 
         const tasks = await Tasks.find({ supervisor: createId(value.id) }).populate({ path: 'assignedInterns.internId', select: ['firstName', 'lastName', '_id', 'email'] })
 
@@ -97,12 +81,7 @@ export const getTasksBySupervisorId = async (req, res, next) => {
 
 export const supervisorUpdateTask = async (req, res, next) => {
     try {
-        const { error, value } = supervisorUpdateTaskValidator.validate(req.body)
-
-        if (error) {
-            const messages = error.details.map(detail => detail.message)
-            throw new BadRequestError(messages.join('\n'))
-        }
+        const value = new Validation(supervisorUpdateTaskValidator, req.body).validate()
 
         const task = await findTaskAndUpdate(value)
         return res.status(200).json({ task: task })
@@ -115,11 +94,7 @@ export const supervisorUpdateTask = async (req, res, next) => {
 
 export const deleteTask = async (req, res, next) => {
     try {
-        const { error, value } = taskIdValidator.validate(req.params)
-
-        if (error) {
-            throwError(error)
-        }
+        const value = new Validation(taskIdValidator, req.params).validate()
 
         const task = await Tasks.findOneAndDelete({ _id: createId(value.taskId) })
 
