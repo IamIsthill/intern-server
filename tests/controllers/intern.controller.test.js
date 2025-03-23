@@ -6,6 +6,7 @@ import { sendEmail } from '../../services/mail.js';
 import { faker } from '@faker-js/faker';
 import { RESET_TOKEN } from '../../config/index.js';
 import { createToken } from '../../utils/token.js';
+import { InternFactory } from '../models/Intern.fake.js';
 
 vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
 vi.mock('../../middleware/auth.js', () => ({
@@ -21,40 +22,18 @@ const { app } = await import('../../server.js')
 
 describe('GET /interns/all', () => {
     const mockSupervisor = '67cbe4e6b85278919bc52ebc'
-    const mockInterns = [
-        {
-            firstName: 'foo',
-            lastName: 'bar',
-            age: 1,
-            school: 'fake',
-            phone: '09876543921',
-            internshipHours: 12,
-            email: 'foo@foo.com',
-            password: 12345678,
-            supervisor: new mongoose.Types.ObjectId(mockSupervisor)
-        },
-        {
-            firstName: 'foo',
-            lastName: 'bar',
-            age: 1,
-            school: 'fake',
-            phone: '09876513921',
-            internshipHours: 12,
-            email: 'foo@foos.com',
-            password: 12345678,
-            supervisor: new mongoose.Types.ObjectId(mockSupervisor)
-        }
-    ]
+    const internFactory = new InternFactory(4, { supervisor: (mockSupervisor) })
+
     beforeEach(async () => {
         await Intern.deleteMany({})
-        await Intern.create(mockInterns)
+        await internFactory.create()
     })
     it('returns 200 and all interns', async () => {
-
 
         const res = await request(app).get('/interns/all')
 
         expect(res.status).toBe(200)
+        console.log(res.body.interns)
         expect(res.body.interns).toEqual(expect.arrayContaining([
             expect.any(Object)
         ]))
@@ -99,8 +78,8 @@ describe('GET /interns/find', () => {
 
     beforeEach(async () => {
         vi.resetAllMocks()
-        await Intern.deleteMany({})
-        await Intern.create(mockInterns)
+        // await Intern.deleteMany({})
+        // await Intern.create(mockInterns)
     })
 
     const url = '/interns/find'
@@ -149,15 +128,18 @@ vi.mock('../../services/mail.js', () => {
 })
 
 describe('POST /interns/password/reset', () => {
+    const internFactory = new InternFactory()
     const url = '/password/intern/reset'
 
-    beforeEach(() => {
+    beforeEach(async () => {
         vi.resetAllMocks()
+        await Intern.deleteMany({})
+        await internFactory.create()
     })
 
 
     it('returns 200 upon successful sending of email reset link', async () => {
-        const email = 'foo@foo.com'
+        const email = internFactory.interns[0].email
         const res = await request(app).post(url).send({ email: email })
 
         expect(sendEmail).toHaveBeenCalledWith(email, expect.any(String), expect.any(String));
@@ -169,7 +151,7 @@ describe('POST /interns/password/reset', () => {
 
     it('returns 400 upon error on sending of email reset link', async () => {
         sendEmail.mockRejectedValue(new Error('Cannot send email'))
-        const email = 'foo@foo.com'
+        const email = internFactory.interns[0].email
         const res = await request(app).post(url).send({ email: email })
 
         expect(sendEmail).toHaveBeenCalledWith(email, expect.any(String), expect.any(String));
@@ -204,12 +186,17 @@ describe('POST /interns/password/reset', () => {
     })
 })
 
+
 describe('PUT /password/intern/new', () => {
+    const internFactory = new InternFactory(1)
     const url = '/password/intern/new'
-    const token = createToken({ email: 'foo@foo.com' }, RESET_TOKEN)
+    const token = createToken({ email: internFactory.interns[0].email }, RESET_TOKEN)
     const password = faker.internet.password({ pattern: /[A-Z]/, prefix: 'a1' })
     let data
-    beforeEach(() => {
+    beforeEach(async () => {
+        await Intern.deleteMany({})
+        await internFactory.create()
+
         data = {
             password: password,
             token: token
