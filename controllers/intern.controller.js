@@ -15,6 +15,7 @@ import {
   resetPasswordValidator,
   updateInternProfileValidator,
 } from "../validations/interns-validators.js";
+import { Validation } from "../validations/Validation.js";
 import { RESET_TOKEN } from "../config/index.js";
 import { sendEmail } from "../services/mail.js";
 import { throwError } from "../utils/errors.js";
@@ -37,12 +38,7 @@ export const getAllInterns = async (req, res, next) => {
 
 export const getInternsBySupervisor = async (req, res, next) => {
   try {
-    const { error, value } = getInternBySupervisorValidator.validate(req.query);
-
-    if (error) {
-      const errorMessages = error.details.map((detail) => detail.message);
-      return res.status(400).json({ message: errorMessages.join(", ") });
-    }
+    const value = new Validation(getInternBySupervisorValidator, req.query).validate()
 
     const interns = await findInterns({ supervisor: value.supervisor });
 
@@ -54,8 +50,6 @@ export const getInternsBySupervisor = async (req, res, next) => {
 
 export const updateInternController = async (req, res, next) => {
   try {
-    console.log("Received ID:", req.params.id);
-    console.log("Received Body:", req.body);
 
     const { id } = req.params;
     const { status } = req.body;
@@ -133,11 +127,7 @@ export const sendPasswordResetEmail = async (req, res, next) => {
 
     const token = createToken({ email: email }, RESET_TOKEN, "2h");
 
-    await sendEmail(
-      email,
-      "Reset link",
-      `http://localhost:5173/intern/reset/${token}`
-    );
+    sendEmail(email, 'Reset link', `http://localhost:5173/intern/reset/${token}`)
 
     return res
       .status(200)

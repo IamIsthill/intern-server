@@ -63,6 +63,27 @@ const internSchema = new mongoose.Schema({
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending'
   },
+  logs: {
+    type: [
+      {
+        taskId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Tasks",
+          default: null
+        },
+        note: {
+          type: String,
+          default: ""
+        },
+        read: {
+          type: String,
+          enum: ['unread', 'read'],
+          default: 'unread'
+        }
+      }
+    ]
+
+  },
   totalHours: {
     type: Number,
     default: 0,

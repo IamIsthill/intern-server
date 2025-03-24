@@ -1,4 +1,5 @@
 import { Tasks } from "../models/Tasks.js";
+import { Intern } from "../models/interns.js";
 import { findTasksByInternId, createTasksValidator, findTaskAndUpdate } from "../services/tasks.services.js";
 import { createId } from "../utils/createId.js";
 import { internTasksValidator, supervisorUpdateTaskValidator, taskBodyValidator, supervisorIdValidator, taskIdValidator } from "../validations/taskValidator.js";
@@ -55,6 +56,15 @@ export const updateTask = async (req, res, next) => {
                 "assignedInterns.$.status": value.status,
             }
         }, { new: true }).select(['-assignedInterns', '-supervisor'])
+
+        const logEntry = {
+            taskId: taskId.toString(),
+            note: `Status of '${task.title}' has been changed to '${value.status}'`
+        }
+
+        await Intern.findByIdAndUpdate(internId,
+            { $push: { logs: logEntry } }
+        )
 
         const taskObject = task.toObject()
         taskObject.status = value.status
