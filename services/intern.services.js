@@ -89,3 +89,38 @@ export const fetchInactiveInterns = async () => {
 export const findInternByEmailAndUpdate = async (email, update) => {
   return await Intern.findOneAndUpdate({ email: email }, { ...update });
 };
+
+export const updateInternProfile = async (id, updateData) => {
+  try {
+    const intern = await Intern.findById(id);
+    if (!intern) {
+      throw new Error("Intern not found");
+    }
+
+    if (updateData.password) {
+      const hashedPassword = await bcrypt.hash(updateData.password, 10);
+      updateData.password = hashedPassword;
+    }
+
+    const updatedIntern = await Intern.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).select("-password");
+    return updatedIntern;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getInternById = async (id) => {
+  try {
+    const intern = await Intern.findById(id).select("-password");
+    if (!intern) {
+      throw new Error("Intern not found");
+    }
+    return intern;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
