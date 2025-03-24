@@ -124,3 +124,7 @@ export const getInternById = async (id) => {
     throw new Error(error.message);
   }
 };
+
+export const findInternByLogId = async (logId, read) => {
+  return Intern.findOneAndUpdate({ "logs._id": createId(logId) }, { "logs.$.read": read }, { new: true, useFindAndModify: false }).select(['-__v', '-password', '-timeEntries'])
+}

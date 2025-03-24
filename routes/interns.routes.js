@@ -11,3 +11,4 @@ internRouter.put(
   "/update-intern/:id",
   controller.updateInternProfileController
 );
+internRouter.put('/logs/:logId', controller.updateLogStatus)

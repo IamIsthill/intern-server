@@ -59,3 +59,10 @@ export const updateInternProfileValidator = joi.object({
   email: joi.string().email().optional(),
   password: joi.string().min(8).optional(),
 });
+
+
+export const logIdValidator = joi.object({
+  logId: joi.string().hex().length(24).required(),
+  read: joi.string().valid('read', 'unread').required()
+
+})

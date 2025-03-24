@@ -17,6 +17,18 @@ class FakeIntern {
         this.accountType = options.accountType || 'intern'
         this.isApproved = options.isApproved || 'approved'
         this.supervisor = createId(options.supervisor) || createId()
+        this.logs = [
+            {
+                _id: createId(),
+                taskId: createId(),
+                note: faker.lorem.sentence()
+            },
+            {
+                _id: createId(),
+                taskId: createId(),
+                note: faker.lorem.sentence()
+            }
+        ]
     }
 
     obj() {
@@ -33,7 +45,8 @@ class FakeIntern {
             status: this.status,
             accountType: this.accountType,
             isApproved: this.isApproved,
-            supervisor: this.supervisor
+            supervisor: this.supervisor,
+            logs: this.logs
         };
     }
 }
@@ -56,13 +69,11 @@ export class InternFactory {
     }
 
     async create() {
-        // this._generateInterns()
         try {
-            await Intern.create(this.interns)
-            return this.interns
-
+            await Intern.insertMany(this.interns);
         } catch (err) {
-            throw err
+            console.error("Error inserting interns:", err);
+            throw err;
         }
     }
 }

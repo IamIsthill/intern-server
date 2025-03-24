@@ -14,7 +14,9 @@ import {
   sendEmailValidator,
   resetPasswordValidator,
   updateInternProfileValidator,
+  logIdValidator
 } from "../validations/interns-validators.js";
+import { Intern } from "../models/interns.js";
 import { Validation } from "../validations/Validation.js";
 import { RESET_TOKEN } from "../config/index.js";
 import { sendEmail } from "../services/mail.js";
@@ -25,6 +27,7 @@ import jwt from "jsonwebtoken";
 import { findInternByEmail } from "../services/interns-auth-services.js";
 import { validatePassword } from "../utils/validatePassword.js";
 import bcrypt from "bcryptjs";
+import { createId } from "../utils/createId.js";
 
 export const getAllInterns = async (req, res, next) => {
   try {
@@ -112,11 +115,7 @@ export const getInactiveInterns = async (req, res) => {
 
 export const sendPasswordResetEmail = async (req, res, next) => {
   try {
-    const { error, value } = sendEmailValidator.validate(req.body);
-
-    if (error) {
-      throwError(error);
-    }
+    const value = new Validation(sendEmailValidator, req.body).validate()
 
     const { email } = value;
 
@@ -125,7 +124,8 @@ export const sendPasswordResetEmail = async (req, res, next) => {
     if (!foundIntern)
       return res.status(400).json({ message: "No account found" });
 
-    const token = createToken({ email: email }, RESET_TOKEN, "2h");
+    const token = createToken({ email: email }, RESET_TOKEN, '2h')
+
 
     sendEmail(email, 'Reset link', `http://localhost:5173/intern/reset/${token}`)
 
@@ -139,12 +139,9 @@ export const sendPasswordResetEmail = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
-    const { error, value } = resetPasswordValidator.validate(req.body);
+    const value = new Validation(resetPasswordValidator, req.body).validate()
 
-    if (error) {
-      throwError(error);
-    }
-    const { password, token } = value;
+    const { password, token } = value
 
     validatePassword(password);
 
@@ -249,3 +246,17 @@ export const getInternIdByController = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateLogStatus = async (req, res, next) => {
+  try {
+    req.body.logId = req.params.logId
+    const value = new Validation(logIdValidator, req.body).validate()
+    const intern = await findInternByLogId(value.logId, value.read)
+
+    if (!intern)
+      return res.status(400).json({ message: "Unable to find specific log" })
+    return res.status(200).json({ intern: intern })
+  } catch (err) {
+    next(err)
+  }
+}

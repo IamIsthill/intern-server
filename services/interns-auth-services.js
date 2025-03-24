@@ -29,9 +29,9 @@ export const registerIntern = async ({
     password: hashedPassword,
     timeEntries: timeEntries
       ? timeEntries.map((entry) => ({
-          timeIn: entry.timeIn ? new Date(entry.timeIn) : null,
-          timeOut: entry.timeOut ? new Date(entry.timeOut) : null,
-        }))
+        timeIn: entry.timeIn ? new Date(entry.timeIn) : null,
+        timeOut: entry.timeOut ? new Date(entry.timeOut) : null,
+      }))
       : [],
     totalHours,
   });
