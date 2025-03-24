@@ -9,19 +9,22 @@ export const findInterns = async (param) => {
       return [];
     }
   }
-  return await Intern.find(param).select([
-    "firstName",
-    "lastName",
-    "age",
-    "phone",
-    "school",
-    "internshipHours",
-    "email",
-    "department",
-    "status",
-    "supervisor",
-    "totalHours",
-  ]);
+
+  return await Intern.find(param)
+    .populate("department", "name")
+    .select([
+      "firstName",
+      "lastName",
+      "age",
+      "phone",
+      "school",
+      "internshipHours",
+      "email",
+      "department",
+      "status",
+      "supervisor",
+      "totalHours",
+    ]);
 };
 
 const createId = (id = "") => {
@@ -84,5 +87,5 @@ export const fetchInactiveInterns = async () => {
 };
 
 export const findInternByEmailAndUpdate = async (email, update) => {
-  return await Intern.findOneAndUpdate({ email: email }, { ...update })
-}
+  return await Intern.findOneAndUpdate({ email: email }, { ...update });
+};
