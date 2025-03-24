@@ -29,6 +29,13 @@ export const updateSupervisor = async (id, supervisorData) => {
     supervisorData.password = await bcrypt.hash(supervisorData.password, 10);
   }
 
+  const currentSupervisor = await Supervisor.findById(id);
+  if (!currentSupervisor) {
+    throw new Error("Supervisor not found");
+  }
+
+  const oldAssignedInterns = [...currentSupervisor.assignedInterns];
+
   const updatedSupervisor = await Supervisor.findByIdAndUpdate(
     id,
     { $set: supervisorData },
@@ -36,13 +43,39 @@ export const updateSupervisor = async (id, supervisorData) => {
   )
     .populate({
       path: "assignedInterns",
-      model: "Intern", // Explicitly specifying the model
-      select: "firstName lastName email", // Only select needed fields
+      model: "Intern",
+      select: "firstName lastName email",
     })
     .populate("department");
 
-  if (!updatedSupervisor) {
-    throw new Error("Supervisor not found");
+  if (supervisorData.assignedInterns) {
+    const newlyAssignedInterns = supervisorData.assignedInterns.filter(
+      (internId) =>
+        !oldAssignedInterns.some(
+          (oldId) => oldId.toString() === internId.toString()
+        )
+    );
+
+    const removedInterns = oldAssignedInterns.filter(
+      (oldId) =>
+        !supervisorData.assignedInterns.some(
+          (internId) => internId.toString() === oldId.toString()
+        )
+    );
+
+    if (newlyAssignedInterns.length > 0) {
+      await Intern.updateMany(
+        { _id: { $in: newlyAssignedInterns } },
+        { $set: { supervisor: id } }
+      );
+    }
+
+    if (removedInterns.length > 0) {
+      await Intern.updateMany(
+        { _id: { $in: removedInterns } },
+        { $set: { supervisor: null } }
+      );
+    }
   }
 
   const data = updatedSupervisor.toObject();
@@ -51,7 +84,6 @@ export const updateSupervisor = async (id, supervisorData) => {
 
   return data;
 };
-
 export const updateSupervisorStatus = async (supervisorId) => {
   try {
     const supervisor = await Supervisor.findById(supervisorId);
