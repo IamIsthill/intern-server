@@ -6,6 +6,7 @@ import {
   findInternByEmailAndUpdate,
   updateInternProfile,
   getInternById,
+  findInternByLogId
 } from "../services/intern.services.js";
 import {
   getInternBySupervisorValidator,
