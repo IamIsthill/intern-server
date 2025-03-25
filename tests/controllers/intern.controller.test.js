@@ -3,7 +3,6 @@ import request from 'supertest'
 import { Intern } from "../../models/interns.js";
 import mongoose from 'mongoose';
 import { faker } from '@faker-js/faker';
-import { RESET_TOKEN } from '../../config/index.js';
 import { createToken } from '../../utils/token.js';
 import { InternFactory, } from '../models/Intern.fake.js';
 import { createId } from '../../utils/createId.js';
@@ -25,6 +24,7 @@ vi.mock('../../services/mail.js', () => (
 ))
 const { sendEmail } = await import('../../services/mail.js')
 const { app } = await import('../../server.js')
+const { RESET_TOKEN } = await import('../../config/index.js')
 
 
 describe('GET /interns/all', () => {
@@ -255,6 +255,13 @@ describe('PUT /interns/logs/:logId', () => {
         const res = await request(app).put(`${url}/${logId}`).send({ read: 'read' })
 
         expect(res.statusCode).toBe(200)
+        expect(res.body).toStrictEqual(expect.objectContaining({
+            _id: expect.any(String),
+            taskId: expect.any(String),
+            note: expect.any(String),
+            date: expect.any(String),
+            read: expect.toBeOneOf(['unread', 'read'])
+        }))
     })
 
     it('returns 400 if log id was invalid', async () => {

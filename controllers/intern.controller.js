@@ -255,7 +255,8 @@ export const updateLogStatus = async (req, res, next) => {
 
     if (!intern)
       return res.status(400).json({ message: "Unable to find specific log" })
-    return res.status(200).json({ intern: intern })
+    const log = intern.logs.find(log => log._id == value.logId)
+    return res.status(200).json(log)
   } catch (err) {
     next(err)
   }

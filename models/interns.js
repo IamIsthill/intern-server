@@ -79,6 +79,10 @@ const internSchema = new mongoose.Schema({
           type: String,
           enum: ['unread', 'read'],
           default: 'unread'
+        },
+        date: {
+          type: Date,
+          default: new Date()
         }
       }
     ]
