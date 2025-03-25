@@ -22,8 +22,9 @@ vi.mock('../../services/mail.js', () => (
         sendEmail: vi.fn()
     }
 ))
-const { sendEmail } = await import('../../services/mail.js')
+
 const { app } = await import('../../server.js')
+const { sendEmail } = await import('../../services/mail.js')
 const { RESET_TOKEN } = await import('../../config/index.js')
 
 
