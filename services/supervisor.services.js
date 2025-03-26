@@ -36,6 +36,18 @@ export const updateSupervisor = async (id, supervisorData) => {
 
   const oldAssignedInterns = [...currentSupervisor.assignedInterns];
 
+  if (supervisorData.assignedInterns) {
+    const firstInternDepartment = await Intern.findById(
+      supervisorData.assignedInterns[0]
+    )
+      .select("department")
+      .lean();
+
+    if (firstInternDepartment && firstInternDepartment.department) {
+      supervisorData.department = firstInternDepartment.department;
+    }
+  }
+
   const updatedSupervisor = await Supervisor.findByIdAndUpdate(
     id,
     { $set: supervisorData },
@@ -44,7 +56,7 @@ export const updateSupervisor = async (id, supervisorData) => {
     .populate({
       path: "assignedInterns",
       model: "Intern",
-      select: "firstName lastName email",
+      select: "firstName lastName email department",
     })
     .populate("department");
 
@@ -66,14 +78,24 @@ export const updateSupervisor = async (id, supervisorData) => {
     if (newlyAssignedInterns.length > 0) {
       await Intern.updateMany(
         { _id: { $in: newlyAssignedInterns } },
-        { $set: { supervisor: id } }
+        {
+          $set: {
+            supervisor: id,
+            department: updatedSupervisor.department,
+          },
+        }
       );
     }
 
     if (removedInterns.length > 0) {
       await Intern.updateMany(
         { _id: { $in: removedInterns } },
-        { $set: { supervisor: null } }
+        {
+          $set: {
+            supervisor: null,
+            department: null,
+          },
+        }
       );
     }
   }
