@@ -17,18 +17,7 @@ class FakeIntern {
         this.accountType = options.accountType || 'intern'
         this.isApproved = options.isApproved || 'approved'
         this.supervisor = createId(options.supervisor) || createId()
-        this.logs = [
-            {
-                _id: createId(),
-                taskId: createId(),
-                note: faker.lorem.sentence()
-            },
-            {
-                _id: createId(),
-                taskId: createId(),
-                note: faker.lorem.sentence()
-            }
-        ]
+        this.logs = options.logs || options.logs == 0 ? this._logs(options.logs) : this._logs()
     }
 
     obj() {
@@ -48,6 +37,18 @@ class FakeIntern {
             supervisor: this.supervisor,
             logs: this.logs
         };
+    }
+
+    _logs(logsNumber = 1) {
+        const logs = []
+        for (let i = 0; i < logsNumber; i++) {
+            logs.push({
+                _id: createId(),
+                taskId: createId(),
+                note: faker.lorem.sentence()
+            })
+        }
+        return logs
     }
 }
 

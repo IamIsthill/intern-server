@@ -24,6 +24,7 @@ export const findInterns = async (param) => {
       "status",
       "supervisor",
       "totalHours",
+      "logs"
     ]);
 };
 

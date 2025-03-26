@@ -253,6 +253,7 @@ describe('PUT /interns/logs/:logId', () => {
 
     it('updates the specific log by id', async () => {
         const logId = interns[0].logs[0]._id.toString()
+        console.log(logId)
         const res = await request(app).put(`${url}/${logId}`).send({ read: 'read' })
 
         expect(res.statusCode).toBe(200)
@@ -261,6 +262,7 @@ describe('PUT /interns/logs/:logId', () => {
             taskId: expect.any(String),
             note: expect.any(String),
             date: expect.any(String),
+
             read: expect.toBeOneOf(['unread', 'read'])
         }))
     })
