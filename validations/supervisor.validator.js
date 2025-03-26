@@ -37,3 +37,30 @@ export const updateSupervisorStatusValidator = Joi.object({
 export const getSupervisorByIdValidator = Joi.object({
   id: Joi.string().required(),
 });
+
+export const createReportValidator = Joi.object({
+  supervisor: Joi.string().required().description("Supervisor ID"),
+  intern: Joi.string().required().description("Intern ID"),
+  tasks: Joi.array().items(Joi.string()).optional().description("Task IDs"),
+  title: Joi.string().required().min(3).max(100).description("Report Title"),
+  description: Joi.string()
+    .required()
+    .min(10)
+    .max(500)
+    .description("Report Description"),
+  feedback: Joi.string().optional().max(300).description("Supervisor Feedback"),
+  suggestions: Joi.string()
+    .optional()
+    .max(300)
+    .description("Supervisor Suggestions"),
+  rating: Joi.number()
+    .integer()
+    .min(1)
+    .max(10)
+    .required()
+    .description("Report Rating"),
+  assignedInterns: Joi.array()
+    .items(Joi.string())
+    .optional()
+    .description("Assigned Intern IDs"),
+});

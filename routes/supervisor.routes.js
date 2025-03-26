@@ -17,3 +17,4 @@ supervisorRouter.put(
   "/update-status/:id",
   controller.updateSupervisorStatusController
 );
+supervisorRouter.post("/create-report", controller.createReportController);

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { Supervisor } from "../models/Supervisor.js";
 import { JWT_SECRET } from "../config/index.js";
 import { Intern } from "../models/interns.js";
-
+import { Reports } from "../models/Reports.js";
 export const createSupervisor = async (supervisor) => {
   supervisor.password = await bcrypt.hash(supervisor.password, 10);
   const response = await Supervisor.create(supervisor);
@@ -183,6 +183,35 @@ export const getSupervisorById = async (id) => {
   }
 };
 
+export const findInternByIdAndCreateReport = async (reportData) => {
+  try {
+    // Create and save the report
+    const report = new Reports(reportData);
+    await report.save();
+
+    // Push report details to intern's reportLogs
+    await Intern.findByIdAndUpdate(
+      reportData.intern,
+      {
+        $push: {
+          reportLogs: {
+            title: report.title,
+            description: report.description,
+            feedback: report.feedback || "",
+            suggestions: report.suggestions || "",
+            rating: report.rating,
+            date: new Date(),
+          },
+        },
+      },
+      { new: true }
+    );
+
+    return report;
+  } catch (error) {
+    throw error;
+  }
+};
 // export const findSupervisorByEmail = async (email) => {
 //   return await Supervisor.findOne({ email: email }).lean();
 // };

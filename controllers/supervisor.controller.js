@@ -4,6 +4,7 @@ import {
   updateSupervisorValidator,
   updateSupervisorStatusValidator,
   getSupervisorByIdValidator,
+  createReportValidator,
 } from "../validations/supervisor.validator.js";
 import {
   findDepartmentByName,
@@ -14,6 +15,7 @@ import {
   updateSupervisor,
   updateSupervisorStatus,
   getSupervisorById,
+  findInternByIdAndCreateReport,
 } from "../services/supervisor.services.js";
 import mongoose from "mongoose";
 
@@ -148,6 +150,32 @@ export const getSupervisorByIdController = async (req, res, next) => {
     }
 
     next(error);
+  }
+};
+
+export const createReportController = async (req, res) => {
+  try {
+    // Validate input
+    const { error, value } = createReportValidator.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        message: "Validation Error",
+        details: error.details[0].message,
+      });
+    }
+
+    // Create the report (with intern check)
+    const report = await findInternByIdAndCreateReport(value);
+
+    res.status(201).json({
+      message: "Report created successfully",
+      report,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error creating report",
+      error: error.message,
+    });
   }
 };
 
