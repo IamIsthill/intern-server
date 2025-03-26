@@ -115,16 +115,24 @@ export const updateInternProfile = async (id, updateData) => {
 
 export const getInternById = async (id) => {
   try {
-    const intern = await Intern.findById(id).select("-password");
+    const intern = await Intern.findById(id).select("-password").populate({
+      path: "supervisor",
+      select: "firstName lastName email",
+    });
+
     if (!intern) {
       throw new Error("Intern not found");
     }
+
     return intern;
   } catch (error) {
     throw new Error(error.message);
   }
 };
-
 export const findInternByLogId = async (logId, read) => {
-  return Intern.findOneAndUpdate({ "logs._id": createId(logId) }, { "logs.$.read": read }, { new: true, useFindAndModify: false }).select(['-__v', '-password', '-timeEntries'])
-}
+  return Intern.findOneAndUpdate(
+    { "logs._id": createId(logId) },
+    { "logs.$.read": read },
+    { new: true, useFindAndModify: false }
+  ).select(["-__v", "-password", "-timeEntries"]);
+};
