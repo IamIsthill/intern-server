@@ -37,17 +37,34 @@ export const updateSupervisor = async (id, supervisorData) => {
   const oldAssignedInterns = [...currentSupervisor.assignedInterns];
 
   if (supervisorData.assignedInterns) {
-    const firstInternDepartment = await Intern.findById(
-      supervisorData.assignedInterns[0]
-    )
-      .select("department")
+    // Prevent assigning interns already supervised by someone else
+    const assignedInterns = await Intern.find({
+      _id: { $in: supervisorData.assignedInterns },
+    })
+      .select("supervisor department")
       .lean();
 
-    if (firstInternDepartment && firstInternDepartment.department) {
-      supervisorData.department = firstInternDepartment.department;
+    const conflictingInterns = assignedInterns.filter(
+      (intern) => intern.supervisor && intern.supervisor.toString() !== id
+    );
+
+    if (conflictingInterns.length > 0) {
+      return {
+        success: false,
+        message: "Some interns are already assigned to another supervisor.",
+        conflictingInterns: conflictingInterns.map((intern) => intern._id),
+      };
+    }
+
+    // Ensure department consistency
+    const firstInternDepartment =
+      assignedInterns.length > 0 ? assignedInterns[0].department : null;
+    if (firstInternDepartment) {
+      supervisorData.department = firstInternDepartment;
     }
   }
 
+  // Proceed with update
   const updatedSupervisor = await Supervisor.findByIdAndUpdate(
     id,
     { $set: supervisorData },
@@ -104,8 +121,9 @@ export const updateSupervisor = async (id, supervisorData) => {
   delete data.password;
   delete data.__v;
 
-  return data;
+  return { success: true, supervisor: data };
 };
+
 export const updateSupervisorStatus = async (supervisorId) => {
   try {
     const supervisor = await Supervisor.findById(supervisorId);
@@ -200,24 +218,20 @@ export const findInternByIdAndCreateReport = async (reportData) => {
     const report = new Reports(reportData);
     await report.save();
 
-    await Intern.findByIdAndUpdate(
-      reportData.intern,
-      {
-        $push: {
-          reportLogs: {
-            reportId: report._id,
-            title: report.title,
-            description: report.description,
-            feedback: report.feedback || "",
-            suggestions: report.suggestions || "",
-            rating: report.rating,
-            date: new Date(),
-            supervisor: reportData.supervisor,
-          },
+    await Intern.findByIdAndUpdate(reportData.intern, {
+      $push: {
+        reportLogs: {
+          reportId: report._id,
+          title: report.title,
+          description: report.description,
+          feedback: report.feedback || "",
+          suggestions: report.suggestions || "",
+          rating: report.rating,
+          date: new Date(),
+          supervisor: reportData.supervisor,
         },
       },
-      { new: true }
-    );
+    });
 
     return report;
   } catch (error) {

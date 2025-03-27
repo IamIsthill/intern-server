@@ -64,11 +64,18 @@ export const updateSupervisorController = async (req, res, next) => {
         .json({ message: error.details.map((d) => d.message).join(", ") });
     }
 
-    const updatedSupervisor = await updateSupervisor(id, value);
+    const result = await updateSupervisor(id, value);
+
+    if (!result.success) {
+      return res.status(400).json({
+        message: result.message,
+        conflictingInterns: result.conflictingInterns,
+      });
+    }
 
     return res.status(200).json({
       message: "Supervisor updated successfully",
-      supervisor: updatedSupervisor,
+      supervisor: result.supervisor,
     });
   } catch (err) {
     next(err);
