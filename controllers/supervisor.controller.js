@@ -21,7 +21,7 @@ import mongoose from "mongoose";
 
 export const getAllSupervisors = async (req, res, next) => {
   try {
-    const supervisors = await Supervisor.find({}).select(["-password", "-__v"]);
+    const supervisors = await Supervisor.find({}).populate('department').select(["-password", "-__v"]);
     return res.status(200).json({ supervisors: supervisors });
   } catch (err) {
     next(err);
