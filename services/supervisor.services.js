@@ -185,22 +185,34 @@ export const getSupervisorById = async (id) => {
 
 export const findInternByIdAndCreateReport = async (reportData) => {
   try {
-    // Create and save the report
+    if (!reportData.intern) {
+      throw new Error("Intern ID is required");
+    }
+    if (!reportData.supervisor) {
+      throw new Error("Supervisor ID is required");
+    }
+
+    const intern = await Intern.findById(reportData.intern);
+    if (!intern) {
+      throw new Error("Intern not found");
+    }
+
     const report = new Reports(reportData);
     await report.save();
 
-    // Push report details to intern's reportLogs
     await Intern.findByIdAndUpdate(
       reportData.intern,
       {
         $push: {
           reportLogs: {
+            reportId: report._id,
             title: report.title,
             description: report.description,
             feedback: report.feedback || "",
             suggestions: report.suggestions || "",
             rating: report.rating,
             date: new Date(),
+            supervisor: reportData.supervisor,
           },
         },
       },
@@ -209,28 +221,7 @@ export const findInternByIdAndCreateReport = async (reportData) => {
 
     return report;
   } catch (error) {
+    console.error("Report creation error:", error);
     throw error;
   }
 };
-// export const findSupervisorByEmail = async (email) => {
-//   return await Supervisor.findOne({ email: email }).lean();
-// };
-
-// export const loginSupervisor = async (password, supervisor) => {
-//   const isPasswordCorrect = await bcrypt.compare(password, supervisor.password);
-//   if (!isPasswordCorrect) {
-//     throw new Error("Invalid credentials");
-//   }
-
-//   const token = jwt.sign(
-//     {
-//       id: supervisor._id,
-//       email: supervisor.email,
-//       accountType: supervisor.accountType,
-//     },
-//     JWT_SECRET,
-//     { expiresIn: 60 * 60 }
-//   );
-
-//   return { message: "Login Successful", token: token };
-// };

@@ -91,6 +91,11 @@ const internSchema = new mongoose.Schema({
   reportLogs: {
     type: [
       {
+        reportId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Reports",
+          default: null,
+        },
         title: {
           type: String,
           required: true,
@@ -116,6 +121,11 @@ const internSchema = new mongoose.Schema({
         date: {
           type: Date,
           default: Date.now,
+        },
+        supervisor: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Supervisor",
+          default: null,
         },
       },
     ],

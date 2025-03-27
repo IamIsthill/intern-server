@@ -155,17 +155,22 @@ export const getSupervisorByIdController = async (req, res, next) => {
 
 export const createReportController = async (req, res) => {
   try {
-    // Validate input
-    const { error, value } = createReportValidator.validate(req.body);
-    if (error) {
-      return res.status(400).json({
-        message: "Validation Error",
-        details: error.details[0].message,
-      });
-    }
+    const internId = req.params.id;
+    const supervisorId = req.user.id;
 
-    // Create the report (with intern check)
-    const report = await findInternByIdAndCreateReport(value);
+    const { title, description, feedback, suggestions, rating } = req.body;
+
+    const reportData = {
+      intern: internId,
+      supervisor: supervisorId,
+      title,
+      description,
+      feedback: feedback || "",
+      suggestions: suggestions || "",
+      rating,
+    };
+
+    const report = await findInternByIdAndCreateReport(reportData);
 
     res.status(201).json({
       message: "Report created successfully",
