@@ -60,6 +60,8 @@ export const registerIntern = async (value) => {
   value.supervisor = createId(value.supervisor);
   const hashedPassword = await bcrypt.hash(value.password, 10);
   value.password = hashedPassword;
+  value.status = 'active'
+  value.isApproved = 'approved'
   const user = await Intern.create(value);
   const obj = user.toObject();
   delete obj.password;
