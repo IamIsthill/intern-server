@@ -164,36 +164,56 @@ export const getSupervisorByIdController = async (req, res, next) => {
   }
 };
 
+// export const createReportController = async (req, res) => {
+//   try {
+//     console.log("🔹 Received Data:", req.body);
+//     console.log("🔹 Params ID (Intern ID):", req.params.id);
+//     console.log("🔹 Authenticated Supervisor ID:", req.user?.id);
+
+//     // ✅ Add missing intern & supervisor before validation
+//     const requestData = {
+//       ...req.body,
+//       intern: req.params.id,
+//       supervisor: req.user.id,
+//     };
+
+//     // Validate the request body
+//     const { error, value } = createReportValidator.validate(requestData, {
+//       abortEarly: false, // Show all errors
+//     });
+
+//     if (error) {
+//       return res.status(400).json({
+//         message: "Validation failed",
+//         errors: error.details.map((err) => err.message),
+//       });
+//     }
+
+//     const report = await findInternByIdAndCreateReport(value);
+
+//     res.status(201).json({
+//       message: "Report created successfully",
+//       report,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       message: "Error creating report",
+//       error: error.message,
+//     });
+//   }
+// };
+
 export const createReportController = async (req, res) => {
   try {
-    // Validate the request body
-    const { error, value } = createReportValidator.validate(req.body, {
-      abortEarly: false, // Show all errors, not just the first one
-    });
+    console.log("🔹 Received Data:", req.body);
+    console.log("🔹 Params ID (Intern ID):", req.params.id);
+    console.log("🔹 Authenticated Supervisor ID:", req.user?.id);
 
-    if (error) {
-      return res.status(400).json({
-        message: "Validation failed",
-        errors: error.details.map((err) => err.message), // Send readable error messages
-      });
-    }
-
-    const internId = req.params.id;
-    const supervisorId = req.user.id;
-
-    // Extract validated data
-    const { title, description, feedback, suggestions, rating, selectedDate } =
-      value;
-
+    // Directly use the request data without Joi validation
     const reportData = {
-      intern: internId,
-      supervisor: supervisorId,
-      title,
-      description,
-      feedback: feedback || "",
-      suggestions: suggestions || "",
-      rating,
-      selectedDate,
+      ...req.body,
+      intern: req.params.id,
+      supervisor: req.user.id,
     };
 
     const report = await findInternByIdAndCreateReport(reportData);
@@ -203,6 +223,7 @@ export const createReportController = async (req, res) => {
       report,
     });
   } catch (error) {
+    console.error("Full error details:", error);
     res.status(500).json({
       message: "Error creating report",
       error: error.message,
