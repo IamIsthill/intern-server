@@ -5,6 +5,7 @@ import {
   updateSupervisorStatusValidator,
   getSupervisorByIdValidator,
   createReportValidator,
+  getReportsbyInternIdValidator,
 } from "../validations/supervisor.validator.js";
 import {
   findDepartmentByName,
@@ -16,6 +17,7 @@ import {
   updateSupervisorStatus,
   getSupervisorById,
   findInternByIdAndCreateReport,
+  getReportsByIntern,
 } from "../services/supervisor.services.js";
 import mongoose from "mongoose";
 
@@ -207,6 +209,39 @@ export const createReportController = async (req, res) => {
     });
   }
 };
+
+export const getReportsbyInternIdController = async (req, res) => {
+  try {
+    console.log("Received internId from request:", req.params.id); // Debugging
+
+    const { error, value } = getReportsbyInternIdValidator.validate({
+      id: req.params.id,
+    });
+
+    if (error) {
+      console.log("Validation failed:", error.details);
+      return res
+        .status(400)
+        .json({ message: "Invalid Intern ID", error: error.details });
+    }
+
+    const reports = await getReportsByIntern(value.id);
+
+    console.log("Final response:", reports); // Debugging
+
+    return res.status(200).json({
+      message: "Reports fetched successfully",
+      reports,
+    });
+  } catch (error) {
+    console.error("Internal Server Error:", error.message);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
 // export const loginSupervisorController = async (req, res, next) => {
 //     try {
 //         const { error, value } = loginSupervisorValidator.validate(req.body)

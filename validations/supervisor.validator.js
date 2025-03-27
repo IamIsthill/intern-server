@@ -67,3 +67,7 @@ export const createReportValidator = Joi.object({
     .required()
     .description("Date the report is created for"),
 });
+
+export const getReportsbyInternIdValidator = Joi.object({
+  id: Joi.string().required(),
+});

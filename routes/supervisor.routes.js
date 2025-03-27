@@ -23,3 +23,8 @@ supervisorRouter.post(
   validateAccess("supervisor"),
   controller.createReportController
 );
+supervisorRouter.get(
+  "/get-reports/:id",
+  validateAccess("supervisor"),
+  controller.getReportsbyInternIdController
+);
