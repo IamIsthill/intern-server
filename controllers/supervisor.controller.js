@@ -164,11 +164,24 @@ export const getSupervisorByIdController = async (req, res, next) => {
 
 export const createReportController = async (req, res) => {
   try {
+    // Validate the request body
+    const { error, value } = createReportValidator.validate(req.body, {
+      abortEarly: false, // Show all errors, not just the first one
+    });
+
+    if (error) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: error.details.map((err) => err.message), // Send readable error messages
+      });
+    }
+
     const internId = req.params.id;
     const supervisorId = req.user.id;
 
+    // Extract validated data
     const { title, description, feedback, suggestions, rating, selectedDate } =
-      req.body;
+      value;
 
     const reportData = {
       intern: internId,
@@ -194,7 +207,6 @@ export const createReportController = async (req, res) => {
     });
   }
 };
-
 // export const loginSupervisorController = async (req, res, next) => {
 //     try {
 //         const { error, value } = loginSupervisorValidator.validate(req.body)
