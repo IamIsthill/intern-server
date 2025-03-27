@@ -215,7 +215,13 @@ export const findInternByIdAndCreateReport = async (reportData) => {
       throw new Error("Intern not found");
     }
 
-    const report = new Reports(reportData);
+    const report = new Reports({
+      ...reportData,
+      createdAt: reportData.selectedDate
+        ? new Date(reportData.selectedDate)
+        : new Date(),
+    });
+
     await report.save();
 
     await Intern.findByIdAndUpdate(reportData.intern, {
@@ -227,7 +233,7 @@ export const findInternByIdAndCreateReport = async (reportData) => {
           feedback: report.feedback || "",
           suggestions: report.suggestions || "",
           rating: report.rating,
-          date: new Date(),
+          date: report.createdAt,
           supervisor: reportData.supervisor,
         },
       },
