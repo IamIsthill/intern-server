@@ -14,8 +14,7 @@ export class Validation {
 
     _checkError(error) {
         if (error) {
-            const messages = error.details.map(detail => detail.message)
-            throw new ValidationError(messages.join('\n'))
+            throw new ValidationError(error.details[0].message)
         }
     }
 

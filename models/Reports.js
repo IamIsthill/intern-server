@@ -49,4 +49,9 @@ const reportsSchema = new mongoose.Schema({
   },
 });
 
-export const Reports = mongoose.model("Reports", reportsSchema);
+export let Reports;
+if (mongoose.models.Reports) {
+  Reports = mongoose.model("Reports");
+} else {
+  Reports = mongoose.model("Reports", reportsSchema);
+}

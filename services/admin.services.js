@@ -58,7 +58,7 @@ export const findPendingInternRequest = async () => {
 export const registerIntern = async (value) => {
   value.department = createId(value.department);
   value.supervisor = createId(value.supervisor);
-  const hashedPassword = bcrypt.hash(value.password, 10);
+  const hashedPassword = await bcrypt.hash(value.password, 10);
   value.password = hashedPassword;
   const user = await Intern.create(value);
   const obj = user.toObject();

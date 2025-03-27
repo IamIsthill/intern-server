@@ -18,8 +18,8 @@ import {
   findInternByEmail,
   findInternByPhone,
 } from "../services/interns-auth-services.js";
-import { createId } from "../utils/createId.js";
 import { validatePassword } from "../utils/validatePassword.js";
+import { Validation } from "../validations/Validation.js";
 
 export const adminFindController = async (req, res, next) => {
   try {
@@ -91,11 +91,7 @@ export const approveInternRequest = async (req, res, next) => {
 
 export const createIntern = async (req, res, next) => {
   try {
-    const { error, value } = registerInternValidator.validate(req.body);
-    if (error) {
-      const errorMessages = error.details.map((detail) => detail.message);
-      return res.status(400).json({ message: errorMessages.join(", ") });
-    }
+    const value = new Validation(registerInternValidator, req.body).validate()
     validatePassword(value.password);
     const { email, phone } = value;
     const existingUser = await findInternByEmail(email);
