@@ -4,6 +4,8 @@ import {
   updateSupervisorValidator,
   updateSupervisorStatusValidator,
   getSupervisorByIdValidator,
+  createReportValidator,
+  getReportsbyInternIdValidator,
 } from "../validations/supervisor.validator.js";
 import {
   findDepartmentByName,
@@ -14,12 +16,16 @@ import {
   updateSupervisor,
   updateSupervisorStatus,
   getSupervisorById,
+  findInternByIdAndCreateReport,
+  getReportsByIntern,
 } from "../services/supervisor.services.js";
 import mongoose from "mongoose";
 
 export const getAllSupervisors = async (req, res, next) => {
   try {
-    const supervisors = await Supervisor.find({}).select(["-password", "-__v"]);
+    const supervisors = await Supervisor.find({})
+      .populate("department")
+      .select(["-password", "-__v"]);
     return res.status(200).json({ supervisors: supervisors });
   } catch (err) {
     next(err);
@@ -62,11 +68,18 @@ export const updateSupervisorController = async (req, res, next) => {
         .json({ message: error.details.map((d) => d.message).join(", ") });
     }
 
-    const updatedSupervisor = await updateSupervisor(id, value);
+    const result = await updateSupervisor(id, value);
+
+    if (!result.success) {
+      return res.status(400).json({
+        message: result.message,
+        conflictingInterns: result.conflictingInterns,
+      });
+    }
 
     return res.status(200).json({
       message: "Supervisor updated successfully",
-      supervisor: updatedSupervisor,
+      supervisor: result.supervisor,
     });
   } catch (err) {
     next(err);
@@ -148,6 +161,105 @@ export const getSupervisorByIdController = async (req, res, next) => {
     }
 
     next(error);
+  }
+};
+
+// export const createReportController = async (req, res) => {
+//   try {
+//     console.log("🔹 Received Data:", req.body);
+//     console.log("🔹 Params ID (Intern ID):", req.params.id);
+//     console.log("🔹 Authenticated Supervisor ID:", req.user?.id);
+
+//     // ✅ Add missing intern & supervisor before validation
+//     const requestData = {
+//       ...req.body,
+//       intern: req.params.id,
+//       supervisor: req.user.id,
+//     };
+
+//     // Validate the request body
+//     const { error, value } = createReportValidator.validate(requestData, {
+//       abortEarly: false, // Show all errors
+//     });
+
+//     if (error) {
+//       return res.status(400).json({
+//         message: "Validation failed",
+//         errors: error.details.map((err) => err.message),
+//       });
+//     }
+
+//     const report = await findInternByIdAndCreateReport(value);
+
+//     res.status(201).json({
+//       message: "Report created successfully",
+//       report,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       message: "Error creating report",
+//       error: error.message,
+//     });
+//   }
+// };
+
+export const createReportController = async (req, res) => {
+  try {
+    console.log("🔹 Received Data:", req.body);
+    console.log("🔹 Params ID (Intern ID):", req.params.id);
+    console.log("🔹 Authenticated Supervisor ID:", req.user?.id);
+
+    // Directly use the request data without Joi validation
+    const reportData = {
+      ...req.body,
+      intern: req.params.id,
+      supervisor: req.user.id,
+    };
+
+    const report = await findInternByIdAndCreateReport(reportData);
+
+    res.status(201).json({
+      message: "Report created successfully",
+      report,
+    });
+  } catch (error) {
+    console.error("Full error details:", error);
+    res.status(500).json({
+      message: "Error creating report",
+      error: error.message,
+    });
+  }
+};
+
+export const getReportsbyInternIdController = async (req, res) => {
+  try {
+    console.log("Received internId from request:", req.params.id); // Debugging
+
+    const { error, value } = getReportsbyInternIdValidator.validate({
+      id: req.params.id,
+    });
+
+    if (error) {
+      console.log("Validation failed:", error.details);
+      return res
+        .status(400)
+        .json({ message: "Invalid Intern ID", error: error.details });
+    }
+
+    const reports = await getReportsByIntern(value.id);
+
+    console.log("Final response:", reports); // Debugging
+
+    return res.status(200).json({
+      message: "Reports fetched successfully",
+      reports,
+    });
+  } catch (error) {
+    console.error("Internal Server Error:", error.message);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
   }
 };
 

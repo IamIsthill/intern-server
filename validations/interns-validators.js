@@ -42,12 +42,27 @@ export const getInactiveInternValidator = joi.object({
   status: joi.string().valid("inactive").optional(),
 });
 
-
 export const sendEmailValidator = joi.object({
-  email: joi.string().email().required()
-})
+  email: joi.string().email().required(),
+});
 
 export const resetPasswordValidator = joi.object({
   token: joi.string().required(),
-  password: joi.string().required()
+  password: joi.string().required(),
+});
+
+export const updateInternProfileValidator = joi.object({
+  id: joi.string(),
+  firstName: joi.string().optional(),
+  lastName: joi.string().optional(),
+  phone: joi.string().optional(),
+  email: joi.string().email().optional(),
+  password: joi.string().min(8).optional(),
+});
+
+
+export const logIdValidator = joi.object({
+  logId: joi.string().hex().length(24).required(),
+  read: joi.string().valid('read', 'unread').required()
+
 })

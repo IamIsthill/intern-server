@@ -4,23 +4,31 @@ import {
   updateInternStatus,
   fetchInactiveInterns,
   findInternByEmailAndUpdate,
+  updateInternProfile,
+  getInternById,
+  findInternByLogId
 } from "../services/intern.services.js";
 import {
   getInternBySupervisorValidator,
   updateInternStatusValidator,
   getInactiveInternValidator,
   sendEmailValidator,
-  resetPasswordValidator
+  resetPasswordValidator,
+  updateInternProfileValidator,
+  logIdValidator
 } from "../validations/interns-validators.js";
+import { Intern } from "../models/interns.js";
+import { Validation } from "../validations/Validation.js";
 import { RESET_TOKEN } from "../config/index.js";
-import { sendEmail } from '../services/mail.js'
+import { sendEmail } from "../services/mail.js";
 import { throwError } from "../utils/errors.js";
 import { createToken } from "../utils/token.js";
 
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 import { findInternByEmail } from "../services/interns-auth-services.js";
 import { validatePassword } from "../utils/validatePassword.js";
 import bcrypt from "bcryptjs";
+import { createId } from "../utils/createId.js";
 
 export const getAllInterns = async (req, res, next) => {
   try {
@@ -34,12 +42,7 @@ export const getAllInterns = async (req, res, next) => {
 
 export const getInternsBySupervisor = async (req, res, next) => {
   try {
-    const { error, value } = getInternBySupervisorValidator.validate(req.query);
-
-    if (error) {
-      const errorMessages = error.details.map((detail) => detail.message);
-      return res.status(400).json({ message: errorMessages.join(", ") });
-    }
+    const value = new Validation(getInternBySupervisorValidator, req.query).validate()
 
     const interns = await findInterns({ supervisor: value.supervisor });
 
@@ -51,8 +54,6 @@ export const getInternsBySupervisor = async (req, res, next) => {
 
 export const updateInternController = async (req, res, next) => {
   try {
-    console.log("Received ID:", req.params.id);
-    console.log("Received Body:", req.body);
 
     const { id } = req.params;
     const { status } = req.body;
@@ -113,58 +114,151 @@ export const getInactiveInterns = async (req, res) => {
   }
 };
 
-
 export const sendPasswordResetEmail = async (req, res, next) => {
   try {
-    const { error, value } = sendEmailValidator.validate(req.body)
+    const value = new Validation(sendEmailValidator, req.body).validate()
 
-    if (error) {
-      throwError(error)
-    }
+    const { email } = value;
 
-    const { email } = value
+    const foundIntern = await findInternByEmail(email);
 
-    const foundIntern = await findInternByEmail(email)
-
-    if (!foundIntern) return res.status(400).json({ message: 'No account found' })
+    if (!foundIntern)
+      return res.status(400).json({ message: "No account found" });
 
     const token = createToken({ email: email }, RESET_TOKEN, '2h')
 
-    await sendEmail(email, 'Reset link', `http://localhost:5173/intern/reset/${token}`)
 
-    return res.status(200).json({ message: 'Successfully sent password reset email' })
+    sendEmail(email, 'Reset link', `http://localhost:5173/intern/reset/${token}`)
+
+    return res
+      .status(200)
+      .json({ message: "Successfully sent password reset email" });
   } catch (err) {
-    return res.status(400).json({ message: "Password reset email not sent" })
+    return res.status(400).json({ message: "Password reset email not sent" });
   }
-}
+};
 
 export const resetPassword = async (req, res, next) => {
   try {
-    const { error, value } = resetPasswordValidator.validate(req.body)
+    const value = new Validation(resetPasswordValidator, req.body).validate()
 
-    if (error) {
-      throwError(error)
-    }
     const { password, token } = value
 
-    validatePassword(password)
+    validatePassword(password);
 
-    const data = jwt.verify(token, RESET_TOKEN)
+    const data = jwt.verify(token, RESET_TOKEN);
 
-    const hashPassword = await bcrypt.hash(password, 10)
+    const hashPassword = await bcrypt.hash(password, 10);
 
-    const foundIntern = await findInternByEmailAndUpdate(data.email, { password: hashPassword })
+    const foundIntern = await findInternByEmailAndUpdate(data.email, {
+      password: hashPassword,
+    });
 
-    if (!foundIntern) return res.status(400).json({ message: "Account not found" })
+    if (!foundIntern)
+      return res.status(400).json({ message: "Account not found" });
 
-    return res.status(200).json({ message: "Successfully updated password" })
+    return res.status(200).json({ message: "Successfully updated password" });
   } catch (err) {
-    if (err instanceof jwt.TokenExpiredError || err instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ message: err.message })
+    if (
+      err instanceof jwt.TokenExpiredError ||
+      err instanceof jwt.JsonWebTokenError
+    ) {
+      return res.status(401).json({ message: err.message });
     }
     if (err instanceof Error) {
-      return res.status(400).json({ message: err.message })
+      return res.status(400).json({ message: err.message });
     }
+    next(err);
+  }
+};
+
+export const updateInternProfileController = async (req, res, next) => {
+  try {
+    const internId = req.params.id || req.body.id;
+
+    if (!internId) {
+      return res.status(400).json({
+        success: false,
+        message: "Intern ID is required",
+      });
+    }
+
+    const { error, value } = updateInternProfileValidator.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
+    }
+
+    const updateData = { ...value };
+    delete updateData.id;
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No update data provided",
+      });
+    }
+
+    const updatedIntern = await updateInternProfile(internId, updateData);
+
+    return res.status(200).json({
+      success: true,
+      message: "Intern profile updated successfully",
+      data: updatedIntern,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
+  }
+};
+
+export const getInternIdByController = async (req, res, next) => {
+  try {
+    const { error, value } = updateInternProfileValidator.validate({
+      id: req.params.id,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
+    }
+
+    const intern = await getInternById(value.id);
+
+    return res.status(200).json({
+      success: true,
+      data: intern,
+    });
+  } catch (error) {
+    if (error.message === "Intern not found") {
+      return res.status(404).json({
+        success: false,
+        message: "Intern not found",
+      });
+    }
+
+    next(error);
+  }
+};
+
+export const updateLogStatus = async (req, res, next) => {
+  try {
+    req.body.logId = req.params.logId
+    const value = new Validation(logIdValidator, req.body).validate()
+    const intern = await findInternByLogId(value.logId, value.read)
+
+    if (!intern)
+      return res.status(400).json({ message: "Unable to find specific log" })
+    const log = intern.logs.find(log => log._id == value.logId)
+    return res.status(200).json(log)
+  } catch (err) {
     next(err)
   }
 }

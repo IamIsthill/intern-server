@@ -60,8 +60,76 @@ const internSchema = new mongoose.Schema({
   },
   isApproved: {
     type: String,
-    enum: ['pending', 'approved', 'rejected'],
-    default: 'pending'
+    enum: ["pending", "approved", "rejected"],
+    default: "pending",
+  },
+  logs: {
+    type: [
+      {
+        taskId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Tasks",
+          default: null,
+        },
+        note: {
+          type: String,
+          default: "",
+        },
+        read: {
+          type: String,
+          enum: ["unread", "read"],
+          default: "unread",
+        },
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    default: [],
+  },
+  reportLogs: {
+    type: [
+      {
+        reportId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Reports",
+          default: null,
+        },
+        title: {
+          type: String,
+          required: true,
+        },
+        description: {
+          type: String,
+          required: true,
+        },
+        feedback: {
+          type: String,
+          default: "",
+        },
+        suggestions: {
+          type: String,
+          default: "",
+        },
+        rating: {
+          type: Number,
+          min: 1,
+          max: 10,
+          required: true,
+        },
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+        supervisor: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Supervisor",
+          default: null,
+        },
+      },
+    ],
+    default: [],
   },
   totalHours: {
     type: Number,
@@ -86,7 +154,7 @@ const internSchema = new mongoose.Schema({
   },
 });
 
-// Add a pre-save middleware to calculate totalHours before saving
+// Pre-save middleware remains the same
 internSchema.pre("save", function (next) {
   if (!this.timeEntries || this.timeEntries.length === 0) {
     this.totalHours = 0;
@@ -106,10 +174,10 @@ internSchema.pre("save", function (next) {
   this.totalHours = Number(totalHours.toFixed(2));
   next();
 });
+
 export let Intern;
 if (mongoose.models.Intern) {
   Intern = mongoose.model("Intern");
 } else {
   Intern = mongoose.model("Intern", internSchema);
 }
-// export const Intern = mongoose.model("Intern", internSchema)

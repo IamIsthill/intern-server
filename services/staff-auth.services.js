@@ -39,6 +39,9 @@ export const loginSupervisorService = async ({ email, password }) => {
   if (!supervisor) {
     return { status: 400, data: { message: "No user found" } };
   }
+  if (supervisor.status === "inactive") {
+    throw new Error("Your account is inactive. Please contact the admin.");
+  }
 
   const isPasswordCorrect = await bcrypt.compare(password, supervisor.password);
 
@@ -47,7 +50,11 @@ export const loginSupervisorService = async ({ email, password }) => {
   }
 
   const token = jwt.sign(
-    { id: supervisor._id, email: supervisor.email, accountType: supervisor.accountType },
+    {
+      id: supervisor._id,
+      email: supervisor.email,
+      accountType: supervisor.accountType,
+    },
     JWT_SECRET,
     { expiresIn: "1h" }
   );

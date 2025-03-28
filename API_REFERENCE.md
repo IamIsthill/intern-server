@@ -396,3 +396,69 @@ PUT /tasks/:taskId
   }
 }
 ```
+
+## Intern Log Update
+An endpoint for updating the logs per intern
+
+### Endpoint
+```http
+PUT /interns/logs/:logId
+```
+
+### Header Parameter
+| Header parameter | Type   | Required? | Description      |
+| ---------------- | ------ | --------- | ---------------- |
+| Content-Type     | string | Required  | application/json |
+| Authorization    | string | Required  | Bearer token     |
+
+### Request Params
+
+| Field           | Type                | Required? | Description |
+| --------------- | ------------------- | --------- | ----------- |
+| logId      | string             | Required  | The _id of the task |
+| read      | string             | Required  | The read status of the log ['read', 'unread'] |
+
+### Request Body
+| Field           | Type                | Required? | Description |
+| --------------- | ------------------- | --------- | ----------- |
+| read      | string             | Required  | The read status of the log ['read', 'unread'] |
+
+### Response Sample
+```json
+{
+ 
+}
+```
+
+## Intern Log Update
+An endpoint for updating the logs per intern
+
+### Endpoint
+```http
+PUT /interns/logs/:logId
+```
+
+### Header Parameter
+| Header parameter | Type   | Required? | Description      |
+| ---------------- | ------ | --------- | ---------------- |
+| Content-Type     | string | Required  | application/json |
+| Authorization    | string | Required  | Bearer token     |
+
+### Request Params
+
+| Field           | Type                | Required? | Description |
+| --------------- | ------------------- | --------- | ----------- |
+| logId      | string             | Required  | The _id of the task |
+| read      | string             | Required  | The read status of the log ['read', 'unread'] |
+
+### Request Body
+| Field           | Type                | Required? | Description |
+| --------------- | ------------------- | --------- | ----------- |
+| read      | string             | Required  | The read status of the log ['read', 'unread'] |
+
+### Response Sample
+```json
+{
+ 
+}
+```

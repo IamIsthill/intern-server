@@ -1,5 +1,6 @@
 import { Router } from "express";
 import * as controller from "../controllers/supervisor.controller.js";
+import { validateAccess } from "../middleware/access.js";
 
 export const supervisorRouter = Router();
 
@@ -16,4 +17,14 @@ supervisorRouter.put(
 supervisorRouter.put(
   "/update-status/:id",
   controller.updateSupervisorStatusController
+);
+supervisorRouter.post(
+  "/create-report/:id",
+  validateAccess("supervisor"),
+  controller.createReportController
+);
+supervisorRouter.get(
+  "/get-reports/:id",
+  validateAccess("supervisor"),
+  controller.getReportsbyInternIdController
 );
