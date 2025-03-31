@@ -1,433 +1,540 @@
-# OJT Management System
+# API Reference template
 
 ## Overview
 
-Todo
+Use the {product} APIs to {access | customize | program} the {features | functionality}.
 
 ### Base URL
 
-The following is the base url for the OJT Management System
-
 ```text
-http://localhost:3000/
+http://localhost:3000
 ```
 
-### Authorization
+### HTTP status codes
 
-Authentication and authorization is required for requests to these APIs. Supported authentication methods are: JWT
+The {product} APIs use the following standard HTTP response codes:
 
-```text
-{Provide an example request with {Basic | Digest | OAuth | others} authentication.}
-```
+| Status code | Message           | Description   |
+|-------------|-------------------|---------------|
+| `200 OK`    | Request succeeds. | {description} |
+|             |                   |               |
+|             |                   |               |
 
-## Login Admins
 
-## Endpoints
+#### ExampleErrorType
 
-## Query Parameters
+| Field          | Type     | Description                                      |
+|----------------|----------|--------------------------------------------------|
+| {errorType}    | {enum}   | {Predefined error codes. Possible enum values are x, y, ..., and z.} |
+| {errorMessage} | {string} | {Additional information about why the error occurs.} |
 
-## Request Sample
+## Login Endpoints
+endpoints for logging in the supervisors, admin and interns
 
-## Response Sample
+### Data Model
+| Attribute | Type   | Required? | Description                  |
+|-----------|--------|-----------|------------------------------|
+| message      | string | Required  | A message caused by the event  |
+| token   | string | Required  | A jwt token to be used for protected endpoints               |
 
-## Login Supervisor
 
-## Endpoints
+### Endpoints  
 
-## Query Parameters
+| Method | Endpoint Name                           | Description                                      |
+|--------|-----------------------------------------|--------------------------------------------------|
+| POST   | [Admin Login](#admin-login)            | Authenticates an admin and generates a jwt token. |
+| POST   | [Supervisor Login](#supervisor-login)  | Authenticates a supervisor and grants access to their dashboard. |
+| POST   | [Intern Login](#intern-login)          | Authenticates an intern and provides access to intern-specific resources. |
 
-## Request Sample
 
-## Response Sample
-
-## Login Interns
-
-## Endpoints
-
-## Query Parameters
-
-## Request Sample
-
-## Response Sample
-
-## Tasks
-
-The Task Route is used to access the task models
-
-### Endpoints
-
-### Task Update Endpoint for Supervisor
-An endpoint for a supervisor to update a task
+## Admin Login
 ```http
-PUT /tasks/supervisor
+POST /a2kstaffs/login/admin
 ```
-
-
-### Retrieve tasks by intern id
-
-Returns an array of tasks based on the intern id or an empty array if not found
-
-#### Endpoint
-
-```http
-GET /tasks/intern
-```
-
-#### Query parameters
-
-| Query parameter | Type   | Required? |
-| --------------- | ------ | --------- |
-| internId        | string | Required  |
-|                 |        |           |
-
-#### Request Sample
-
-```http
-GET /tasks/intern?internId=67cbecaa3f611eedb0b953f0
-```
+### Request schema
 
 #### Request body
 
-| Field           | Type                | Required? | Description                                                        |
-| --------------- | ------------------- | --------- | ------------------------------------------------------------------ |
-| title           | string              | Required  | Title of the tasks                                                 |
-| description     | string              | Required  | Description of the task                                            |
-| deadline        | string              | Required  | Task deadline, formatted as an ISO 8601 string                     |
-| assignedInterns | strings[] | Optional  | A single intern ID or an array of intern IDs to assign to the task |
+| Field  | Type   | Required? | Description                      |
+|--------|--------|-----------|----------------------------------|
+| email   | string | Required  | The email of the admin user  |
+| password   | string | Required  | The password of the admin user  |
 
-
-#### Response Sample
+### Request example
 ```json
 {
-    "tasks": [
+    "email": "admin@admin.com",
+    "password": "12345678"
+}
+```
+### Response schema
+
+| Status code | Schema                                  | Description          |
+|-------------|-----------------------------------------|----------------------|
+| `2xx`       | [Data Model](#login-endpoints/data-model)        | The request was successful, and a token is returned. |
+
+
+### Response example
+```json
+{
+    "message": "Login Successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Yzg0MmViZDQ5MmE3MzQ2YzRhNDQwNyIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0MzM5MzAyMSwiZXhwIjoxNzQzMzk2NjIxfQ.Gwa9UOa_R54YwBLZP3z0fyuizUJV__JS-pl4DTh-A8w"
+}
+```
+
+## Supervisor Login
+```http
+POST /a2kstaffs/login/supervisor
+```
+### Request schema
+
+#### Request body
+
+| Field  | Type   | Required? | Description                      |
+|--------|--------|-----------|----------------------------------|
+| email   | string | Required  | Email of the user  |
+| password   | string | Required  | Password of the user  |
+
+### Request example
+```json
+{
+    "email": "sup@sup.com",
+    "password": "12345678"
+}
+```
+### Response schema
+
+| Status code | Schema                                  | Description          |
+|-------------|-----------------------------------------|----------------------|
+| `2xx`       | [Data Model](#login-endpoints/data-model)        | {Describe the result where the request succeeds.} |
+
+
+### Response example
+```json
+{
+    "message": "Login Successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Yzg0MmViZDQ5MmE3MzQ2YzRhNDQwNyIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0MzM5MzAyMSwiZXhwIjoxNzQzMzk2NjIxfQ.Gwa9UOa_R54YwBLZP3z0fyuizUJV__JS-pl4DTh-A8w"
+}
+```
+## Intern Login
+```http
+POST /auth/login/intern
+```
+### Request schema
+
+#### Request body
+
+| Field  | Type   | Required? | Description                      |
+|--------|--------|-----------|----------------------------------|
+| email   | string | Required  | Email of the user  |
+| password   | string | Required  | Password of the user  |
+
+### Request example
+```json
+{
+    "email": "foo@foo.com",
+    "password": "12345678"
+}
+```
+### Response schema
+
+| Status code | Schema                                  | Description          |
+|-------------|-----------------------------------------|----------------------|
+| `2xx`       | [Data Model](#login-endpoints/data-model)        | {Describe the result where the request succeeds.} |
+
+
+### Response example
+```json
+{
+    "message": "Login Successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Yzg0MmViZDQ5MmE3MzQ2YzRhNDQwNyIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0MzM5MzAyMSwiZXhwIjoxNzQzMzk2NjIxfQ.Gwa9UOa_R54YwBLZP3z0fyuizUJV__JS-pl4DTh-A8w"
+}
+```
+
+
+
+## Admin User  
+
+These are the endpoints accessible by an admin user.  
+
+### Authorization  
+
+The [Admin Authorization](#admin-login) is required for each API request.  
+
+---
+
+### Endpoints  
+
+Use the following endpoints to interact with the Admin entity:  
+
+| Method | Endpoint Name                                  | Description |
+|--------|-----------------------------------------------|-------------|
+| GET    | [Get all accounts](#get-all-accounts)        | Retrieves all user accounts. |
+| POST   | [Create intern account](#create-intern-account) | Creates a new intern account. |
+| GET    | [Requesting interns](#fetch-intern-request)  | Fetches pending intern requests. |
+| PUT    | [Update an intern request status](#update-admin-profile) | Updates the status of an intern request. |
+| GET    | [Get admin by ID](#get-admin-by-id)          | Retrieves admin details by ID. |
+
+
+## Get all accounts
+
+Fetch supervisor and intern accounts by query
+
+### Endpoint
+
+```text
+GET /admin/accounts
+```
+
+### Description
+
+This endpoint retrieves all supervisor and intern accounts. You can filter the results using the q query parameter, which applies filtering based on:
+- firstName
+- lastName
+- email
+- status
+- accountType
+
+
+### Request schema
+
+#### Query parameters
+
+| Query parameter | Type | Required? | Description                             |
+|-----------------|------|-----------|-----------------------------------------|
+| q      | string  | Optional  | Filter accounts by name, email, status, or type. |
+
+
+### Request example
+
+```http
+GET /admin/accounts?q=intern
+```
+### Response example
+
+```json
+{
+    "accounts": [
         {
-            "supervisor": {
-                "firstName": "John",
-                "lastName": "Doe",
-                "email": "john.doe@example.com"
-            },
-            "title": "foo",
-            "description": "bar",
-            "deadline": "2024-03-10T00:00:00.000Z",
-            "status" : "pending"
+            "_id": "67e4cfb72ce2f25a20a1211c",
+            "firstName": "Erna",
+            "lastName": "Mosciski",
+            "email": "foo@foo.com",
+            "status": "active",
+            "accountType": "intern"
+        },
+        {
+            "_id": "67e4cfb72ce2f25a20a12120",
+            "firstName": "Francis",
+            "lastName": "Grimes",
+            "email": "Jennyfer_Goyette34@hotmail.com",
+            "status": "active",
+            "accountType": "intern"
+        },
+        {
+            "_id": "67e52ca548b989a81dcc706f",
+            "firstName": "Charles",
+            "lastName": "Bercasio",
+            "email": "training@a2kacademy.com",
+            "status": "active",
+            "accountType": "intern"
+        },
+        {
+            "_id": "67e52d921542c906a6223b04",
+            "firstName": "Charles",
+            "lastName": "Bercasio",
+            "email": "supqweqwe@sup.com",
+            "status": "active",
+            "accountType": "intern"
+        },
+        {
+            "_id": "67e52e851542c906a6223baf",
+            "firstName": "Charles",
+            "lastName": "Bercasio",
+            "email": "supqweqe@sup.com",
+            "status": "active",
+            "accountType": "intern"
         }
     ]
 }
 ```
 
-#### Supervisor Response sample
-If the requester has a supervisor access, the json below is the response
-```json
-{
-  "tasks": [
-    {
-      "supervisor": {
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "john.doe@example.com"
-      },
-      "title": "foo",
-      "description": "bar",
-      "deadline": "2024-03-10T00:00:00.000Z",
-      "assignedInterns": [
-        {
-          "internId": "67cbecaa3f611eedb0b953f0",
-          "status": "pending"
-        }
-      ]
-    }
-  ]
-}
-
-```
-
-## Create tasks
-
-An endpoint for creating tasks. You can immediately assign interns to it or leave it for later.
+## Create Intern Account
+Create a new intern account
 
 ### Endpoint
-
 ```http
-POST /tasks
+POST /admin/accounts/intern
 ```
+### Description
+This endpoint allows an admin user to create an intern account within the system. The newly created intern account will be associated with details such as personal information, school, internship hours, and optional fields like department, supervisor, and time entries.
 
-#### Header parameters
-
-| Header parameter | Type   | Required? | Description      |
-| ---------------- | ------ | --------- | ---------------- |
-| Content-Type     | string | Required  | application/json |
+### Request schema
 
 #### Request body
 
-| Field           | Type                | Required? | Description                                                        |
-| --------------- | ------------------- | --------- | ------------------------------------------------------------------ |
-| title           | string              | Required  | Title of the tasks                                                 |
-| description     | string              | Required  | Description of the task                                            |
-| deadline        | string              | Required  | Task deadline, formatted as an ISO 8601 string                     |
-| assignedInterns | string or strings[] | Optional  | A single intern ID or an array of intern IDs to assign to the task |
+Field           | Type     | Required? | Description  
+---------------|---------|-----------|-------------  
+firstName    | string | Yes       | Intern’s first name.  
+lastName     | string | Yes       | Intern’s last name.  
+age          | number | Yes       | Intern’s age.  
+phone        | string | Yes       | 11-digit phone number.  
+school       | string | Yes       | Name of the intern’s school.  
+internshipHours | number | Yes    | Required internship hours.  
+email        | string | Yes       | Intern’s email address.  
+password     | string | Yes       | Account password.  
+department   | string | No        | Hexadecimal 24-character department ID.  
+supervisor   | string | No        | Hexadecimal 24-character supervisor ID.  
+status       | string | No        | Internship status (active or inactive).  
+timeEntries  | array  | No        | List of time-in and time-out records.  
+totalHours   | number | No        | Total hours completed.
 
-### Request Sample
-
+### Request Example
 ```http
-POST /tasks
+POST /admin/accounts/intern
 Content-Type: application/json
-Authorization: Bearer <your_token>
-```
 
-### Request Payload
-
-```json
 {
-  "title": "Complete Project Report",
-  "description": "Interns need to finalize and submit the project report.",
-  "deadline": "2025-03-15T23:59:59.999Z",
-  "assignedInterns": ["67cbecaa3f611eedb0b953ef", "67cbf2ba5f611eedb0b9540a"]
-}
-```
-
-### Response Sample
-
-```json
-{
-  "supervisor": "67cbecaa3f611eedb0b953ef",
-  "title": "Complete Project Report",
-  "description": "Interns need to finalize and submit the project report.",
-  "deadline": "2025-03-15T23:59:59.999Z",
-  "_id": "67cd2e27a8ec1d186a4f60de",
-  "assignedInterns": [
+  "firstName": "John",
+  "lastName": "Doe",
+  "age": 22,
+  "phone": "09123456789",
+  "school": "Tech University",
+  "internshipHours": 200,
+  "email": "johndoe@example.com",
+  "password": "securePassword123",
+  "department": "60d5f9e813b5c70017e6e5b1",
+  "supervisor": "60d5f9e813b5c70017e6e5b2",
+  "status": "active",
+  "timeEntries": [
     {
-      "internId": "67cbecaa3f611eedb0b953ef",
-      "status": "pending"
-    },
-    {
-      "internId": "67cbf2ba5f611eedb0b9540a",
-      "status": "pending"
+      "timeIn": "2025-03-31T08:00:00Z",
+      "timeOut": "2025-03-31T17:00:00Z"
     }
   ],
-  "__v": 0
+  "totalHours": 9
 }
 ```
 
-## Admin Endpoints
-To access the routes on this endpoint, user must have admin access
-
-### Header Parameters
-| Header parameter | Type   | Required? | Description      |
-| ---------------- | ------ | --------- | ---------------- |
-| Content-Type     | string | Required  | application/json |
-| Authorization    | string | Required  | Bearer token     |
-
-### Get all accounts
-An endpoint for fetching all supervisor and intern accounts
-
-#### Endpoint
-```http
-GET /admin/accounts
-```
-
-#### Response sample
+### Response Example
 ```json
 {
-  [
-    {
-      "_id": "67ca8a80536daacf28d2940e",
-      "firstName": "foo",
-      "lastName": "bar",
-      "email": "supssss@sup.com",
-      "accountType": "supervisor"
-    },
-    {
-      "_id": "67ca8a89536daacf28d29411",
-      "firstName": "foo",
-      "lastName": "bar",
-      "email": "supsssss@sup.com",
-      "accountType": "supervisor"
+    "message": "User created successfully",
+    "user": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "age": 22,
+        "phone": "09123456789",
+        "school": "Tech University",
+        "internshipHours": 200,
+        "email": "johndoe@example.com",
+        "department": "60d5f9e813b5c70017e6e5b1",
+        "supervisor": "60d5f9e813b5c70017e6e5b2",
+        "status": "active",
+        "timeEntries": [
+            {
+                "timeIn": "2025-03-31T08:00:00.000Z",
+                "timeOut": "2025-03-31T17:00:00.000Z",
+                "_id": "67ea2a8f86c8971ca1fe27bb"
+            }
+        ],
+        "accountType": "intern",
+        "isApproved": "approved",
+        "totalHours": 9,
+        "_id": "67ea2a8f86c8971ca1fe27ba",
     }
-  ]
 }
 ```
-### Get all intern request
-An endpoint for fetching the accounts waiting for approval
 
-#### Endpoint
+## Fetch Intern Request
+Retrieve all intern accounts that are **pending approval**. 
+### Endpoint
 ```http
 GET /admin/accounts/intern-request
 ```
 
-#### Response sample
-```json
-{
-  "accounts": [
-    {
-      "_id": "67cbecaa3f611eedb0b953f0",
-      "firstName": "foo",
-      "lastName": "bar",
-      "email": "foo@foos.com",
-      "status": "inactive",
-      "accountType": "intern"
-    }
-  ]
-}
-```
-### Update intern request status
-An endpoint for updating the request status of an intern
+### Description
+This endpoint allows an admin user to fetch a list of intern accounts that are still awaiting approval or rejection.
+- Useful for managing pending intern requests efficiently.
 
-#### Endpoint
+- Helps track interns who have applied but have not yet been approved into the system.
+
+- Typically, these accounts require an admin decision to activate or reject them.
+
+This ensures that only verified interns gain access to the system.
+
+### Request example
+
 ```http
-PUT /admin/accounts/intern-request
+GET /admin/accounts/intern-request
+Content-type: application/json
 ```
+### Response example
 
-#### Request body
-
-| Field           | Type                | Required? | Description |
-| --------------- | ------------------- | --------- | ----------- |
-| internId        | string              | Required  | The _id of the intern |
-| isApproved      | boolean             | Required  | True=approved, False=reject |
-
-#### Request Payload Sample
 ```json
 {
-  "internId": "67cbecaa3f611eedb0b953f0",
-  "isApproved": true 
-}
-
-```
-
-#### Response sample
-```json
-{
-  "accounts": [
-    {
-      "_id": "67cbecaa3f611eedb0b953f0",
-      "firstName": "foo",
-      "lastName": "bar",
-      "email": "foo@foos.com",
-      "status": "active",
-      "accountType": "intern"
-    }
-  ]
+    "accounts": [
+        {
+        "firstName": "foo",
+        "lastName": "bar",
+        "email": "foobar@gmail.com",
+        "accountType": "intern",
+        "_id": "60d5f9e813b5c70017e6e5b1",
+        "status" : "approved"
+        }
+    ]
 }
 ```
 
-### Create intern account endpoint
-An endpoint for the admin to create an intern account
-
-#### Endpoint
-```http
-POST /accounts/intern
-```
-
-#### Request body
-| Field           | Type                | Required? | Description |
-| --------------- | ------------------- | --------- | ----------- |
-| firstName        | string              | Required  |  |
-| lastName      | string             | Required  |  |
-| age      | number             | Required  |  |
-| school      | string             | Required  |  |
-| internshipHours      | number             | Required  |  |
-| email      | string             | Required  |  |
-| password      | number             | Required  |  |
-| department      | string             | Required  | The object id of the department |
-| supervisor      | string             | Required  | The object id of the supervisor |
-| status      | string             | Required  | active or inactive |
-
-#### Response Sample
-```json
-{
-  "message" : "User created successfully",
-  "user" : {
-    "accountType" : "intern",
-    "age" : 22,
-    "department" : null,
-    "email" : "marias@maria.com",
-    "firstName" :  "Charles",
-    "internshipHours" :  21,
-    "isApproved"  :  "pending",
-    "lastName"  :  "Bercasio",
-    "phone" :  "09876543216",
-    "school" : "12123" ,
-    "status" : "inactive",
-    "supervisor" : null,
-    "timeEntries" : [],
-    "totalHours" : 0,
-    "__v" : 0,
-    "_id" : "67d6a7ca0bf047d57a1b0073"
-  }
-}
-```
-## Task Endpoint
-An endpoint for interfacing with the task model
-
-### Header Parameters
-| Header parameter | Type   | Required? | Description      |
-| ---------------- | ------ | --------- | ---------------- |
-| Content-Type     | string | Required  | application/json |
-| Authorization    | string | Required  | Bearer token     |
-
-### Update Task Endpoint
-Allows an intern user to update their respective task status
-
-#### Endpoint
-```http
-PUT /tasks/:taskId
-```
-
-#### Request Params
-| Field           | Type                | Required? | Description |
-| --------------- | ------------------- | --------- | ----------- |
-| taskId      | boolean             | Required  | The _id of the task |
-
-
-#### Request Body
-
-| Field           | Type                | Required? | Description |
-| --------------- | ------------------- | --------- | ----------- |
-| internId        | string              | Required  | The _id of the intern |
-| status      | string             | Required  | The new status of the task |
-
-#### Response Sample
-```json
-{
-  "task": {
-    "_id": "67ce53f7a21d35e947ece076",
-    "title": "Foo",
-    "description": "Foo",
-    "deadline": "2025-03-09T18:08:44.000Z",
-    "__v": 0,
-    "status": "completed"
-  }
-}
-```
-
-## Intern Log Update
-An endpoint for updating the logs per intern
-
+## Update an Intern Request Status
+Approve or reject an intern's account request. 
 ### Endpoint
 ```http
-PUT /interns/logs/:logId
+PUT /accounts/intern-request
 ```
+### Description
+This endpoint allows an admin user to update the status of an intern's request. The status can be set to:
 
-### Header Parameter
-| Header parameter | Type   | Required? | Description      |
-| ---------------- | ------ | --------- | ---------------- |
-| Content-Type     | string | Required  | application/json |
-| Authorization    | string | Required  | Bearer token     |
+- Approved – Grants the intern access to the system.
 
-### Request Params
+- Rejected – Denies the intern’s request and prevents account activation.
 
-| Field           | Type                | Required? | Description |
-| --------------- | ------------------- | --------- | ----------- |
-| logId      | string             | Required  | The _id of the task |
-| read      | string             | Required  | The read status of the log ['read', 'unread'] |
+This ensures that only verified interns are approved while filtering out unqualified or invalid requests.
 
-### Request Body
-| Field           | Type                | Required? | Description |
-| --------------- | ------------------- | --------- | ----------- |
-| read      | string             | Required  | The read status of the log ['read', 'unread'] |
+### Request Schema
+#### Request body
+| Field  | Type   | Required? | Description                      |
+|--------|--------|-----------|----------------------------------|
+internId   | string | Yes        | Hexadecimal 24-character intern ID. 
+isApproved | boolean | Yes | [false, true] Request status of the intern
+### Request example
 
-### Response Sample
-```json
+```http
+PUT /accounts/intern-request
+Content-type: application/json
+
 {
- 
+    "internId": "67e4cfb72ce2f25a20a1211c",
+    "isApproved": false
 }
 ```
+
+### Response example
+```json
+{
+    "account": {
+        "_id": "67e4cfb72ce2f25a20a1211c",
+        "firstName": "Erna",
+        "lastName": "Mosciski",
+        "email": "foo@foo.com",
+        "status": "inactive",
+        "accountType": "intern"
+    }
+}
+```
+
+## Update Admin Profile
+An endpoint for updating the admin user's profile information.
+
+### Endpoint 
+```http
+PUT /admin/edit-profile/:id
+```
+
+### Description
+This endpoint allows an admin user to update their profile details, such as their name, email, or password. It ensures that the admin can manage and maintain their account information securely. The `id` parameter in the URL specifies the unique identifier of the admin whose profile is being updated.
+
+
+### Request Schema
+
+#### Path parameters
+| Path parameter | Type   | Required? | Description                  |
+|----------------|--------|-----------|------------------------------|
+id   | string | Yes        | Hexadecimal 24-character admin id. 
+
+#### Request body
+
+Field       | Type     | Required? | Description  
+-----------|---------|-----------|-------------  
+id         | string  | Yes       | Unique identifier of the admin.  
+firstName  | string  | No        | Admin’s first name.  
+lastName   | string  | No        | Admin’s last name.  
+email      | string  | No        | Admin’s email address (must be a valid email).  
+password   | string  | No        | Admin’s password (minimum 8 characters).  
+
+### Request example
+
+```http
+PUT /admin/edit-profile/67e4cfb72ce2f25a20a1211c
+Content-type: application/json
+
+{
+    "id": "67c842ebd492a7346c4a4407",
+    "firstName": "Charles",
+    "lastName": "Bercasio",
+    "email": "admin@admin.com",
+    "password": "12345678"
+}
+```
+
+### Response Example
+```json
+{
+    "success": true,
+    "message": "Admin profile updated successfully",
+    "data": {
+        "_id": "67c842ebd492a7346c4a4407",
+        "email": "admin@admin.com",
+        "accountType": "admin",
+        "firstName": "Charles",
+        "lastName": "Bercasio"
+    }
+}
+```
+
+## Get Admin by ID
+Retrieve the details of an admin account using its unique identifier.
+
+### Endpoint 
+```http
+GET /admin/get-admin/:id
+```
+
+### Description
+This endpoint allows you to fetch the details of a specific admin account by providing its unique ID. It is useful for retrieving information such as the admin's name, email, and account type. The `id` parameter in the URL represents the 24-character hexadecimal identifier of the admin.
+
+### Request schema
+
+#### Path parameters
+| Path parameter | Type   | Required? | Description                  |
+|----------------|--------|-----------|------------------------------|
+id   | string | Yes        | Hexadecimal 24-character admin id. 
+
+### Request Example
+```http
+GET /admin/get-admin/67c842ebd492a7346c4a4407
+```
+
+### Response Example
+```json
+{
+    "success": true,
+    "data": {
+        "_id": "67c842ebd492a7346c4a4407",
+        "email": "admin@admin.com",
+        "accountType": "admin",
+        "firstName": "Charles",
+        "lastName": "Bercasio"
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
