@@ -5,7 +5,7 @@ export const authenticateJWT = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
-  console.log("Token received:", token);
+  // console.log("Token received:", token);
 
   if (token == null) {
     return res.status(401).json({ message: "Unauthorized" });
