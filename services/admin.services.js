@@ -36,7 +36,7 @@ export const findAndUpdateIntern = async (internId, isApproved) => {
   // console.log(internId)
   const intern = await Intern.findOneAndUpdate(
     { _id: createId(internId) },
-    { isApproved: isApproved ? "approved" : "rejected", status: "active" },
+    { isApproved: isApproved ? "approved" : "rejected", status: isApproved ? "active" : "inactive" },
     { new: true }
   )
     .select(["firstName", "lastName", "email", "accountType", "_id", "status"])
