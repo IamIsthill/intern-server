@@ -25,7 +25,7 @@ export const createDepartmentController = async (req, res, next) => {
 
 export const getAllDepartments = async (req, res, next) => {
     try {
-        const departments = await Department.find({})
+        const departments = await Department.find({}).select(['_id', 'name'])
         return res.status(200).json({ departments: departments })
     } catch (err) {
         next(err)
