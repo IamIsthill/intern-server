@@ -1,142 +1,126 @@
+# A2K Internship Management System
 
-## A2K Internship Management System
-
-{Include the project URL and project owner name underneath the project name if applicable.}
-
-## Table of contents
-
-{This section is optional.}
-
-1. Heading 1
-
-2. Heading 2
-
-3. Heading 3...
-
-## Project description
-
-{The README template guide includes information on how to write a project description and a project description. Here are some examples of effective phrases for describing a project.}
-
-With _{Project Name}_ you can _{verb}_ _{noun}_...
-
-_{Project Name}_ helps you _{verb}_ _{noun}_...
-
-Unlike _{alternative}_, _{Project Name}_ _{verb}_ _{noun}_...
-
-{Include screenshots and/or demo videos if applicable}
-
-## Who this project is for
-
-This project is intended for {target user} who wants to {user objective}.
-
-## Project dependencies
-
-Before using {Project Name}, ensure you have:
-
-* Prerequisite 1
-* Prerequisite 2
-* Prerequisite 3...
-
-## Instructions for using {Project Name}
-
-Get started with {Project Name} by {write the first step a user needs to start using the project. Use a verb to start.}.
-
-### Install {Project Name}
-
-1. {Write the step here.}
-
-    {Explanatory text here}
-
-    {Optional: Include a code sample or screenshot that helps your users complete this step}
-
-2. Setup the `.env` at the root of the project
-  ```bash
-  DATABASE_URI = your-db-connection 
-  ```
-
-
-### Configure {Project Name}
-
-1. {Write the step here.}
-2. {Write the step here.}
-
-### Run {Project Name}
-
-1. {Write the step here.}
-2. {Write the step here.}
-
-### Troubleshoot {Project Name}
-
-1. {Write the step here.}
-2. {Write the step here.}
-
-<table>
-  <tr>
-   <td>
-    Issue
-   </td>
-   <td>
-    Solution
-   </td>
-  </tr>
-  <tr>
-   <td>
-    {Describe the issue here}
-   </td>
-   <td>
-    {Write solution here}
-   </td>
-  </tr>
-  <tr>
-   <td>
-    {Describe the issue here}
-   </td>
-   <td>
-    {Write solution here}
-   </td>
-  </tr>
-  <tr>
-   <td>
-    {Describe the issue here}
-   </td>
-   <td>
-    {Write solution here}
-   </td>
-  </tr>
-</table>
-
-Other troubleshooting supports:
-
-* {Link to FAQs}
-* {Link to runbooks}
-* {Link to other relevant support information}
-
-## Contributing guidelines
-
-{Include a link to your contributing guide here. If you do not have a contributing guide, incorporate the information in the README.}
-
-## Additional documentation
-
-{Include links and brief descriptions to additional documentation. Examples provided in README template guide.}
-
-For more information:
-
-* Reference link 1
-* Reference link 2
-* Reference link 3...
-
-## How to get help
-
-{Include links and brief descriptions for support resources. Examples provided in README template guide.}
-
-* Reference link 1
-* Reference link 2
-* Reference link 3...
-
-## Terms of use
-
-{Project Name} is licensed under {link to license file}.
+A web-based platform designed to streamline the management of internship programs. This system allows administrators to manage interns, departments, and supervisors efficiently while providing interns with tools to track their progress.
 
 ---
 
-> Explore other templates from [The Good Docs Project](https://thegooddocsproject.dev/). Use our [feedback form](https://thegooddocsproject.dev/feedback/?template=Readme%20template) to give feedback on this template.
+## Table of Contents
+
+- [A2K Internship Management System](#a2k-internship-management-system)
+  - [Table of Contents](#table-of-contents)
+  - [Project Description](#project-description)
+  - [Who This Project Is For](#who-this-project-is-for)
+  - [Project Dependencies](#project-dependencies)
+  - [Instructions for Using the System](#instructions-for-using-the-system)
+    - [Installation](#installation)
+    - [Configuration](#configuration)
+    - [Running the System](#running-the-system)
+    - [Troubleshooting](#troubleshooting)
+  - [Contributing Guidelines](#contributing-guidelines)
+  - [Additional Documentation](#additional-documentation)
+  - [How to Get Help](#how-to-get-help)
+  - [Terms of Use](#terms-of-use)
+
+---
+
+## Project Description
+
+The **A2K Internship Management System** simplifies the process of managing internship programs by providing features such as:
+
+- Intern registration and profile management.
+- Department and supervisor assignment.
+- Time tracking and progress monitoring.
+- Admin tools for managing interns and generating reports.
+
+Unlike traditional manual processes, this system automates key tasks, saving time and reducing errors.
+
+---
+
+## Who This Project Is For
+
+This project is intended for:
+
+- **Administrators** who want to manage interns, departments, and supervisors efficiently.
+- **Interns** who want to track their progress and log their internship hours.
+- **Organizations** looking to streamline their internship programs.
+
+---
+
+## Project Dependencies
+
+Before using the **A2K Internship Management System**, ensure you have the following:
+
+- Node.js (v16 or higher)
+- MongoDB (v5.0 or higher)
+- A modern web browser (e.g., Chrome, Firefox)
+
+---
+
+## Instructions for Using the System
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo/a2k-internship-management.git
+   cd a2k-internship-management
+   ```
+2. Install dependencies:
+  ```bash
+  npm install
+  ```
+
+
+4. Setup the `.env` at the root of the project
+  ```env
+  DATABASE_URI=your-db-connection
+  JWT_SECRET=your-secret-key
+  PORT=3000 
+  ```
+
+### Configuration
+
+1. Ensure MongoDB is running locally or provide a connection string to a remote MongoDB instance.
+2. Update the .env file with the appropriate configuration values.
+
+### Running the System
+
+1. Start the development server:
+   ```bash
+   npm run dev
+   ```
+2. Access the system in your browser at http://localhost:3000.
+
+### Troubleshooting
+Issue | Solution
+------|----------
+Cannot connect to the database |	Verify the DATABASE_URI in the .env file.
+Server not starting	| Ensure all dependencies are installed.
+Missing environment variables	| Check the .env file for required variables.
+
+## Contributing Guidelines
+
+We welcome contributions to the A2K Internship Management System. To contribute:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Submit a pull request with a detailed description of your changes.
+
+## Additional Documentation
+
+For more information, refer to:
+
+* [API Reference](/API_REFERENCE.md)
+
+
+## How to Get Help
+
+If you encounter issues or have questions, use the following resources:
+
+* [GitHub Issues](https://github.com/IamIsthill/intern-server/issues)
+
+## Terms of Use
+
+The **A2K Internship Management System** is licensed under the MIT License.
+
+
