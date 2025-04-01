@@ -341,7 +341,7 @@ Content-Type: application/json
         "accountType": "intern",
         "isApproved": "approved",
         "totalHours": 9,
-        "_id": "67ea2a8f86c8971ca1fe27ba",
+        "_id": "67ea2a8f86c8971ca1fe27ba"
     }
 }
 ```
@@ -528,6 +528,257 @@ GET /admin/get-admin/67c842ebd492a7346c4a4407
     }
 }
 ```
+
+## Department
+
+The `Department` model represents a department entity in the system. It is used to store and manage information about different departments.
+
+### Schema Definition
+The `Department` schema is defined as follows:
+
+| Field | Type   | Required | Unique | Description                     |
+|-------|--------|----------|--------|---------------------------------|
+| _id   | String | Yes      | Yes    | The unique identifier of the department. |
+| name  | String | Yes      | Yes    | The name of the department.     |
+
+### Example
+```json
+{
+    "_id": "642c1f9e8f1b2c0012345678",
+    "name": "Human Resources"
+}
+```
+
+### Endpoints
+
+Use the following endpoints to interact with the {resource name} entities.
+
+| Method | Endpoint name                            | Description             |
+|--------|------------------------------------------|-------------------------|
+| GET   | {[Get All Departments](#get-all-departments)} | Retrieves a list of all departments in the system..  |
+
+## Get All Departments
+Retrieve a list of all departments in the system.
+
+### Endpoint
+```http
+GET /departments/all
+```
+
+### Description
+This endpoint allows you to fetch an array of all departments currently available in the system. Each department includes its unique identifier (`_id`) and name.
+
+### Request Example
+```http
+GET /departments/all
+Content-Type: application/json
+```
+
+### Response Example
+```json
+{
+    "departments": [
+        {
+            "_id": "67ca8a7f536daacf28d2940c",
+            "name": "IT"
+        },
+        {
+            "_id": "67d69526719d37d13d97d784",
+            "name": "Design"
+        }
+    ]
+}
+```
+
+## Interns Auth
+Endpoints useful for registering an intern
+
+### Authorization
+Authentication is not required to access these APIs.
+
+### Endpoints
+
+Use the following endpoints to interact with the {resource name} entities.
+
+| Method | Endpoint name                            | Description             |
+|--------|------------------------------------------|-------------------------|
+| POST   | [Register Intern](#register-intern) | An endpoint for creating intern accounts.  |
+| GET    | [Check Email Availability](#check-email-availability) | Verify if an email address is already registered in the system. |
+| GET    | [Check Phone Availability](#check-phone-availability) | Verify if a phone number is already registered in the system. |
+
+## Register Intern
+An endpoint for creating intern accounts.
+
+### Endpoint
+```http
+POST /auth/register
+```
+
+### Description
+This endpoint allows the creation of a new intern account in the system. The intern account will include personal details, school information, and other optional fields such as department and supervisor. The account will be stored in the database and can be used for authentication and tracking internship progress.
+
+### Request Schema
+
+#### Request Body
+| Field           | Type     | Required? | Description                                      |
+|------------------|----------|-----------|--------------------------------------------------|
+| firstName        | string   | Yes       | Intern’s first name.                             |
+| lastName         | string   | Yes       | Intern’s last name.                              |
+| age              | number   | Yes       | Intern’s age.                                    |
+| phone            | string   | Yes       | 11-digit phone number.                           |
+| school           | string   | Yes       | Name of the intern’s school.                     |
+| internshipHours  | number   | Yes       | Required internship hours.                       |
+| email            | string   | Yes       | Intern’s email address (must be unique).         |
+| password         | string   | Yes       | Account password (minimum 8 characters).         |
+| department       | string   | No        | Hexadecimal 24-character department ID.          |
+| supervisor       | string   | No        | Hexadecimal 24-character supervisor ID.          |
+| status           | string   | No        | Internship status (e.g., active or inactive).    |
+| timeEntries      | array    | No        | List of time-in and time-out records.            |
+| totalHours       | number   | No        | Total hours completed by the intern.             |
+
+### Request Example
+```http
+POST /auth/register
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "age": 22,
+  "phone": "09123456782",
+  "school": "Tech University",
+  "internshipHours": 200,
+  "email": "johndoe@example.com",
+  "password": "securePassword123",
+  "department": "60d5f9e813b5c70017e6e5b1",
+  "supervisor": "60d5f9e813b5c70017e6e5b2",
+  "status": "active",
+  "timeEntries": [
+    {
+      "timeIn": "2025-03-31T08:00:00Z",
+      "timeOut": "2025-03-31T17:00:00Z"
+    }
+  ],
+  "totalHours": 9
+}
+```
+
+### Response Example
+```json
+{
+    "message": "User created successfully",
+    "user": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "age": 22,
+        "phone": "09123456782",
+        "school": "Tech University",
+        "internshipHours": 200,
+        "email": "johndoes@example.com",
+        "department": null,
+        "supervisor": null,
+        "status": "inactive",
+        "timeEntries": [
+            {
+                "timeIn": "2025-03-31T08:00:00.000Z",
+                "timeOut": "2025-03-31T17:00:00.000Z",
+                "_id": "67ebf698b0d4d8143ee09977"
+            }
+        ],
+        "accountType": "intern",
+        "isApproved": "pending",
+        "totalHours": 9,
+        "_id": "67ebf698b0d4d8143ee09976",
+        "logs": [],
+        "reportLogs": [],
+        "__v": 0
+    }
+}
+```
+
+
+## Check Email Availability
+Verify if an email address is already registered in the system.
+
+### Endpoint
+```http
+GET /auth/check-email
+```
+
+### Description
+This endpoint checks whether a given email address is already associated with an existing intern account. It is useful for validating email uniqueness during the registration process.
+
+### Request Schema
+
+#### Query Parameters
+| Query Parameter | Type   | Required? | Description                          |
+|------------------|--------|-----------|--------------------------------------|
+| email            | string | Yes       | The email address to be checked.     |
+
+### Request Example
+```http
+GET /auth/check-email?email=johndoe@example.com
+Content-Type: application/json
+```
+
+### Response Example
+#### If the email is available:
+```json
+{
+    "message": "Email is available"
+}
+```
+
+#### If the email is already taken:
+```json
+{
+    "message": "Email already exists"
+}
+```
+
+## Check Phone Availability
+Verify if a phone number is already registered in the system.
+
+### Endpoint
+```http
+GET /auth/check-phone
+```
+
+### Description
+This endpoint checks whether a given phone number is already associated with an existing intern account. It is useful for validating phone number uniqueness during the registration process.
+
+### Request Schema
+
+#### Query Parameters
+| Query Parameter | Type   | Required? | Description                          |
+|------------------|--------|-----------|--------------------------------------|
+| phone            | string | Yes       | The phone number to be checked (must be a valid 11-digit number). |
+
+### Request Example
+```http
+GET /auth/check-phone?phone=09123456789
+Content-Type: application/json
+```
+
+### Response Example
+#### If the phone number is available:
+```json
+{
+    "message": "Phone number is available"
+}
+```
+
+#### If the phone number is already taken:
+```json
+{
+    "message": "Phone number already exists"
+}
+```
+
+
+
+
+
 
 
 
