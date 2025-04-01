@@ -529,6 +529,75 @@ GET /admin/get-admin/67c842ebd492a7346c4a4407
 }
 ```
 
+## Department
+
+The `Department` model represents a department entity in the system. It is used to store and manage information about different departments.
+
+### Schema Definition
+The `Department` schema is defined as follows:
+
+| Field | Type   | Required | Unique | Description                     |
+|-------|--------|----------|--------|---------------------------------|
+| _id   | String | Yes      | Yes    | The unique identifier of the department. |
+| name  | String | Yes      | Yes    | The name of the department.     |
+
+### Example
+```json
+{
+    "_id": "642c1f9e8f1b2c0012345678",
+    "name": "Human Resources"
+}
+```
+
+### Endpoints
+
+Use the following endpoints to interact with the {resource name} entities.
+
+| Method | Endpoint name                            | Description             |
+|--------|------------------------------------------|-------------------------|
+| POST   | {[Endpoint name A](#link_to_endpoint_a)} | Creates a {resource}.  |
+| GET    | {[Endpoint name B](#link_to_endpoint_b)} | Retrieves a {resource}. |
+|        |                                          |                         |
+
+## Get All Departments
+Retrieve a list of all departments in the system.
+
+### Endpoint
+```http
+GET /departments/all
+```
+
+### Description
+This endpoint allows you to fetch an array of all departments currently available in the system. Each department includes its unique identifier (`_id`) and name.
+
+### Request Example
+```http
+GET /departments/all
+Content-Type: application/json
+```
+
+### Response Example
+```json
+{
+    "departments": [
+        {
+            "_id": "67ca8a7f536daacf28d2940c",
+            "name": "IT"
+        },
+        {
+            "_id": "67d69526719d37d13d97d784",
+            "name": "Design"
+        }
+    ]
+}
+```
+
+
+
+
+
+
+
 
 
 
