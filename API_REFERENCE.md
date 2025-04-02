@@ -10,15 +10,19 @@ Use the {product} APIs to {access | customize | program} the {features | functio
 http://localhost:3000
 ```
 
-### HTTP status codes
+### HTTP Status Codes
 
-The {product} APIs use the following standard HTTP response codes:
 
-| Status code | Message           | Description   |
-|-------------|-------------------|---------------|
-| `200 OK`    | Request succeeds. | {description} |
-|             |                   |               |
-|             |                   |               |
+| Status Code | Message           | Description                                   |
+|-------------|-------------------|-----------------------------------------------|
+| `200 OK`    | Request succeeds. | The request was successfully processed.       |
+| `201 Created` | Resource created. | A new resource has been successfully created. |
+| `400 Bad Request` | Invalid request. | The server could not understand the request due to invalid syntax. |
+| `401 Unauthorized` | Authentication required. | The request requires user authentication. |
+| `403 Forbidden` | Access denied. | The server understood the request but refuses to authorize it. |
+| `404 Not Found` | Resource not found. | The requested resource could not be found. |
+| `500 Internal Server Error` | Server error. | The server encountered an unexpected condition that prevented it from fulfilling the request. |
+
 
 
 #### ExampleErrorType
