@@ -1295,8 +1295,106 @@ Authorization: Bearer <your-token>
 }
 ```
 
+## Password Reset
+Collection of endpoints used for resetting the password via email
+
+### Endpoints
 
 
+| Method | Endpoint Name                            | Description                          |
+|--------|------------------------------------------|--------------------------------------|
+| POST   | [Get Password Reset Link](#get-password-reset-link) | Request a password reset link for an intern account. |
+| PUT    | [Reset Password](#reset-password)        | Reset the password using the token received via email. |
+
+
+## Get Password Reset Link
+Request a password reset link for an intern account.
+
+### Endpoint
+```http
+POST /password/intern/reset
+```
+
+### Description
+This endpoint allows an intern to request a password reset link. The link will be sent to the email address associated with the intern's account. It is useful for recovering access to an account when the password is forgotten.
+
+### Request Schema
+
+#### Request Body
+| Field  | Type   | Required? | Description                      |
+|--------|--------|-----------|----------------------------------|
+| email  | string | Yes       | The email address of the intern. |
+
+### Request Example
+```http
+POST /password/intern/reset
+Content-Type: application/json
+
+{
+    "email": "johndoe@example.com"
+}
+```
+
+### Response Example
+#### If the request is successful:
+```json
+{
+    "message": "Password reset link sent successfully"
+}
+```
+
+#### If the email is not found:
+```json
+{
+    "message":"No account found"
+}
+```
+
+## Reset Password
+Reset password using the token received via email
+
+### Endpoint
+```http
+PUT /password/intern/new
+```
+
+### Description
+This endpoint allows an intern to reset their password using a token received via email. It is typically used after requesting a password reset link.
+
+### Request Schema
+
+#### Request Body
+| Field       | Type   | Required? | Description                                      |
+|-------------|--------|-----------|--------------------------------------------------|
+| token       | string | Yes       | The password reset token sent to the intern's email. |
+| password | string | Yes       | The new password for the intern's account (minimum 8 characters). |
+
+### Request Example
+```http
+PUT /password/intern/new
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+    "password": "newSecurePassword123"
+}
+```
+
+### Response Example
+#### If the password reset is successful:
+```json
+{
+
+     "message": "Successfully updated password" 
+}
+```
+
+#### If the token is invalid or expired:
+```json
+{
+    "message": "Invalid or expired token"
+}
+```
 
 
 
