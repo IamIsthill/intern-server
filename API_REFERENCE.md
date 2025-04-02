@@ -2311,6 +2311,78 @@ The server responds with a `204 No Content` status code, indicating that the tas
 }
 ```
 
+## Task Updates
+A WebSocket endpoint for real-time task updates.
+
+### Endpoint
+```ws
+ws://localhost:3000/tasks/updates
+```
+
+### Query Parameters
+| Query Parameter | Type   | Required? | Description                              |
+|------------------|--------|-----------|------------------------------------------|
+| accountType      | string | Optional  | Specifies the type of account. Valid values are `supervisor` or `intern`. |
+| email            | string | Required  | The email address associated with the account. |
+| internId         | string | Optional  | The unique identifier of the intern.     |
+
+### Description
+This WebSocket endpoint enables real-time task status updates for supervisors and interns. It eliminates the need for manual refreshes or polling by providing instant notifications whenever a task's status changes.
+
+### Usage
+1. Establish a WebSocket connection to the endpoint.
+2. Listen for task update events, which are sent as JSON payloads.
+3. Supervisors receive updates whenever an intern modifies a task.
+4. Interns receive notifications when their tasks are updated by a supervisor.
+
+### Example Payloads
+#### Task Update Event (Intern)
+Sent by the intern. A rest api endpoint handles the update in the backend.
+```json
+{
+    "update": true
+}
+```
+
+#### Task Update Event (Supervisor)
+Receive by the supervisor
+```json
+[
+    {
+        "_id": "67e511e30c1587abaf93a6f6",
+        "supervisor": "67ca892acd4899978d1b6666",
+        "title": "asdasd",
+        "description": "asdasd",
+        "deadline": "2025-03-15T00:00:00.000Z",
+        "assignedInterns": [
+            {
+                "internId": "67e4cfb72ce2f25a20a12120",
+                "status": "pending",
+                "_id": "67e511e30c1587abaf93a6f7"
+            },
+            {
+                "internId": "67e4cfb72ce2f25a20a1211c",
+                "status": "backlogs",
+                "_id": "67e6308c347a28689f1db5f7"
+            }
+        ]
+    }
+]
+```
+
+### Notes
+- Ensure the WebSocket connection is authenticated if required.
+- Handle reconnections gracefully in case of network interruptions.
+- Task updates include the task ID, intern ID, updated status, and a timestamp.
+- This endpoint is read-only and does not accept client messages.
+
+### Notes
+- Ensure the WebSocket connection is authenticated if required.
+- Handle reconnections gracefully in case of network interruptions.
+- Task updates include the task ID, intern ID, updated status, and a timestamp.
+- This endpoint is read-only and does not accept client messages.
+
+
 
 
 
