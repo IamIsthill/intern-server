@@ -1901,7 +1901,415 @@ Authorization: Bearer <your-token>
 }
 ```
 
+## Task
+The `Task` model represents a task entity in the system. It is used to manage and assign tasks to interns, track their progress, and ensure timely completion.
 
+### Schema Definition
+
+The `Task` schema is defined as follows:
+
+| Field             | Type       | Required? | Description                                      |
+|-------------------|------------|-----------|--------------------------------------------------|
+| `supervisor`      | ObjectId   | No        | References the supervisor who created the task. |
+| `title`           | String     | Yes       | The title of the task.                          |
+| `description`     | String     | Yes       | A detailed description of the task.             |
+| `deadline`        | Date       | No        | The deadline for completing the task.           |
+| `assignedInterns` | Array      | No        | A list of interns assigned to the task, along with their task statuses. |
+
+#### Assigned Interns Subdocument
+
+Each entry in the `assignedInterns` array contains the following fields:
+
+| Field      | Type     | Required? | Description                                      |
+|------------|----------|-----------|--------------------------------------------------|
+| `internId` | ObjectId | Yes       | References the intern assigned to the task.     |
+| `status`   | String   | Yes       | The status of the task for the intern. Possible values are: |
+|            |          |           | - `pending`: Task is not yet started.           |
+|            |          |           | - `in-progress`: Task is currently being worked on. |
+|            |          |           | - `completed`: Task has been completed.         |
+|            |          |           | - `backlogs`: Task is delayed or moved to backlogs. |
+
+### Endpoints
+
+Use the following endpoints to interact with the `Task` entities:
+
+| Method | Endpoint Name                            | Description                                      |
+|--------|------------------------------------------|--------------------------------------------------|
+| POST   | [Create Task](#create-task)              | Creates a new task and assigns it to interns.   |
+| GET    | [Get Tasks by Intern ID](#get-tasks-by-intern-id) | Retrieves all tasks assigned to a specific intern. |
+| PUT    | [Update Task](#update-task)              | Updates the details of an existing task.        |
+| GET    | [Get Tasks by Supervisor ID](#get-tasks-by-supervisor-id) | Retrieves all tasks created by a specific supervisor. |
+| PUT    | [Update Task Status (Intern)](#update-task-status-intern) | Updates the status of a task for a specific intern. |
+| DELETE | [Delete Task](#delete-task)              | Deletes a task from the system.                 |
+
+
+## Create Task
+
+### Endpoint
+```http
+POST /tasks
+```
+
+### Description
+This endpoint allows supervisors to create a new task and assign it to one or more interns. Tasks include details such as a title, description, deadline, and the list of assigned interns. It is useful for managing and tracking the progress of interns' work.
+
+### Request Schema
+
+#### Request Body
+| Field             | Type       | Required? | Description                                      |
+|-------------------|------------|-----------|--------------------------------------------------|
+| `title`           | `string`   | Yes       | The title of the task.                          |
+| `description`     | `string`   | Yes       | A detailed description of the task.             |
+| `deadline`        | `Date`     | No        | The deadline for completing the task.           |
+| `assignedInterns` | `array`    | Yes       | A list of intern IDs assigned to the task.      |
+
+### Request Example
+```http
+POST /tasks
+Content-Type: application/json
+
+{
+    "title": "Complete Weekly Report",
+    "description": "Interns must submit their weekly progress report by the end of the week.",
+    "deadline": "2025-04-07T23:59:59.000Z",
+    "assignedInterns": [
+        "67ebf698b0d4d8143ee09976",
+        "67ea2a8f86c8971ca1fe27ba"
+    ]
+}
+```
+
+### Response Example
+#### If the task is created successfully:
+```json
+{
+    "supervisor": "67ca892acd4899978d1b6666",
+    "title": "Complete Weekly Report",
+    "description": "Interns must submit their weekly progress report by the end of the week.",
+    "deadline": "2025-04-07T23:59:59.000Z",
+    "assignedInterns": [
+        {
+            "internId": "67ebf698b0d4d8143ee09976",
+            "status": "pending",
+            "_id": "67ecf9d0600490691b4ffe8b"
+        },
+        {
+            "internId": "67ea2a8f86c8971ca1fe27ba",
+            "status": "pending",
+            "_id": "67ecf9d0600490691b4ffe8c"
+        }
+    ],
+    "_id": "67ecf9d0600490691b4ffe8a",
+    "__v": 0
+}
+```
+
+#### If an error occurs:
+```json
+{
+    "message": "Failed to create task. Please check the input data."
+}
+```
+
+## Get Tasks by Intern ID
+
+### Endpoint
+```http
+GET /tasks/intern
+```
+
+### Description
+This endpoint allows you to retrieve all tasks assigned to a specific intern. It is useful for interns to view their task list and track their progress.
+
+### Request Schema
+
+#### Query Parameters
+| Query Parameter | Type   | Required? | Description                              |
+|------------------|--------|-----------|------------------------------------------|
+| internId         | string | Yes       | The unique identifier of the intern whose tasks are being retrieved. |
+
+### Request Example
+```http
+GET /tasks/intern?internId=67ebf698b0d4d8143ee09976
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+### Response Example
+#### If tasks are found:
+```json
+{
+    "tasks": [
+        {
+            "_id": "67ecf9d0600490691b4ffe8a",
+            "supervisor": "67ca892acd4899978d1b6666",
+            "title": "Complete Weekly Report",
+            "description": "Interns must submit their weekly progress report by the end of the week.",
+            "deadline": "2025-04-07T23:59:59.000Z",
+            "assignedInterns": [
+                {
+                    "internId": "67ebf698b0d4d8143ee09976",
+                    "status": "pending",
+                    "_id": "67ecf9d0600490691b4ffe8b"
+                },
+                {
+                    "internId": "67ea2a8f86c8971ca1fe27ba",
+                    "status": "pending",
+                    "_id": "67ecf9d0600490691b4ffe8c"
+                }
+            ]
+        }
+    ]
+}
+```
+
+#### If no tasks are found:
+```json
+{
+    "success": false,
+    "message": "No tasks found for the specified intern."
+}
+```
+
+## Update Task
+
+### Endpoint
+```http
+PUT /tasks/supervisor
+```
+
+### Description
+This endpoint allows a supervisor to update the details of an existing task. Supervisors can modify the task's title, description, deadline, or the list of assigned interns. It is useful for making adjustments to tasks as needed.
+
+### Authorization
+The [Supervisor Login](#supervisor-login) is required for each API request.
+
+### Request Schema
+
+#### Request Body
+| Field             | Type       | Required? | Description                                      |
+|-------------------|------------|-----------|--------------------------------------------------|
+| `_id`          | `string`   | Yes       | The unique identifier of the task to be updated.|
+| `title`           | `string`   | Yes        | The updated title of the task.                  |
+| `description`     | `string`   | Yes        | The updated description of the task.            |
+| `deadline`        | `Date`     | Yes        | The updated deadline for completing the task.   |
+| `assignedInterns` | `array`    | Yes        | The updated list of intern IDs assigned to the task. |
+
+### Request Example
+```http
+PUT /tasks/supervisor
+Content-Type: application/json
+Authorization: Bearer <your-token>
+
+{
+    "_id": "67ecf9d0600490691b4ffe8a",
+    "title": "Updated Weekly Report",
+    "description": "Interns must submit their updated weekly progress report by the new deadline.",
+    "deadline": "2025-04-10T23:59:59.000Z",
+    "assignedInterns": [
+        "67ebf698b0d4d8143ee09976",
+        "67ea2a8f86c8971ca1fe27ba"
+    ]
+}
+```
+
+### Response Example
+#### If the update is successful:
+```json
+{
+    "task": {
+        "_id": "67ecf9d0600490691b4ffe8a",
+        "supervisor": "67ca892acd4899978d1b6666",
+        "title": "Updated Weekly Report",
+        "description": "Interns must submit their updated weekly progress report by the new deadline.",
+        "deadline": "2025-04-10T23:59:59.000Z",
+        "assignedInterns": [
+            {
+                "internId": {
+                    "_id": "67ebf698b0d4d8143ee09976",
+                    "firstName": "John",
+                    "lastName": "Smith",
+                    "email": "bercasiocharles14@gmail.com"
+                },
+                "status": "pending",
+                "_id": "67ecf9d0600490691b4ffe8b"
+            },
+            {
+                "internId": {
+                    "_id": "67ea2a8f86c8971ca1fe27ba",
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "email": "johndoe@example.com"
+                },
+                "status": "pending",
+                "_id": "67ecf9d0600490691b4ffe8c"
+            }
+        ]
+    }
+}
+```
+
+#### If the task is not found:
+```json
+{
+    "success": false,
+    "message": "Task not found"
+}
+```
+
+## Get Tasks by Supervisor ID
+
+### Endpoint
+```http
+GET /tasks/supervisor/:id
+```
+
+### Description
+This endpoint allows a supervisor to retrieve all tasks they have created. It provides a detailed list of tasks, including their titles, descriptions, deadlines, and the interns assigned to each task. This is useful for supervisors to monitor and manage the progress of tasks they are overseeing.
+
+### Request Schema
+
+#### Path Parameters
+| Parameter | Type   | Required? | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| id        | string | Yes       | The unique identifier of the supervisor. |
+
+### Request Example
+```http
+GET /tasks/supervisor/67ca892acd4899978d1b6666
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+### Response Example
+```json
+{
+    "tasks": [
+        {
+            "_id": "67e397950d0a7b597c07b51b",
+            "supervisor": "67ca892acd4899978d1b6666",
+            "title": "asd",
+            "description": "asd",
+            "deadline": "2025-03-28T00:00:00.000Z",
+            "__v": 0,
+            "assignedInterns": [
+                {
+                    "internId": {
+                        "_id": "67e4cfb72ce2f25a20a1211c",
+                        "firstName": "Erna",
+                        "lastName": "Mosciski",
+                        "email": "foo@foo.com"
+                    },
+                    "status": "pending",
+                    "_id": "67ea2ddc86c8971ca1fe61fd"
+                },
+                {
+                    "internId": {
+                        "_id": "67e4cfb72ce2f25a20a12120",
+                        "firstName": "Francis",
+                        "lastName": "Grimes",
+                        "email": "Jennyfer_Goyette34@hotmail.com"
+                    },
+                    "status": "pending",
+                    "_id": "67ea2ddc86c8971ca1fe61fe"
+                }
+            ]
+        }
+    ]
+}
+```
+
+## Update Task Status (Intern)
+
+### Endpoint
+```http
+PUT /tasks/:taskId
+```
+
+### Description
+This endpoint allows interns to update the status of a specific task assigned to them. It helps track task progress and keeps supervisors informed about the current state of the task.
+
+### Request Schema
+
+#### Path Parameters
+| Parameter | Type   | Required? | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| taskId    | string | Yes       | The unique identifier of the task.       |
+
+#### Request Body
+| Field    | Type   | Required? | Description                              |
+|----------|--------|-----------|------------------------------------------|
+| internId | string | Yes       | The unique identifier of the intern assigned to the task. |
+| status   | string | Yes       | The updated status of the task. Valid options are: `pending`, `in-progress`, `completed`, or `backlogs`. |
+
+### Request Example
+```http
+PUT /tasks/67e397950d0a7b597c07b51b
+Content-Type: application/json
+Authorization: Bearer <your-token>
+
+{
+    "internId": "67e4cfb72ce2f25a20a1211c",
+    "status": "completed"
+}
+```
+
+### Response Example
+#### If the update is successful:
+```json
+{
+    "task": {
+        "_id": "67e397950d0a7b597c07b51b",
+        "title": "asd",
+        "description": "asd",
+        "deadline": "2025-03-28T00:00:00.000Z",
+        "status": "completed",
+        "__v": 0
+    }
+}
+```
+
+#### If the task or intern is not found:
+```json
+{
+    "message": "Task or intern not found"
+}
+```
+
+## Delete Task
+
+### Endpoint
+```http
+DELETE /tasks/:taskId
+```
+
+### Description
+This endpoint allows supervisors to delete a specific task from the system. Deleting a task removes it from the database and unassigns it from all associated interns. It is useful for managing outdated or unnecessary tasks.
+
+### Request Schema
+
+#### Path Parameters
+| Parameter | Type   | Required? | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| taskId    | string | Yes       | The unique identifier of the task to be deleted. |
+
+### Request Example
+```http
+DELETE /tasks/67e397950d0a7b597c07b51b
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+### Response Example
+#### If the task is deleted successfully (204 No Content):
+The server responds with a `204 No Content` status code, indicating that the task was successfully deleted and there is no additional content to send in the response body.
+
+#### If the task is not found:
+```json
+{
+    "message":   "No task found. Unable to delete."
+}
+```
 
 
 
