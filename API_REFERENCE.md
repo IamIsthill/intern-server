@@ -776,6 +776,531 @@ Content-Type: application/json
 ```
 
 
+## Intern
+The `Intern` model represents an intern entity in the system. It is used to store and manage information about interns, including their personal details, internship progress, and associated records.
+
+### Schema Definition
+The `Intern` schema is defined as follows:
+
+| Field            | Type     | Required? | Description                                      |
+|-------------------|----------|-----------|--------------------------------------------------|
+| _id              | String   | Yes       | The unique identifier of the intern.            |
+| firstName        | String   | Yes       | The first name of the intern.                   |
+| lastName         | String   | Yes       | The last name of the intern.                    |
+| age              | Number   | Yes       | The age of the intern.                          |
+| phone            | String   | Yes       | The intern's phone number (11 digits, unique).  |
+| school           | String   | Yes       | The name of the intern's school.                |
+| internshipHours  | Number   | Yes       | The total required internship hours.            |
+| email            | String   | Yes       | The intern's email address (must be unique).    |
+| password         | String   | Yes       | The intern's account password (minimum 8 characters). |
+| department       | String   | No        | The ID of the department the intern belongs to. |
+| supervisor       | String   | No        | The ID of the supervisor assigned to the intern.|
+| status           | String   | No        | The internship status (`active` or `inactive`). |
+| timeEntries      | Array    | No        | A list of time-in and time-out records.         |
+| accountType      | String   | Yes       | The type of account (always `intern`).          |
+| isApproved       | String   | No        | Approval status of the intern (`pending`, `approved`, `rejected`). |
+| logs             | Array    | No        | A list of logs associated with the intern.      |
+| reportLogs       | Array    | No        | A list of report logs submitted by the intern.  |
+| totalHours       | Number   | No        | The total hours completed by the intern (calculated from `timeEntries`). |
+
+#### Time Entries
+Each entry in the `timeEntries` array contains:
+- `timeIn` (Date): The time the intern clocked in.
+- `timeOut` (Date): The time the intern clocked out.
+
+#### Logs
+Each entry in the `logs` array contains:
+- `taskId` (String): The ID of the associated task.
+- `note` (String): A note related to the task.
+- `read` (String): The read status (`unread` or `read`).
+- `date` (Date): The date the log was created.
+
+#### Report Logs
+Each entry in the `reportLogs` array contains:
+- `reportId` (String): The ID of the associated report.
+- `title` (String): The title of the report.
+- `description` (String): The description of the report.
+- `feedback` (String): Feedback provided for the report.
+- `suggestions` (String): Suggestions for improvement.
+- `rating` (Number): A rating between 1 and 10.
+- `date` (Date): The date the report was submitted.
+- `supervisor` (String): The ID of the supervisor who reviewed the report.
+
+### Example
+```json
+{
+    "_id": "67ebf698b0d4d8143ee09976",
+    "firstName": "John",
+    "lastName": "Doe",
+    "age": 22,
+    "phone": "09123456789",
+    "school": "Tech University",
+    "internshipHours": 200,
+    "email": "johndoe@example.com",
+    "password": "hashedPassword123",
+    "department": "60d5f9e813b5c70017e6e5b1",
+    "supervisor": "60d5f9e813b5c70017e6e5b2",
+    "status": "active",
+    "timeEntries": [
+        {
+            "timeIn": "2025-03-31T08:00:00.000Z",
+            "timeOut": "2025-03-31T17:00:00.000Z"
+        }
+    ],
+    "accountType": "intern",
+    "isApproved": "approved",
+    "logs": [
+        {
+            "taskId": "60d5f9e813b5c70017e6e5b3",
+            "note": "Completed task 1",
+            "read": "read",
+            "date": "2025-03-30T10:00:00.000Z"
+        }
+    ],
+    "reportLogs": [
+        {
+            "reportId": "60d5f9e813b5c70017e6e5b4",
+            "title": "Weekly Report",
+            "description": "Summary of weekly tasks",
+            "feedback": "Great work!",
+            "suggestions": "Focus on time management.",
+            "rating": 9,
+            "date": "2025-03-31T12:00:00.000Z",
+            "supervisor": "60d5f9e813b5c70017e6e5b2"
+        }
+    ],
+    "totalHours": 9
+}
+```
+### Authorization
+
+The [Intern Authorization](#intern-login) is required to access this, unless specified otherwise.
+
+### Endpoints
+
+### Endpoints
+
+Use the following endpoints to interact with the Intern entities.
+
+| Method | Endpoint name                            | Description             |
+|--------|------------------------------------------|-------------------------|
+| GET    | [Get All Interns](#get-all-interns)      | Retrieve a list of all interns in the system. |
+| GET    | [Find Interns via Supervisor](#find-interns-via-supervisor) | Filter interns by their assigned supervisor. |
+| PUT    | [Update Intern Account Status](#update-intern-account-status) | Update the intern account status by ID. |
+| GET    | [Get Inactive Interns](#get-inactive-interns) | Fetch a list of all inactive interns in the system. |
+| PUT    | [Update Intern Profile (Self)](#update-intern-profile-self) | Allows an intern to update their own profile details. |
+| GET    | [Fetch Intern by ID](#fetch-intern-by-id) | Retrieve the details of a specific intern using their unique identifier. |
+
+## Get All Interns
+Retrieve a list of all interns in the system.
+
+### Endpoint
+```http
+GET /interns/all
+```
+
+### Description
+This endpoint allows you to fetch an array of all intern accounts currently available in the system. Each intern includes their personal details, internship progress, and associated records. This endpoint is useful for administrators to manage and monitor all interns.
+
+### Request Example
+```http
+GET /interns/all
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+### Response Example
+```json
+{
+    "interns": [
+        {
+            "_id": "67e4cfb72ce2f25a20a12120",
+            "firstName": "Francis",
+            "lastName": "Grimes",
+            "age": 18,
+            "phone": "59811976098",
+            "school": "Lord Jim",
+            "internshipHours": 486,
+            "email": "Jennyfer_Goyette34@hotmail.com",
+            "department": null,
+            "supervisor": "67ca892acd4899978d1b6666",
+            "status": "active",
+            "logs": [
+                {
+                    "taskId": "67e4cfb72ce2f25a20a12123",
+                    "note": "Voluptate umerus tabesco caelestis acies clementia ambulo trans contra villa.",
+                    "read": "read",
+                    "_id": "67e4cfb72ce2f25a20a12122",
+                    "date": "2025-03-27T04:10:33.460Z"
+                }
+            ],
+            "totalHours": 0
+        }
+    ]
+}
+```
+
+## Find Interns via Supervisor
+Filter interns by their assigned supervisor.
+
+### Endpoint
+```http
+GET /interns/find
+```
+
+### Description
+This endpoint allows you to retrieve a list of interns assigned to a specific supervisor. It is useful for supervisors to monitor and manage the interns under their supervision.
+
+### Request Schema
+
+#### Query Parameters
+| Parameter      | Type   | Required? | Description                              |
+|----------------|--------|-----------|------------------------------------------|
+| supervisor   | string | Yes       | The unique ID of the supervisor.         |
+
+### Request Example
+```http
+GET /interns/find?supervisor=67ca892acd4899978d1b6666
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+### Response Example
+```json
+{
+    "interns": [
+        {
+            "_id": "67ea2a8f86c8971ca1fe27ba",
+            "firstName": "John",
+            "lastName": "Doe",
+            "age": 22,
+            "phone": "09123456789",
+            "school": "Tech University",
+            "internshipHours": 200,
+            "email": "johndoe@example.com",
+            "department": null,
+            "supervisor": "60d5f9e813b5c70017e6e5b2",
+            "status": "active",
+            "totalHours": 9,
+            "logs": []
+        }
+    ]
+}
+```
+
+## Update Intern Account Status
+Update the intern account status by ID.
+
+### Endpoint
+```http
+PUT /interns/update-status/:id
+```
+
+### Description
+This endpoint allows an administrator to update the status of an intern's account. The status can be set to either `active` or `inactive`. This is useful for managing the availability and participation of interns in the system.
+
+### Request Schema
+
+#### Path Parameters
+| Path Parameter | Type   | Required? | Description                              |
+|----------------|--------|-----------|------------------------------------------|
+| id             | string | Yes       | The unique identifier of the intern.     |
+
+
+### Request Example
+```http
+PUT /interns/update-status/67e4cfb72ce2f25a20a12120
+Content-Type: application/json
+```
+
+### Response Example
+#### If the update is successful:
+```json
+{
+    "success": true,
+    "message": "Intern status successfully updated to 'active'",
+    "intern": {
+        "_id": "67ebf698b0d4d8143ee09976",
+        "firstName": "John",
+        "lastName": "Doe",
+        "age": 22,
+        "phone": "09123456782",
+        "school": "Tech University",
+        "internshipHours": 200,
+        "email": "johndoes@example.com",
+        "password": "$2b$10$uPI6HELQHLLszjjCgbk/VeHmYtZ.RYSmn0ahgjxEKPxBdGCNOYkfu",
+        "department": null,
+        "supervisor": null,
+        "status": "active",
+        "timeEntries": [
+            {
+                "timeIn": "2025-03-31T08:00:00.000Z",
+                "timeOut": "2025-03-31T17:00:00.000Z",
+                "_id": "67ebf698b0d4d8143ee09977"
+            }
+        ],
+        "accountType": "intern",
+        "isApproved": "pending",
+        "totalHours": 9,
+        "logs": [],
+        "reportLogs": [],
+        "__v": 0
+    }
+}
+```
+
+#### If the intern is not found:
+```json
+{
+    "success": false,
+    "message": "Intern not found"
+}
+```
+
+## Get Inactive Interns
+Fetch a list of all inactive interns in the system.
+
+### Endpoint
+```http
+GET /interns/inactive-interns
+```
+
+### Description
+This endpoint allows administrators to retrieve a list of all interns whose accounts are marked as `inactive`. It is useful for monitoring interns who are not currently participating in the internship program or have been temporarily deactivated.
+
+### Request Example
+```http
+GET /interns/inactive-interns
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+### Response Example
+```json
+{
+    "success": true,
+    "count": 1,
+    "interns": [
+        {
+            "_id": "67ebf698b0d4d8143ee09976",
+            "firstName": "John",
+            "lastName": "Doe",
+            "age": 22,
+            "phone": "09123456782",
+            "school": "Tech University",
+            "email": "johndoes@example.com",
+            "department": null,
+            "status": "inactive"
+        }
+    ]
+}
+```
+
+## Update Intern Profile (Self)
+Allows an intern to update their own profile details.
+
+### Endpoint
+```http
+PUT /interns/update-profile/:id
+```
+
+### Description
+This endpoint allows an intern to update their own profile information, such as personal details, school information, or contact details. It ensures that interns can keep their profiles up to date.
+
+### Request Schema
+#### Path parameters
+
+{This section is optional.}
+
+| Path parameter | Type   | Required? | Description                  |
+|----------------|--------|-----------|------------------------------|
+| id           | string | Required  | Unique identifier of the intern  |
+|                |        |           |                              |
+
+#### Request Body
+| Field      | Type     | Required? | Description                                      |
+|------------|----------|-----------|--------------------------------------------------|
+| id         | string   | No        | The unique identifier of the intern (optional). |
+| firstName  | string   | No        | The first name of the intern.                   |
+| lastName   | string   | No        | The last name of the intern.                    |
+| phone      | string   | No        | The intern's phone number.                      |
+| email      | string   | No        | The intern's email address (must be valid).     |
+| password   | string   | No        | The intern's account password (minimum 8 characters). |
+
+
+### Request Example
+```http
+PUT /interns/update-profile/67ebf698b0d4d8143ee09976
+Content-Type: application/json
+Authorization: Bearer <your-token>
+
+{
+    "firstName": "John",
+    "lastName": "Smith",
+    "phone": "09123456781",
+    "email": "johnsmith@example.com"
+}
+```
+
+### Response Example
+```json
+{
+    "success": true,
+    "message": "Intern profile updated successfully",
+    "data": {
+        "_id": "67ebf698b0d4d8143ee09976",
+        "firstName": "John",
+        "lastName": "Smith",
+        "age": 22,
+        "phone": "09123456781",
+        "school": "Tech University",
+        "internshipHours": 200,
+        "email": "johnsmith@example.com",
+        "department": null,
+        "supervisor": null,
+        "status": "inactive",
+        "timeEntries": [
+            {
+                "timeIn": "2025-03-31T08:00:00.000Z",
+                "timeOut": "2025-03-31T17:00:00.000Z",
+                "_id": "67ebf698b0d4d8143ee09977"
+            }
+        ],
+        "accountType": "intern",
+        "isApproved": "pending",
+        "totalHours": 9,
+        "logs": [],
+        "reportLogs": [],
+        "__v": 0
+    }
+}
+```
+
+## Fetch Intern by ID
+Retrieve the details of a specific intern using their unique identifier.
+
+### Endpoint
+```http
+GET /interns/get-intern/:id
+```
+
+### Description
+This endpoint allows you to fetch detailed information about a specific intern by providing their unique ID. It is useful for administrators or supervisors to view an intern's profile, progress, and associated records.
+
+### Request Schema
+
+#### Path Parameters
+| Parameter | Type   | Required? | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| id        | string | Yes       | The unique identifier of the intern.     |
+
+### Request Example
+```http
+GET /interns/get-intern/67ebf698b0d4d8143ee09976
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+### Response Example
+#### If the intern is found:
+```json
+{
+    "success": true,
+    "data": {
+        "_id": "67ebf698b0d4d8143ee09976",
+        "firstName": "John",
+        "lastName": "Smith",
+        "age": 22,
+        "phone": "09123456781",
+        "school": "Tech University",
+        "internshipHours": 200,
+        "email": "johnsmith@example.com",
+        "department": null,
+        "supervisor": null,
+        "status": "inactive",
+        "timeEntries": [
+            {
+                "timeIn": "2025-03-31T08:00:00.000Z",
+                "timeOut": "2025-03-31T17:00:00.000Z",
+                "_id": "67ebf698b0d4d8143ee09977"
+            }
+        ],
+        "accountType": "intern",
+        "isApproved": "pending",
+        "totalHours": 9,
+        "logs": [],
+        "reportLogs": [],
+        "__v": 0
+    }
+}
+```
+
+#### If the intern is not found:
+```json
+{
+    "success": false,
+    "message": "Intern not found"
+}
+```
+
+## Update Log Status
+Update the status of a specific log entry.
+
+### Endpoint
+```http
+PUT /interns/logs/:logId
+```
+
+### Description
+This endpoint updates the `read` status of a specific log entry in their logs. Logs are generated whenever an intern updates or changes the status of a task. This functionality ensures that logs can be marked as read or unread as needed.
+
+### Request Schema
+#### Path Parameters
+| Parameter | Type   | Required? | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| logId     | string | Yes       | The unique identifier of the log entry.  |
+
+#### Request Body
+| Field  | Type   | Required? | Description                      |
+|--------|--------|-----------|----------------------------------|
+| read   | string | Yes       | Indicates the status of the log. Acceptable values are `read` or `unread`. |
+
+### Request Example
+```http
+PUT /interns/logs/67e4cfb72ce2f25a20a1211e
+Content-Type: application/json
+Authorization: Bearer <your-token>
+
+{
+    "read": "unread"
+}
+```
+
+### Response Example
+#### If the update is successful:
+```json
+{
+    "taskId": "67e4cfb72ce2f25a20a1211f",
+    "note": "Ager quas volup magnam unus condico tenax ventito creo accusamus.",
+    "read": "unread",
+    "_id": "67e4cfb72ce2f25a20a1211e",
+    "date": "2025-03-27T04:10:33.459Z"
+}
+```
+
+#### If the log is not found:
+```json
+{
+    "message": "Unable to find specific log"
+}
+```
+
+
+
+
+
+
+
 
 
 
