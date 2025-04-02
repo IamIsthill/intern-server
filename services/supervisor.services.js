@@ -4,6 +4,8 @@ import { Supervisor } from "../models/Supervisor.js";
 import { JWT_SECRET } from "../config/index.js";
 import { Intern } from "../models/interns.js";
 import { Reports } from "../models/Reports.js";
+import { createId } from "../utils/createId.js";
+
 export const createSupervisor = async (supervisor) => {
   supervisor.password = await bcrypt.hash(supervisor.password, 10);
   const response = await Supervisor.create(supervisor);
@@ -259,3 +261,11 @@ export const getReportsByIntern = async (internId) => {
     throw new Error("Error fetching reports: " + error.message);
   }
 };
+
+export const findSupervisorByEmailAndInternId = async (value) => {
+  return await Supervisor.findOne({ assignedInterns: { $in: createId(value.internId) }, email: value.email })
+}
+
+export const findSupervisorByEmail = async (email) => {
+  return await Supervisor.findOne({ email })
+}

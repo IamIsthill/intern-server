@@ -117,3 +117,12 @@ export const findTaskAndUpdate = async (value) => {
 
     return task
 }
+
+export const getTasksByInternIdAndSupervisorId = async (supervisorId, internId) => {
+    return await Tasks.find({
+        supervisor: supervisorId,
+        assignedInterns: {
+            $elemMatch: { internId: internId }
+        }
+    }).select(['-__v'])
+}
