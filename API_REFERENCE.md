@@ -1399,6 +1399,510 @@ Content-Type: application/json
     "message": "Invalid or expired token"
 }
 ```
+## Supervisor
+The `Supervisor` model represents a supervisor entity in the system. It is used to store and manage information about supervisors, including their personal details and the interns they oversee.
+### Schema Definition
+The `Supervisor` schema is defined as follows:
+
+| Field            | Type     | Required? | Description                                      |
+|-------------------|----------|-----------|--------------------------------------------------|
+| _id              | String   | Yes       | The unique identifier of the supervisor.         |
+| firstName        | String   | Yes       | The first name of the supervisor.                |
+| lastName         | String   | Yes       | The last name of the supervisor.                 |
+| age              | Number   | Yes       | The age of the supervisor.                       |
+| email            | String   | Yes       | The supervisor's email address (must be unique). |
+| password         | String   | Yes       | The supervisor's account password (minimum 8 characters). |
+| department       | String   | No        | The ID of the department the supervisor belongs to. |
+| assignedInterns  | Array    | No        | A list of intern IDs assigned to the supervisor. |
+| status           | String   | No        | The current status of the supervisor (e.g., active, inactive). |
+| accountType      | String   | No        | The type of account (always `supervisor`).       |
+
+### Example
+```json
+{
+    "_id": "67ca892acd4899978d1b6666",
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "age": 35,
+    "email": "janedoe@example.com",
+    "password": "hashedPassword123",
+    "department": "60d5f9e813b5c70017e6e5b1",
+    "assignedInterns": [
+        "67ebf698b0d4d8143ee09976",
+        "67ea2a8f86c8971ca1fe27ba"
+    ],
+    "status": "active",
+    "accountType": "supervisor"
+}
+```
+
+### Endpoints
+
+Use the following endpoints to interact with the Supervisor entities.
+
+| Method | Endpoint Name                            | Description                                      |
+|--------|------------------------------------------|--------------------------------------------------|
+| GET    | [Get All Supervisors](#get-all-supervisors) | Retrieve a list of all supervisors in the system. |
+| GET    | [Fetch Supervisor by ID](#fetch-supervisor-by-id) | Retrieve the details of a specific supervisor using their unique identifier. |
+| PUT    | [Update Supervisor Profile](#update-supervisor-profile) | Update the profile details of a supervisor. |
+| POST   | [Register Supervisor](#register-supervisor) | Create a new supervisor account in the system. |
+| PUT    | [Update Supervisor Status](#update-supervisor-status) | Update the status of a supervisor account. |
+| POST   | [Create Report](#create-report) | Create a detailed report for an intern. |
+| GET    | [Get Reports for an Intern](#get-reports-for-an-intern) | Retrieve all reports created for a specific intern. |
+
+## Get All Supervisors
+Retrieve a list of all supervisors in the system.
+
+### Endpoint
+```http
+GET /supervisors/all
+```
+
+### Description
+This endpoint allows administrators to fetch an array of all supervisors currently available in the system. Each supervisor includes their personal details and the interns they oversee.
+
+### Request Example
+```http
+GET /supervisors/all
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+### Response Example
+```json
+{
+    "supervisors": [
+        {
+            "_id": "67ca892acd4899978d1b6666",
+            "firstName": "maria",
+            "lastName": "mercedes",
+            "age": 30,
+            "email": "sup@sup.com",
+            "assignedInterns": [
+                "67e4cfb72ce2f25a20a1211c",
+                "67e4cfb72ce2f25a20a12120"
+            ],
+            "department": {
+                "_id": "67ca8a7f536daacf28d2940c",
+                "name": "IT",
+                "__v": 0
+            },
+            "accountType": "supervisor",
+            "status": "active"
+        }
+    ]
+}
+```
+
+## Fetch Supervisor by ID
+Retrieve the details of a specific supervisor using their unique identifier.
+
+### Endpoint
+```http
+GET /supervisors/get-supervisor/:id
+```
+
+### Description
+This endpoint allows you to fetch detailed information about a specific supervisor by providing their unique ID. It is useful for administrators to view a supervisor's profile and the interns they oversee.
+
+### Request Schema
+
+#### Path Parameters
+| Parameter | Type   | Required? | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| id        | string | Yes       | The unique identifier of the supervisor. |
+
+### Request Example
+```http
+GET /supervisors/get-supervisor/67ca892acd4899978d1b6666
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+### Response Example
+```json
+{
+    "success": true,
+    "data": {
+        "_id": "67ca892acd4899978d1b6666",
+        "firstName": "maria",
+        "lastName": "mercedes",
+        "age": 30,
+        "email": "sup@sup.com",
+        "password": "$2a$10$uSIVbf8cjV.vw.dO62/Di.1acSP4SnxbxSzcBTH5dprzb/bkjwyRq",
+        "assignedInterns": [
+            {
+                "_id": "67e4cfb72ce2f25a20a1211c",
+                "firstName": "Erna",
+                "lastName": "Mosciski"
+            },
+            {
+                "_id": "67e4cfb72ce2f25a20a12120",
+                "firstName": "Francis",
+                "lastName": "Grimes"
+            }
+        ],
+        "department": {
+            "_id": "67ca8a7f536daacf28d2940c",
+            "name": "IT"
+        },
+        "accountType": "supervisor",
+        "__v": 0,
+        "status": "active",
+        "departmentName": "IT",
+        "assignedInternsFullNames": [
+            {
+                "_id": "67e4cfb72ce2f25a20a1211c",
+                "fullName": "Erna Mosciski"
+            },
+            {
+                "_id": "67e4cfb72ce2f25a20a12120",
+                "fullName": "Francis Grimes"
+            }
+        ]
+    }
+}
+```
+## Register Supervisor
+An endpoint for registering a supervisor.
+
+### Endpoint
+```http
+POST /supervisors/register
+```
+
+### Description
+This endpoint allows the creation of a new supervisor account in the system. The supervisor account will include personal details and optional fields such as department and assigned interns. The account will be stored in the database and can be used for managing interns and overseeing their progress.
+
+### Request Schema
+#### Request Body
+
+| Field            | Type     | Required? | Description                                      |
+|-------------------|----------|-----------|--------------------------------------------------|
+| `firstName`       | `string` | Yes       | The first name of the supervisor.               |
+| `lastName`        | `string` | Yes       | The last name of the supervisor.                |
+| `age`             | `number` | Yes       | The age of the supervisor.                      |
+| `email`           | `string` | Yes       | The supervisor's email address (must be unique).|
+| `password`        | `string` | Yes       | The account password (minimum 8 characters).    |
+| `department`      | `string` | No        | The unique ID of the department (24-character hexadecimal). |
+| `assignedInterns` | `array`  | No        | A list of intern IDs assigned to the supervisor.|
+| `status`          | `string` | No        | The account status (e.g., `active` or `inactive`). |
+| `accountType`     | `string` | Yes       | The type of account (always `supervisor`).      |
+
+
+### Request Example
+```http
+POST /supervisors/register
+Content-Type: application/json
+
+{
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "age": 35,
+    "email": "janedoe@example.com",
+    "password": "securePassword123",
+    "department": "60d5f9e813b5c70017e6e5b1",
+    "assignedInterns": [
+        "67ebf698b0d4d8143ee09976",
+        "67ea2a8f86c8971ca1fe27ba"
+    ],
+    "status": "active",
+    "accountType": "supervisor"
+}
+```
+
+### Response Example
+#### If the registration is successful:
+```json
+{
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "age": 35,
+    "email": "janedoes@example.com",
+    "assignedInterns": [
+        "67ebf698b0d4d8143ee09976",
+        "67ea2a8f86c8971ca1fe27ba"
+    ],
+    "status": "active",
+    "department": "67ecebe3b69866e59673ed4e",
+    "accountType": "supervisor",
+    "_id": "67ecec14b69866e59673ed6f"
+}
+```
+
+#### If the email is already taken:
+```json
+{
+        "message": "Email already exists"
+}
+```
+
+
+## Update Supervisor Profile
+Update the profile details of a supervisor.
+
+### Endpoint
+```http
+PUT /supervisors/update-profile/:id
+```
+
+### Description
+This endpoint allows a supervisor to update their profile information, such as their name, email, or phone number. It ensures that supervisors can maintain accurate and up-to-date profiles.
+
+### Request Schema
+
+#### Path Parameters
+| Parameter | Type   | Required? | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| id        | string | Yes       | The unique identifier of the supervisor. |
+
+#### Request Body
+| Field            | Type     | Required? | Description                                      |
+|-------------------|----------|-----------|--------------------------------------------------|
+| `firstName`       | `string` | No       | The first name of the supervisor.               |
+| `lastName`        | `string` | No       | The last name of the supervisor.                |
+| `age`             | `number` | No       | The age of the supervisor.                      |
+| `email`           | `string` | No       | The supervisor's email address (must be unique).|
+| `password`        | `string` | No       | The account password (minimum 8 characters).    |
+| `department`      | `string` | No        | The unique ID of the department (24-character hexadecimal). |
+| `assignedInterns` | `array`  | No        | A list of intern IDs assigned to the supervisor.|
+| `status`          | `string` | No        | The account status (e.g., `active` or `inactive`). |
+| `accountType`     | `string` | No       | The type of account (always `supervisor`).      |
+
+### Request Example
+```http
+PUT /supervisors/update-profile/67ca892acd4899978d1b6666
+Content-Type: application/json
+Authorization: Bearer <your-token>
+
+{
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "email": "janesmith@example.com",
+    "phone": "09123456780"
+}
+```
+
+### Response Example
+```json
+{
+    "success": true,
+    "message": "Supervisor profile updated successfully",
+    "data": {
+        "_id": "67ca892acd4899978d1b6666",
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "email": "janesmith@example.com",
+        "phone": "09123456780",
+        "department": "60d5f9e813b5c70017e6e5b1",
+        "interns": [
+            "67ebf698b0d4d8143ee09976",
+            "67ea2a8f86c8971ca1fe27ba"
+        ]
+    }
+}
+```
+
+## Update Supervisor Status
+
+Update the status of a supervisor account.
+
+### Endpoint
+```http
+PUT /supervisors/update-status/:id
+```
+
+### Description
+This endpoint allows administrators to update the status of a supervisor's account. The status can be set to either `active` or `inactive`. This is useful for managing the availability and participation of supervisors in the system.
+
+### Request Schema
+
+#### Path Parameters
+| Parameter | Type   | Required? | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| id        | string | Yes       | The unique identifier of the supervisor. |
+
+#### Request Body
+| Field  | Type   | Required? | Description                              |
+|--------|--------|-----------|------------------------------------------|
+| status | string | Yes       | The new status of the supervisor. Valid options are `active` or `inactive`. |
+
+### Request Example
+```http
+PUT /supervisors/update-status/67ca892acd4899978d1b6666
+Content-Type: application/json
+
+{
+    "status": "inactive"
+}
+```
+
+### Response Example
+#### If the update is successful:
+```json
+{
+    "success": true,
+    "message": "Supervisor status successfully updated to 'inactive'",
+    "supervisor": {
+        "_id": "67ecec14b69866e59673ed6f",
+        "firstName": "Jane",
+        "lastName": "Doe",
+        "age": 35,
+        "email": "janedoes@example.com",
+        "password": "$2b$10$KauLmqRPxPRwTE8Ry.enBeVSOjX.mME4KJATllZZpe2Ti.CcETXBy",
+        "assignedInterns": [
+            "67ebf698b0d4d8143ee09976",
+            "67ea2a8f86c8971ca1fe27ba"
+        ],
+        "status": "inactive",
+        "department": "67ecebe3b69866e59673ed4e",
+        "accountType": "supervisor",
+        "__v": 0
+    }
+}
+```
+
+#### If the supervisor is not found:
+```json
+{
+    "success": false,
+    "message": "Supervisor not found"
+}
+```
+
+## Create Report
+An endpoint for supervisors to create a report for an intern.
+
+### Endpoint
+```http
+POST /supervisors/create-report/:id
+```
+
+### Description
+This endpoint allows a supervisor to create a detailed report for a specific intern. The report includes feedback, suggestions, and a performance rating. It is useful for tracking the intern's progress and providing actionable insights for improvement.
+
+### Request Schema
+
+#### Path Parameters
+| Parameter | Type   | Required? | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| id        | string | Yes       | The unique identifier of the intern.     |
+#### Request Body
+| Field        | Type     | Required? | Description                                      |
+|--------------|----------|-----------|--------------------------------------------------|
+| title        | string   | Yes       | The title of the report.                        |
+| description  | string   | Yes       | A detailed description of the intern's performance. |
+| feedback     | string   | Yes       | Feedback provided by the supervisor.            |
+| suggestions  | string   | No        | Suggestions for improvement, if any.            |
+| rating       | number   | Yes       | A performance rating on a scale of 1 to 10.     |
+| createdAt    | Date     | No        | The date and time when the report was created.  |
+
+
+### Request Example
+```http
+POST /supervisors/create-report/67ebf698b0d4d8143ee09976
+Content-Type: application/json
+
+{
+    "title": "Weekly Performance Review",
+    "description": "The intern has shown excellent progress in completing assigned tasks.",
+    "feedback": "Great job on meeting deadlines and maintaining quality.",
+    "suggestions": "Focus on improving time management for larger projects.",
+    "rating": 9
+}
+```
+
+### Response Example
+#### If the report is created successfully:
+```json
+{
+    "message": "Report created successfully",
+    "report": {
+        "supervisor": "67ca892acd4899978d1b6666",
+        "intern": "67ebf698b0d4d8143ee09976",
+        "tasks": [],
+        "title": "Weekly Performance Review",
+        "description": "The intern has shown excellent progress in completing assigned tasks.",
+        "feedback": "Great job on meeting deadlines and maintaining quality.",
+        "suggestions": "Focus on improving time management for larger projects.",
+        "rating": 9,
+        "assignedInterns": [],
+        "createdAt": "2025-04-02T08:21:37.292Z",
+        "_id": "67ecf391b69866e59673ed96",
+        "__v": 0
+    }
+}
+```
+
+#### If the intern is not found:
+```json
+{
+    "success": false,
+    "message": "Intern not found"
+}
+```
+
+## Get Reports for an Intern
+
+### Endpoint
+```http
+GET /supervisors/get-reports/:id
+```
+
+### Description
+This endpoint allows a supervisor to retrieve all reports created for a specific intern. It provides a detailed list of reports, including feedback, suggestions, and performance ratings, enabling supervisors to track the intern's progress over time.
+
+### Request Schema
+
+#### Path Parameters
+| Parameter | Type   | Required? | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| id        | string | Yes       | The unique identifier of the intern.     |
+
+### Request Example
+```http
+GET /supervisors/get-reports/67ebf698b0d4d8143ee09976
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+### Response Example
+#### If reports are found:
+```json
+{
+    "message": "Reports fetched successfully",
+    "reports": [
+        {
+            "_id": "67ecf3cbb69866e59673ed9e",
+            "supervisor": {
+                "_id": "67ca892acd4899978d1b6666",
+                "email": "sup@sup.com"
+            },
+            "intern": "67ebf698b0d4d8143ee09976",
+            "tasks": [],
+            "title": "Weekly Performance Review",
+            "description": "The intern has shown excellent progress in completing assigned tasks.",
+            "feedback": "Great job on meeting deadlines and maintaining quality.",
+            "suggestions": "Focus on improving time management for larger projects.",
+            "rating": 9,
+            "assignedInterns": [],
+            "createdAt": "2025-04-02T08:22:35.285Z",
+            "__v": 0
+        }
+    ]
+}
+```
+
+#### If no reports are found:
+```json
+{
+    "success": false,
+    "message": "No reports found for the specified intern"
+}
+```
+
+
+
 
 
 
