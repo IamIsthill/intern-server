@@ -20,7 +20,6 @@ const supervisorSchema = new mongoose.Schema({
       ref: "Intern",
     },
   ],
-  default: [],
   status: {
     type: String,
     enum: ["active", "inactive"],
