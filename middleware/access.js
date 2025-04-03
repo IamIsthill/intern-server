@@ -10,11 +10,12 @@
  *     res.send('Welcome, Supervisor!');
  * });
  */
-export const validateAccess = (access) => {
-    return async (req, res, next) => {
-        if (req.user.accountType !== access) {
-            return res.status(401).json({ message: "Unauthorized access" });
-        }
-        next();
-    };
+export const validateAccess = (...allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user || !allowedRoles.includes(req.user.accountType)) {
+      return res.status(401).json({ message: "Unauthorized access" });
+    }
+
+    next();
+  };
 };

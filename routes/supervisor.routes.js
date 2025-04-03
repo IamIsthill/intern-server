@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as controller from "../controllers/supervisor.controller.js";
 import { validateAccess } from "../middleware/access.js";
+import { authenticateJWT } from "../middleware/auth.js";
 
 export const supervisorRouter = Router();
 
@@ -25,7 +26,8 @@ supervisorRouter.post(
 );
 supervisorRouter.get(
   "/get-reports/:id",
-  validateAccess("supervisor"),
+  authenticateJWT,
+  validateAccess("supervisor", "admin"),
   controller.getReportsbyInternIdController
 );
 supervisorRouter.put("/update-reports/:id", controller.updateReportController);
