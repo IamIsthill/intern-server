@@ -2386,6 +2386,8 @@ Receive by the supervisor
 - Handle reconnections gracefully in case of network interruptions.
 - Task updates include the task ID, intern ID, updated status, and a timestamp.
 - This endpoint is read-only and does not accept client messages.
+  
+---
 ## Files
 A collection of endpoints for managing file uploads and metadata in the system.
 
@@ -2413,6 +2415,7 @@ The `doc` field contains detailed information about the uploaded file.
 | Method | Endpoint Name                          | Description                                      |
 |--------|----------------------------------------|--------------------------------------------------|
 | POST   | [Intern Upload Document](#intern-upload-document) | Allows an intern to upload a document to the system. |
+| GET   | [Fetch Files](#fetch-files) | Retrieve uploaded files based on the user's account type. |
 
 
  
@@ -2473,6 +2476,92 @@ Content-Type: multipart/form-data
 }
 ```
 
+## Fetch Files
+Retrieve uploaded files based on the user's account type.
+
+### Endpoint
+```http
+GET /files
+```
+
+### Authorization
+A valid login is required. Refer to [Login Endpoints](#login-endpoints) for authentication options.
+
+### Description
+- **Interns**: Fetches only the files uploaded by the logged-in intern.
+- **Supervisors or Admins**: Fetches all files uploaded in the system. Supervisors and admins can optionally filter files by uploader.
+
+### Request Schema
+
+#### Query Parameters
+
+| Query Parameter | Type   | Required? | Description                                                                 |
+|------------------|--------|-----------|-----------------------------------------------------------------------------|
+| `uploader`       | string | Optional  | The unique identifier of the uploader. Only applicable for admin or supervisor accounts. |
+
+### Request Example
+
+#### For Interns
+```http
+GET /files
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+#### For Supervisors or Admins (with optional uploader filter)
+```http
+GET /files?uploader=67ebf698b0d4d8143ee09976
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+### Response Example
+
+#### For Interns
+```json
+{
+    "files": [
+        {
+            "_id": "67f1a2b3c4d5e6f7g8h9i0j1",
+            "accountType": "Intern",
+            "uploader": "67ebf698b0d4d8143ee09976",
+            "doc": {
+                "name": "weekly_report.pdf",
+                "type": "application/pdf",
+                "buffer": "<binary-data>"
+            }
+        }
+    ]
+}
+```
+
+#### For Supervisors or Admins
+```json
+{
+    "files": [
+        {
+            "_id": "67f1a2b3c4d5e6f7g8h9i0j1",
+            "accountType": "Intern",
+            "uploader": "67ebf698b0d4d8143ee09976",
+            "doc": {
+                "name": "weekly_report.pdf",
+                "type": "application/pdf",
+                "buffer": "<binary-data>"
+            }
+        },
+        {
+            "_id": "67f1a2b3c4d5e6f7g8h9i0j2",
+            "accountType": "Supervisor",
+            "uploader": "67ca892acd4899978d1b6666",
+            "doc": {
+                "name": "project_overview.png",
+                "type": "image/png",
+                "buffer": "<binary-data>"
+            }
+        }
+    ]
+}
+```
 
 
 
