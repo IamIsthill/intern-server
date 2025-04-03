@@ -251,7 +251,7 @@ export const findInternByIdAndCreateReport = async (reportData) => {
 export const getReportsByIntern = async (internId) => {
   try {
     const reports = await Reports.find({ intern: internId })
-      .populate("supervisor", "name email")
+      .populate("supervisor", "firstName lastName email")
       .populate("tasks", "title description")
       .populate("assignedInterns", "name email")
       .sort({ createdAt: -1 });
