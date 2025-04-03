@@ -28,3 +28,4 @@ supervisorRouter.get(
   validateAccess("supervisor"),
   controller.getReportsbyInternIdController
 );
+supervisorRouter.put("/update-reports/:id", controller.updateReportController);

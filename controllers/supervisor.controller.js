@@ -4,7 +4,6 @@ import {
   updateSupervisorValidator,
   updateSupervisorStatusValidator,
   getSupervisorByIdValidator,
-  createReportValidator,
   getReportsbyInternIdValidator,
 } from "../validations/supervisor.validator.js";
 import {
@@ -18,6 +17,7 @@ import {
   getSupervisorById,
   findInternByIdAndCreateReport,
   getReportsByIntern,
+  findReportByIdAndUpdate,
 } from "../services/supervisor.services.js";
 import mongoose from "mongoose";
 
@@ -258,6 +258,56 @@ export const getReportsbyInternIdController = async (req, res) => {
     console.error("Internal Server Error:", error.message);
     return res.status(500).json({
       message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+export const updateReportController = async (req, res) => {
+  try {
+    console.log("🔹 Received Data:", req.body);
+    console.log("🔹 Params ID (Report ID):", req.params.id); // FIX: Use req.params.id
+    console.log("🔹 Authenticated Supervisor ID:", req.user?.id);
+
+    const reportId = req.params.id; // FIX: Get report ID from params
+
+    const {
+      internId,
+      supervisorId,
+      title,
+      description,
+      feedback,
+      suggestions,
+      rating,
+      selectedDate,
+    } = req.body;
+
+    if (!reportId) {
+      return res.status(400).json({ message: "Report ID is required" });
+    }
+
+    const reportData = {
+      reportId,
+      internId,
+      supervisorId: supervisorId || req.user.id,
+      title,
+      description,
+      feedback,
+      suggestions,
+      rating,
+      selectedDate,
+    };
+
+    const updatedReport = await findReportByIdAndUpdate(reportData);
+
+    return res.status(200).json({
+      message: "Report updated successfully",
+      report: updatedReport,
+    });
+  } catch (error) {
+    console.error("Full error details:", error);
+    return res.status(500).json({
+      message: "Error updating report",
       error: error.message,
     });
   }

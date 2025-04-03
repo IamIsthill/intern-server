@@ -93,3 +93,33 @@ export const createReportValidator = Joi.object({
 export const getReportsbyInternIdValidator = Joi.object({
   id: Joi.string().required(),
 });
+
+export const updateReportValidator = Joi.object({
+  supervisor: Joi.string().optional().description("Supervisor ID"),
+  intern: Joi.string().optional().description("Intern ID"),
+  tasks: Joi.array().items(Joi.string()).optional().description("Task IDs"),
+  title: Joi.string().optional().min(3).max(100).description("Report Title"),
+  description: Joi.string()
+    .optional()
+    .min(10)
+    .max(500)
+    .description("Report Description"),
+  feedback: Joi.string().optional().max(300).description("Supervisor Feedback"),
+  suggestions: Joi.string()
+    .optional()
+    .max(300)
+    .description("Supervisor Suggestions"),
+  rating: Joi.number()
+    .integer()
+    .min(0) // Changed from min(1) to min(0)
+    .max(10)
+    .optional()
+    .description("Report Rating"),
+  assignedInterns: Joi.array()
+    .items(Joi.string())
+    .optional()
+    .description("Assigned Intern IDs"),
+  selectedDate: Joi.date()
+    .optional() // Changed from required to optional
+    .default(() => new Date()), // If not provided, use current date
+});
