@@ -58,6 +58,8 @@ export const updateInternProfileValidator = joi.object({
   phone: joi.string().optional(),
   email: joi.string().email().optional(),
   password: joi.string().min(8).optional(),
+  school: joi.string().optional(),
+  internshipHours: joi.string().optional()
 });
 
 
