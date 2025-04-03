@@ -16,6 +16,7 @@ import { passwordRouter } from "./routes/password.routes.js";
 import { WebSocketServer } from "./services/websocket.js";
 import http from 'http'
 import { wsRouter } from "./routes/websockets.routes.js";
+import { fileRouter } from "./routes/file.route.js";
 
 export const app = express();
 export const server = http.createServer(app)
@@ -39,6 +40,7 @@ app.use("/admin", adminRouter);
 app.use("/tasks", taskRouter);
 app.use("/supervisors", supervisorRouter);
 app.use("/departments", departmentRouter);
+app.use('/files', fileRouter)
 app.use(errorHandler);
 
 startApp(server, port);
