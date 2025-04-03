@@ -2386,6 +2386,93 @@ Receive by the supervisor
 - Handle reconnections gracefully in case of network interruptions.
 - Task updates include the task ID, intern ID, updated status, and a timestamp.
 - This endpoint is read-only and does not accept client messages.
+## Files
+A collection of endpoints for managing file uploads and metadata in the system.
+
+### Schema Definition
+The `File` schema represents documents uploaded by users, storing essential metadata such as file name, type, size, and the uploader's details.
+
+| Field         | Type     | Required? | Description                                      |
+|---------------|----------|-----------|--------------------------------------------------|
+| `_id`         | String   | Yes       | The unique identifier of the file.              |
+| `accountType` | String   | Yes       | The type of account associated with the uploader (`Intern`, `Admin`, `Supervisor`). |
+| `uploader`    | String   | Yes       | The unique identifier of the user who uploaded the file. |
+| `doc`         | Object   | Yes       | Metadata about the uploaded document.           |
+
+#### `doc` Subdocument
+The `doc` field contains detailed information about the uploaded file.
+
+| Field   | Type   | Required? | Description                                      |
+|---------|--------|-----------|--------------------------------------------------|
+| `buffer` | String | Yes       | The binary data of the uploaded file.           |
+| `type`   | String | Yes       | The MIME type of the file (e.g., `image/jpeg`, `application/pdf`). |
+| `name`   | String | Yes       | The original name of the uploaded file.         |
+
+
+### Endpoints
+| Method | Endpoint Name                          | Description                                      |
+|--------|----------------------------------------|--------------------------------------------------|
+| POST   | [Intern Upload Document](#intern-upload-document) | Allows an intern to upload a document to the system. |
+
+
+ 
+## Intern Upload Document
+An endpoint for the intern user to upload a document.
+
+### Endpoint
+```http
+POST /files/intern/:internId
+```
+
+### Description
+This endpoint allows an intern to upload a document to the system. Accepted file formats include `image/jpeg`, `image/png`, and `application/pdf`. The maximum file size allowed is 10 MB. This feature is useful for submitting reports, assignments, or other required documents securely and efficiently.
+
+### Request Schema
+
+#### Path Parameters
+| Parameter | Type   | Required? | Description                              |
+|-----------|--------|-----------|------------------------------------------|
+| internId  | string | Yes       | The unique identifier of the intern uploading the document. |
+
+#### Request Body
+The request body should include the file to be uploaded as a `multipart/form-data` payload.
+
+| Field  | Type   | Required? | Description                      |
+|--------|--------|-----------|----------------------------------|
+| file   | file   | Yes       | The document to be uploaded. Supported formats: `image/jpeg`, `image/png`, `application/pdf`. |
+
+### Request Example
+```http
+POST /files/intern/67ebf698b0d4d8143ee09976
+Content-Type: multipart/form-data
+
+{
+    "file": <file>
+}
+```
+
+### Response Example
+#### If the upload is successful:
+```json
+{
+    "message": "File uploaded successfully",
+}
+```
+
+#### If the file format is unsupported:
+```json
+{
+    "message": "Unsupported file format. Please upload a JPEG, PNG, or PDF file."
+}
+```
+
+#### If the intern is not found:
+```json
+{
+    "message": "Intern not found"
+}
+```
+
 
 
 
