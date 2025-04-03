@@ -263,11 +263,9 @@ export const getReportsByIntern = async (internId) => {
 };
 
 export const findSupervisorByEmailAndInternId = async (value) => {
-  return await Supervisor.findOne({
-    assignedInterns: { $in: createId(value.internId) },
-    email: value.email,
-  });
-};
+  const intern = await Intern.findOne({ _id: createId(value.internId) }).populate('supervisor')
+  return await Supervisor.findOne({ assignedInterns: { $in: createId(value.internId) }, email: intern.supervisor.email })
+}
 
 export const findSupervisorByEmail = async (email) => {
   return await Supervisor.findOne({ email });

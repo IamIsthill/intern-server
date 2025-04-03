@@ -72,7 +72,7 @@ const internHandler = async (connection, value) => {
         const supervisor = await findSupervisorByEmailAndInternId(value)
 
         if (!supervisor) {
-            connection.send(connection, false, "No supervisor found")
+            sendMessage(connection, false, "No supervisor found")
             return
         }
         const supervisorId = supervisor._id.toString()
