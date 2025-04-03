@@ -1,5 +1,7 @@
 import { File } from "../models/File.js";
 import { Intern } from "../models/interns.js";
+import { Validation } from "../validations/Validation.js";
+import { fetchFilesValidator } from "../validations/fileValidator.js";
 import Joi from "joi";
 
 export const internUploadDoc = async (req, res, next) => {
@@ -49,4 +51,18 @@ export const internUploadDoc = async (req, res, next) => {
 const toMegaBytes = (bytes) => {
     const size = bytes / (1024 * 1024)
     return size
+}
+
+
+export const fetchFiles = async (req, res, next) => {
+    try {
+        const value = new Validation(fetchFilesValidator, req.query).validate()
+        if (req.user.accountType == 'intern') {
+            value.uploader = req.user.id
+        }
+        const files = await File.find(value).lean()
+        return res.status(200).json(files)
+    } catch (err) {
+        next(err)
+    }
 }
