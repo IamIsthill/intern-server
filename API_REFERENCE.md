@@ -1,8 +1,7 @@
-# API Reference template
-
+# OJT Management API Documentation
 ## Overview
 
-Use the {product} APIs to {access | customize | program} the {features | functionality}.
+The `OJT Management` APIs provide powerful tools to streamline and enhance your internship management processes. These APIs enable seamless integration with the system, allowing you to efficiently build, extend, and optimize workflows tailored to your needs.
 
 ### Base URL
 
@@ -24,13 +23,19 @@ http://localhost:3000
 | `500 Internal Server Error` | Server error. | The server encountered an unexpected condition that prevented it from fulfilling the request. |
 
 
+## Table of Contents
 
-#### ExampleErrorType
-
-| Field          | Type     | Description                                      |
-|----------------|----------|--------------------------------------------------|
-| {errorType}    | {enum}   | {Predefined error codes. Possible enum values are x, y, ..., and z.} |
-| {errorMessage} | {string} | {Additional information about why the error occurs.} |
+| Resource                     | Description                                      |
+|------------------------------|--------------------------------------------------|
+| [Login Endpoints](#login-endpoints) | Endpoints for user authentication and login.      |
+| [Admin Endpoints](#admin-user)      | APIs for managing admin accounts and resources.   |
+| [Department Endpoints](#department) | APIs for managing department-related operations.  |
+| [Interns Auth Endpoints](#interns-auth) | Endpoints for intern registration and validation. |
+| [Intern Endpoints](#intern)         | APIs for managing intern accounts and activities. |
+| [Password Reset Endpoints](#password-reset) | APIs for password recovery and reset.            |
+| [Supervisor Endpoints](#supervisor) | APIs for managing supervisor accounts and tasks.  |
+| [Task Endpoints](#task)             | APIs for creating, updating, and managing tasks.  |
+| [Task Updates (WebSockets)](#task-updates) | Real-time updates for task status changes.        |
 
 ## Login Endpoints
 endpoints for logging in the supervisors, admin and interns
