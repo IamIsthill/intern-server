@@ -29,3 +29,8 @@ supervisorRouter.get(
   controller.getReportsbyInternIdController
 );
 supervisorRouter.put("/update-reports/:id", controller.updateReportController);
+supervisorRouter.delete(
+  "/delete-report/:id",
+  validateAccess("supervisor"),
+  controller.deleteReportController
+);

@@ -327,3 +327,25 @@ export const findReportByIdAndUpdate = async (reportData) => {
     throw error;
   }
 };
+
+export const deleteReport = async (reportId) => {
+  try {
+    if (!reportId) throw new Error("Report ID is required");
+
+    const report = await Reports.findById(reportId);
+    if (!report) throw new Error("Report not found");
+
+    const internId = report.intern;
+
+    await Intern.findByIdAndUpdate(internId, {
+      $pull: { reportLogs: { reportId: reportId } },
+    });
+
+    await Reports.findByIdAndDelete(reportId);
+
+    return { success: true, message: "Report deleted successfully" };
+  } catch (error) {
+    console.error("Report deletion error:", error);
+    return { success: false, message: "Error deleting report" };
+  }
+};

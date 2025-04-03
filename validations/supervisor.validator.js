@@ -123,3 +123,7 @@ export const updateReportValidator = Joi.object({
     .optional() // Changed from required to optional
     .default(() => new Date()), // If not provided, use current date
 });
+
+export const deteleReportValidator = Joi.object({
+  id: Joi.string().required(),
+});

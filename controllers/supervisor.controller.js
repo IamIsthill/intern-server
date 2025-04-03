@@ -5,6 +5,8 @@ import {
   updateSupervisorStatusValidator,
   getSupervisorByIdValidator,
   getReportsbyInternIdValidator,
+  deteleReportValidator,
+  createReportValidator,
 } from "../validations/supervisor.validator.js";
 import {
   findDepartmentByName,
@@ -18,6 +20,7 @@ import {
   findInternByIdAndCreateReport,
   getReportsByIntern,
   findReportByIdAndUpdate,
+  deleteReport,
 } from "../services/supervisor.services.js";
 import mongoose from "mongoose";
 
@@ -308,6 +311,41 @@ export const updateReportController = async (req, res) => {
     console.error("Full error details:", error);
     return res.status(500).json({
       message: "Error updating report",
+      error: error.message,
+    });
+  }
+};
+export const deleteReportController = async (req, res) => {
+  try {
+    const { error, value } = deteleReportValidator.validate({
+      id: req.params.id,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
+    }
+
+    const result = await deleteReport(value.id);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: result.message,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Report deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error in deleteReportController:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
       error: error.message,
     });
   }
