@@ -2,6 +2,7 @@ import { loginAdminService } from "../services/staff-auth.services.js";
 import { loginSupervisorService } from "../services/staff-auth.services.js";
 import { loginSupervisorValidator } from "../validations/supervisor.validator.js";
 import { loginAdminValidator } from "../validations/adminValidator.js";
+import { BadRequestError } from "../utils/errors.js";
 
 export const loginSupervisorController = async (req, res, next) => {
   try {

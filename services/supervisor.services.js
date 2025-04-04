@@ -4,6 +4,8 @@ import { Supervisor } from "../models/Supervisor.js";
 import { JWT_SECRET } from "../config/index.js";
 import { Intern } from "../models/interns.js";
 import { Reports } from "../models/Reports.js";
+import { createId } from "../utils/createId.js";
+
 export const createSupervisor = async (supervisor) => {
   supervisor.password = await bcrypt.hash(supervisor.password, 10);
   const response = await Supervisor.create(supervisor);
@@ -249,7 +251,7 @@ export const findInternByIdAndCreateReport = async (reportData) => {
 export const getReportsByIntern = async (internId) => {
   try {
     const reports = await Reports.find({ intern: internId })
-      .populate("supervisor", "name email")
+      .populate("supervisor", "firstName lastName email")
       .populate("tasks", "title description")
       .populate("assignedInterns", "name email")
       .sort({ createdAt: -1 });
@@ -257,5 +259,91 @@ export const getReportsByIntern = async (internId) => {
     return reports;
   } catch (error) {
     throw new Error("Error fetching reports: " + error.message);
+  }
+};
+
+export const findSupervisorByEmailAndInternId = async (value) => {
+  const intern = await Intern.findOne({ _id: createId(value.internId) }).populate('supervisor')
+  return await Supervisor.findOne({ assignedInterns: { $in: createId(value.internId) }, email: intern.supervisor.email })
+}
+
+export const findSupervisorByEmail = async (email) => {
+  return await Supervisor.findOne({ email });
+};
+export const findReportByIdAndUpdate = async (reportData) => {
+  try {
+    const {
+      reportId,
+      supervisorId,
+      title,
+      description,
+      feedback,
+      suggestions,
+      rating,
+      selectedDate,
+    } = reportData;
+
+    if (!reportId) throw new Error("Report ID is required");
+    if (!supervisorId) throw new Error("Supervisor ID is required");
+
+    // Find the report by ID
+    const report = await Reports.findById(reportId);
+    if (!report) throw new Error("Report not found");
+
+    const internId = report.intern;
+
+    // Update only allowed fields
+    report.title = title || report.title;
+    report.description = description || report.description;
+    report.feedback = feedback || report.feedback;
+    report.suggestions = suggestions || report.suggestions;
+    report.rating = rating || report.rating;
+    report.createdAt = selectedDate ? new Date(selectedDate) : report.createdAt;
+
+    await report.save();
+
+    await Intern.findByIdAndUpdate(
+      internId,
+      {
+        $set: {
+          "reportLogs.$[log].title": report.title,
+          "reportLogs.$[log].description": report.description,
+          "reportLogs.$[log].feedback": report.feedback || "",
+          "reportLogs.$[log].suggestions": report.suggestions || "",
+          "reportLogs.$[log].rating": report.rating,
+          "reportLogs.$[log].date": report.createdAt,
+        },
+      },
+      {
+        arrayFilters: [{ "log.reportId": reportId }],
+      }
+    );
+
+    return report;
+  } catch (error) {
+    console.error("Report update error:", error);
+    throw error;
+  }
+};
+
+export const deleteReport = async (reportId) => {
+  try {
+    if (!reportId) throw new Error("Report ID is required");
+
+    const report = await Reports.findById(reportId);
+    if (!report) throw new Error("Report not found");
+
+    const internId = report.intern;
+
+    await Intern.findByIdAndUpdate(internId, {
+      $pull: { reportLogs: { reportId: reportId } },
+    });
+
+    await Reports.findByIdAndDelete(reportId);
+
+    return { success: true, message: "Report deleted successfully" };
+  } catch (error) {
+    console.error("Report deletion error:", error);
+    return { success: false, message: "Error deleting report" };
   }
 };

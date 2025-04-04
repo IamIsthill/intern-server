@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Intern } from "../models/interns.js";
-
+import bcrypt from "bcryptjs";
 export const findInterns = async (param) => {
   if (param.supervisor) {
     try {
@@ -24,7 +24,7 @@ export const findInterns = async (param) => {
       "status",
       "supervisor",
       "totalHours",
-      "logs"
+      "logs",
     ]);
 };
 

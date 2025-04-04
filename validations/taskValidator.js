@@ -25,3 +25,9 @@ export const supervisorIdValidator = Joi.object({
 export const taskIdValidator = Joi.object({
     taskId: Joi.string().hex().required().length(24)
 })
+
+export const taskUpdatesValidator = Joi.object({
+    accountType: Joi.string().valid('intern', 'supervisor').required(),
+    email: Joi.string().email({ tlds: false }),
+    internId: Joi.string().hex().optional().length(24)
+})

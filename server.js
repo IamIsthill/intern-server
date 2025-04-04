@@ -13,12 +13,21 @@ import { internRouter } from "./routes/interns.routes.js";
 import { router as internAuthRouter } from "./routes/interns-auth.routes.js";
 import { router as staffAuthRouter } from "./routes/staff-auth.routes.js";
 import { passwordRouter } from "./routes/password.routes.js";
+import { WebSocketServer } from "./services/websocket.js";
+import http from 'http'
+import { wsRouter } from "./routes/websockets.routes.js";
+import { fileRouter } from "./routes/file.route.js";
 
 export const app = express();
+export const server = http.createServer(app)
+export const ws = new WebSocketServer({ server: server })
+
+
+ws.websocket.on("connection", wsRouter)
+
 const port = 3000;
 
 connectDb();
-
 app.use(compression());
 app.use(express.json());
 app.use(Cors());
@@ -31,7 +40,8 @@ app.use("/admin", adminRouter);
 app.use("/tasks", taskRouter);
 app.use("/supervisors", supervisorRouter);
 app.use("/departments", departmentRouter);
+app.use('/files', fileRouter)
 app.use(errorHandler);
 
-startApp(app, port);
+startApp(server, port);
 onDbError();
