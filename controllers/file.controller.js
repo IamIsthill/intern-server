@@ -56,8 +56,9 @@ const toMegaBytes = (bytes) => {
 
 export const fetchFiles = async (req, res, next) => {
     try {
-        const value = new Validation(fetchFilesValidator, req.query).validate()
+        let value = new Validation(fetchFilesValidator, req.query).validate()
         if (req.user.accountType == 'intern') {
+            value = {}
             value.uploader = req.user.id
         }
         const files = await File.find(value).lean()
