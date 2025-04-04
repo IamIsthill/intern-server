@@ -2497,7 +2497,8 @@ A valid login is required. Refer to [Login Endpoints](#login-endpoints) for auth
 
 | Query Parameter | Type   | Required? | Description                                                                 |
 |------------------|--------|-----------|-----------------------------------------------------------------------------|
-| `uploader`       | string | Optional  | The unique identifier of the uploader. Only applicable for admin or supervisor accounts. |
+| `uploader`       | string | Optional  | The unique identifier of the uploader. This parameter is applicable only for admin or supervisor accounts. |
+| `accountType`    | string | Optional  | A filter for admin and supervisor accounts. Valid values are [`Intern`, `Supervisor`, `Admin`]. |
 
 ### Request Example
 
