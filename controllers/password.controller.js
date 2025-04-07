@@ -14,29 +14,24 @@ export const sendPasswordResetEmail = async (req, res, next) => {
   try {
     const value = new Validation(sendEmailValidator, req.body).validate();
 
-    const { email, accountType } = value;
+    const { email } = value;
 
-    let user
+    const queries = [findInternByEmail, findAdminByEmail, findSupervisorByEmail]
 
-    switch (accountType) {
-      case 'intern':
-        user = await findInternByEmail(email);
-        break
-      case 'admin':
-        user = await findAdminByEmail(email)
-        break
-      case 'supervisor':
-        user = await findSupervisorByEmail(email)
-        break
-      default:
-        user = null
+    let user = null;
 
+    for (const query of queries) {
+      const foundUser = await query(email);
+      if (foundUser) {
+        user = foundUser;
+        break;
+      }
     }
 
     if (!user)
       return res.status(400).json({ message: "No account found" });
 
-    const token = createToken({ email: email, accountType: accountType }, RESET_TOKEN, "2h");
+    const token = createToken({ email: email, accountType: user.accountType }, RESET_TOKEN, "2h");
 
     const htmlContent = `
       <!DOCTYPE html>

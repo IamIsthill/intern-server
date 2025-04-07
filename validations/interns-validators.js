@@ -44,7 +44,6 @@ export const getInactiveInternValidator = joi.object({
 
 export const sendEmailValidator = joi.object({
   email: joi.string().email().required(),
-  accountType: joi.string().valid("admin", 'intern', 'supervisor').required()
 });
 
 export const resetPasswordValidator = joi.object({
