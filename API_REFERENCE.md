@@ -1324,7 +1324,7 @@ Collection of endpoints used for resetting the password via email
 
 | Method | Endpoint Name                            | Description                          |
 |--------|------------------------------------------|--------------------------------------|
-| POST   | [Get Password Reset Link](#get-password-reset-link) | Request a password reset link for an intern account. |
+| POST   | [Get Password Reset Link](#get-password-reset-link) | Request a password reset link for your account. |
 | PUT    | [Reset Password](#reset-password)        | Reset the password using the token received via email. |
 
 
@@ -1333,7 +1333,7 @@ Request a password reset link for an intern account.
 
 ### Endpoint
 ```http
-POST /password/intern/reset
+POST /password/reset
 ```
 
 ### Description
@@ -1342,17 +1342,19 @@ This endpoint allows an intern to request a password reset link. The link will b
 ### Request Schema
 
 #### Request Body
-| Field  | Type   | Required? | Description                      |
-|--------|--------|-----------|----------------------------------|
-| email  | string | Yes       | The email address of the intern. |
+| Field        | Type   | Required? | Description                                      |
+|--------------|--------|-----------|--------------------------------------------------|
+| email        | string | Yes       | The email address of the user.                  |
+| accountType  | string | Yes       | The type of the user's account. Valid values are `intern`, `supervisor`, or `admin`. |
 
 ### Request Example
 ```http
-POST /password/intern/reset
+POST /password/reset
 Content-Type: application/json
 
 {
     "email": "johndoe@example.com"
+    "accountType": "intern"
 }
 ```
 
