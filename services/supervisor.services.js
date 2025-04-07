@@ -347,3 +347,7 @@ export const deleteReport = async (reportId) => {
     return { success: false, message: "Error deleting report" };
   }
 };
+
+export const findSupervisorByEmailAndUpdate = async (email, update) => {
+  return await Supervisor.findOneAndUpdate({ email: email }, { ...update });
+};

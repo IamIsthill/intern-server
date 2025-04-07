@@ -1,43 +1,44 @@
 import { Validation, ValidationError } from "../validations/Validation.js";
-import { findInternByEmail } from "../services/intern.services.js";
+import { findInternByEmail, findInternByEmailAndUpdate } from "../services/intern.services.js";
 import { sendEmailValidator, resetPasswordValidator } from "../validations/interns-validators.js";
 import { sendEmail } from "../services/mail.js";
-import { findAdminByEmail } from "../services/admin.services.js";
-import { findSupervisorByEmail } from "../services/supervisor.services.js";
+import { findAdminByEmail, findAdminByEmailAndUpdate } from "../services/admin.services.js";
+import { findSupervisorByEmail, findSupervisorByEmailAndUpdate } from "../services/supervisor.services.js";
 import { RESET_TOKEN } from "../config/index.js";
 import jwt from 'jsonwebtoken'
 import bcrypt from "bcryptjs";
 import { createToken } from "../utils/token.js";
 
+
 export const sendPasswordResetEmail = async (req, res, next) => {
-    try {
-        const value = new Validation(sendEmailValidator, req.body).validate();
+  try {
+    const value = new Validation(sendEmailValidator, req.body).validate();
 
-        const { email, accountType } = value;
+    const { email, accountType } = value;
 
-        let user
+    let user
 
-        switch (accountType) {
-            case 'intern':
-                user = await findInternByEmail(email);
-                break
-            case 'admin':
-                user = await findAdminByEmail(email)
-                break
-            case 'supervisor':
-                user = await findSupervisorByEmail(email)
-                break
-            default:
-                user = null
+    switch (accountType) {
+      case 'intern':
+        user = await findInternByEmail(email);
+        break
+      case 'admin':
+        user = await findAdminByEmail(email)
+        break
+      case 'supervisor':
+        user = await findSupervisorByEmail(email)
+        break
+      default:
+        user = null
 
-        }
+    }
 
-        if (!user)
-            return res.status(400).json({ message: "No account found" });
+    if (!user)
+      return res.status(400).json({ message: "No account found" });
 
-        const token = createToken({ email: email }, RESET_TOKEN, "2h");
+    const token = createToken({ email: email, accountType: accountType }, RESET_TOKEN, "2h");
 
-        const htmlContent = `
+    const htmlContent = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -104,51 +105,69 @@ export const sendPasswordResetEmail = async (req, res, next) => {
       </html>
     `;
 
-        sendEmail(email, "Reset Password Link", htmlContent);
+    sendEmail(email, "Reset Password Link", htmlContent);
 
-        return res
-            .status(200)
-            .json({ message: "Successfully sent password reset email" });
-    } catch (err) {
-        console.log(err)
-        if (err instanceof ValidationError) {
-            next(err)
-            return
-        }
-        return res.status(400).json({ message: "Password reset email not sent" });
+    return res
+      .status(200)
+      .json({ message: "Successfully sent password reset email" });
+  } catch (err) {
+    console.log(err)
+    if (err instanceof ValidationError) {
+      next(err)
+      return
     }
+    return res.status(400).json({ message: "Password reset email not sent" });
+  }
 };
 
 export const resetPassword = async (req, res, next) => {
-    try {
-        const value = new Validation(resetPasswordValidator, req.body).validate();
+  try {
+    const value = new Validation(resetPasswordValidator, req.body).validate();
 
-        const { password, token } = value;
+    const { password, token } = value;
 
-        validatePassword(password);
+    validatePassword(password);
 
-        const data = jwt.verify(token, RESET_TOKEN);
+    const data = jwt.verify(token, RESET_TOKEN);
 
-        const hashPassword = await bcrypt.hash(password, 10);
-
-        const foundIntern = await findInternByEmailAndUpdate(data.email, {
-            password: hashPassword,
+    const hashPassword = await bcrypt.hash(password, 10);
+    let user
+    switch (data.accountType) {
+      case 'intern':
+        user = await findInternByEmailAndUpdate(data.email, {
+          password: hashPassword,
         });
+        break
+      case 'admin':
+        user = await findAdminByEmailAndUpdate(data.email, {
+          password: hashPassword,
+        })
+        break
+      case 'supervisor':
+        user = await findSupervisorByEmailAndUpdate(data.email, {
+          password: hashPassword,
+        })
+        break
+      default:
+        user = null
 
-        if (!foundIntern)
-            return res.status(400).json({ message: "Account not found" });
-
-        return res.status(200).json({ message: "Successfully updated password" });
-    } catch (err) {
-        if (
-            err instanceof jwt.TokenExpiredError ||
-            err instanceof jwt.JsonWebTokenError
-        ) {
-            return res.status(401).json({ message: err.message });
-        }
-        if (err instanceof Error) {
-            return res.status(400).json({ message: err.message });
-        }
-        next(err);
     }
+
+
+    if (!user)
+      return res.status(400).json({ message: "Account not found" });
+
+    return res.status(200).json({ message: "Successfully updated password" });
+  } catch (err) {
+    if (
+      err instanceof jwt.TokenExpiredError ||
+      err instanceof jwt.JsonWebTokenError
+    ) {
+      return res.status(401).json({ message: err.message });
+    }
+    if (err instanceof Error) {
+      return res.status(400).json({ message: err.message });
+    }
+    next(err);
+  }
 };
