@@ -137,3 +137,7 @@ export const findInternByLogId = async (logId, read) => {
     { new: true, useFindAndModify: false }
   ).select(["-__v", "-password", "-timeEntries"]);
 };
+
+export const findInternByEmail = async (email) => {
+  return await Intern.findOne({ email }).lean()
+}

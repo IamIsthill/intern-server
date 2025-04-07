@@ -20,7 +20,7 @@ export class Validation {
 
 }
 
-class ValidationError extends Error {
+export class ValidationError extends Error {
     constructor(message) {
         super(message)
         this.name = "ValidationError"
