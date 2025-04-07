@@ -1345,7 +1345,6 @@ This endpoint allows an intern to request a password reset link. The link will b
 | Field        | Type   | Required? | Description                                      |
 |--------------|--------|-----------|--------------------------------------------------|
 | email        | string | Yes       | The email address of the user.                  |
-| accountType  | string | Yes       | The type of the user's account. Valid values are `intern`, `supervisor`, or `admin`. |
 
 ### Request Example
 ```http
@@ -1354,7 +1353,6 @@ Content-Type: application/json
 
 {
     "email": "johndoe@example.com"
-    "accountType": "intern"
 }
 ```
 
