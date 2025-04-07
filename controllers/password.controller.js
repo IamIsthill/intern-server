@@ -8,6 +8,7 @@ import { RESET_TOKEN } from "../config/index.js";
 import jwt from 'jsonwebtoken'
 import bcrypt from "bcryptjs";
 import { createToken } from "../utils/token.js";
+import { validatePassword } from '../utils/validatePassword.js'
 
 
 export const sendPasswordResetEmail = async (req, res, next) => {
