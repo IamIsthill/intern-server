@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import http from 'http'
 import compression from "compression";
 import { connectDb, startApp, onDbError } from "./database/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -14,9 +15,9 @@ import { router as internAuthRouter } from "./routes/interns-auth.routes.js";
 import { router as staffAuthRouter } from "./routes/staff-auth.routes.js";
 import { passwordRouter } from "./routes/password.routes.js";
 import { WebSocketServer } from "./services/websocket.js";
-import http from 'http'
 import { wsRouter } from "./routes/websockets.routes.js";
 import { fileRouter } from "./routes/file.route.js";
+import { limiter } from "./services/rateLimiter.js";
 
 export const app = express();
 export const server = http.createServer(app)
@@ -31,6 +32,7 @@ connectDb();
 app.use(compression());
 app.use(express.json());
 app.use(Cors());
+app.use(limiter)
 app.use('/password', passwordRouter)
 app.use("/auth", internAuthRouter);
 app.use("/a2kstaffs", staffAuthRouter);
