@@ -11,16 +11,28 @@ http://localhost:3000
 
 ### HTTP Status Codes
 
+The following table outlines common HTTP status codes used in the **OJT Management API**:
 
-| Status Code | Message           | Description                                   |
-|-------------|-------------------|-----------------------------------------------|
-| `200 OK`    | Request succeeds. | The request was successfully processed.       |
-| `201 Created` | Resource created. | A new resource has been successfully created. |
-| `400 Bad Request` | Invalid request. | The server could not understand the request due to invalid syntax. |
-| `401 Unauthorized` | Authentication required. | The request requires user authentication. |
-| `403 Forbidden` | Access denied. | The server understood the request but refuses to authorize it. |
-| `404 Not Found` | Resource not found. | The requested resource could not be found. |
-| `500 Internal Server Error` | Server error. | The server encountered an unexpected condition that prevented it from fulfilling the request. |
+| Status Code       | Message                  | Description                                                                 |
+|-------------------|--------------------------|-----------------------------------------------------------------------------|
+| `200 OK`          | Request succeeded.       | The request was successfully processed.                                     |
+| `201 Created`     | Resource created.        | A new resource has been successfully created.                               |
+| `400 Bad Request` | Invalid request.         | The server could not understand the request due to invalid syntax.          |
+| `401 Unauthorized`| Authentication required. | The request requires valid user authentication.                             |
+| `403 Forbidden`   | Access denied.           | The server understood the request but refuses to authorize it.              |
+| `404 Not Found`   | Resource not found.      | The requested resource could not be found on the server.                    |
+| `500 Internal Server Error` | Server error.  | The server encountered an unexpected condition that prevented it from fulfilling the request. |
+
+### Rate Limiting and Throttling
+
+To ensure fair usage and maintain system performance, the **OJT Management API** enforces the following rate limits:
+
+- **Limit**: 100 requests per 15-minute window.
+- **Exceeding the Limit**: Requests exceeding this limit will receive a `429 Too Many Requests` response.
+
+For optimal performance, consider implementing retry logic with exponential backoff in your client application.
+
+---
 
 ## Table of Contents
 
