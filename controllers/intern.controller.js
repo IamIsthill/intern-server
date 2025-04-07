@@ -6,7 +6,7 @@ import {
   findInternByEmailAndUpdate,
   updateInternProfile,
   getInternById,
-  findInternByLogId
+  findInternByLogId,
 } from "../services/intern.services.js";
 import {
   getInternBySupervisorValidator,
@@ -15,7 +15,7 @@ import {
   sendEmailValidator,
   resetPasswordValidator,
   updateInternProfileValidator,
-  logIdValidator
+  logIdValidator,
 } from "../validations/interns-validators.js";
 import { Intern } from "../models/interns.js";
 import { Validation } from "../validations/Validation.js";
@@ -42,7 +42,10 @@ export const getAllInterns = async (req, res, next) => {
 
 export const getInternsBySupervisor = async (req, res, next) => {
   try {
-    const value = new Validation(getInternBySupervisorValidator, req.query).validate()
+    const value = new Validation(
+      getInternBySupervisorValidator,
+      req.query
+    ).validate();
 
     const interns = await findInterns({ supervisor: value.supervisor });
 
@@ -54,7 +57,6 @@ export const getInternsBySupervisor = async (req, res, next) => {
 
 export const updateInternController = async (req, res, next) => {
   try {
-
     const { id } = req.params;
     const { status } = req.body;
 
@@ -116,7 +118,7 @@ export const getInactiveInterns = async (req, res) => {
 
 export const sendPasswordResetEmail = async (req, res, next) => {
   try {
-    const value = new Validation(sendEmailValidator, req.body).validate()
+    const value = new Validation(sendEmailValidator, req.body).validate();
 
     const { email } = value;
 
@@ -125,10 +127,76 @@ export const sendPasswordResetEmail = async (req, res, next) => {
     if (!foundIntern)
       return res.status(400).json({ message: "No account found" });
 
-    const token = createToken({ email: email }, RESET_TOKEN, '2h')
+    const token = createToken({ email: email }, RESET_TOKEN, "2h");
 
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8" />
+          <title>Reset Your Password</title>
+          <style>
+            body {
+              font-family: 'Segoe UI', sans-serif;
+              background-color: #f9fafb;
+              margin: 0;
+              padding: 0;
+            }
+            .container {
+              max-width: 600px;
+              margin: 40px auto;
+              background-color: #ffffff;
+              padding: 30px;
+              border-radius: 10px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            .button {
+              display: inline-block;
+              background-color: #C9A227;
+              color: #ffffff !important;
+              padding: 12px 24px;
+              border-radius: 6px;
+              text-decoration: none;
+              font-weight: 600;
+              margin-top: 20px;
+            }
+            .text {
+              color: #333333;
+              font-size: 16px;
+              line-height: 1.6;
+            }
+            .footer {
+              margin-top: 40px;
+              font-size: 12px;
+              color: #999999;
+              text-align: center;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h2 style="color:#111827;">Reset Your Password</h2>
+            <p class="text">
+              Hello,
+            </p>
+            <p class="text">
+              You requested to reset your password. Click the button below to proceed. This link will expire in 2 hours for security reasons.
+            </p>
+            <a href="http://localhost:5173/intern/reset/${token}" class="button">
+              Reset Password
+            </a>
+            <p class="text">
+              If you didn’t request this, you can ignore this email.
+            </p>
+            <div class="footer">
+              &copy; 2025 A2K OJT Management Application. All rights reserved.
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
 
-    sendEmail(email, 'Reset link', `http://localhost:5173/intern/reset/${token}`)
+    sendEmail(email, "Reset Password Link", htmlContent);
 
     return res
       .status(200)
@@ -140,9 +208,9 @@ export const sendPasswordResetEmail = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
-    const value = new Validation(resetPasswordValidator, req.body).validate()
+    const value = new Validation(resetPasswordValidator, req.body).validate();
 
-    const { password, token } = value
+    const { password, token } = value;
 
     validatePassword(password);
 
@@ -250,15 +318,15 @@ export const getInternIdByController = async (req, res, next) => {
 
 export const updateLogStatus = async (req, res, next) => {
   try {
-    req.body.logId = req.params.logId
-    const value = new Validation(logIdValidator, req.body).validate()
-    const intern = await findInternByLogId(value.logId, value.read)
+    req.body.logId = req.params.logId;
+    const value = new Validation(logIdValidator, req.body).validate();
+    const intern = await findInternByLogId(value.logId, value.read);
 
     if (!intern)
-      return res.status(400).json({ message: "Unable to find specific log" })
-    const log = intern.logs.find(log => log._id == value.logId)
-    return res.status(200).json(log)
+      return res.status(400).json({ message: "Unable to find specific log" });
+    const log = intern.logs.find((log) => log._id == value.logId);
+    return res.status(200).json(log);
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
