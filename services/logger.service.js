@@ -1,6 +1,7 @@
-import { createLogger, format, transports } from 'winston'
+import { createLogger, format } from 'winston'
 import fs from 'fs'
 import path from 'path'
+import DailyRotateFile from 'winston-daily-rotate-file'
 
 const logsDir = path.resolve('logs')
 
@@ -13,9 +14,27 @@ try {
     console.error(`Failed to initialize logs directory: ${err.message}`);
 }
 
+const combinedTransport = new DailyRotateFile({
+    filename: 'logs/combined-%DATE%.log',
+    datePattern: 'YYYY-MM-DD',
+    zippedArchive: true,
+    maxSize: '20m',
+    maxFiles: '14d'
+});
+
+const errorTransport = new DailyRotateFile({
+    level: 'error',
+    filename: 'logs/error-%DATE%.log',
+    datePattern: 'YYYY-MM-DD',
+    zippedArchive: true,
+    maxSize: '20m',
+    maxFiles: '14d'
+});
+
+
 const { combine, timestamp, printf } = format;
 
-const customFormat = printf(({ level, message, stack, timestamp, service }) => {
+const customFormat = printf(({ level, message, timestamp, service }) => {
     return JSON.stringify({
         timestamp,
         level,
@@ -33,8 +52,8 @@ export const logger = (service = 'server') => {
         ),
         defaultMeta: { service },
         transports: [
-            new transports.File({ filename: 'logs/error.log', level: 'error' }),
-            new transports.File({ filename: 'logs/combined.log' }),
+            errorTransport,
+            combinedTransport
         ],
     })
 }
