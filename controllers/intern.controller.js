@@ -15,7 +15,9 @@ import {
   logIdValidator,
 } from "../validations/interns-validators.js";
 import { Validation } from "../validations/Validation.js";
+import { logger as log } from "../services/logger.service.js";
 
+const logger = log('intern-controller')
 
 export const getAllInterns = async (req, res, next) => {
   try {
@@ -23,6 +25,7 @@ export const getAllInterns = async (req, res, next) => {
 
     return res.status(200).json({ interns: interns });
   } catch (err) {
+    logger.warn(err.message)
     next(err);
   }
 };
@@ -38,6 +41,7 @@ export const getInternsBySupervisor = async (req, res, next) => {
 
     return res.status(200).json({ interns: interns });
   } catch (err) {
+    logger.warn(err.message)
     next(err);
   }
 };
@@ -78,6 +82,7 @@ export const updateInternController = async (req, res, next) => {
       intern: result.intern,
     });
   } catch (err) {
+    logger.warn(err.message)
     console.error("Error in updateInternController:", err);
     return res.status(500).json({
       message: "Internal server error",
@@ -99,6 +104,7 @@ export const getInactiveInterns = async (req, res) => {
 
     return res.status(200).json(result);
   } catch (error) {
+    logger.warn(error.message)
     return res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -142,6 +148,7 @@ export const updateInternProfileController = async (req, res, next) => {
       data: updatedIntern,
     });
   } catch (error) {
+    logger.warn(error.message)
     return res.status(500).json({
       success: false,
       message: error.message || "Internal server error",
@@ -175,7 +182,7 @@ export const getInternIdByController = async (req, res, next) => {
         message: "Intern not found",
       });
     }
-
+    logger.warn(error.message)
     next(error);
   }
 };
@@ -191,6 +198,7 @@ export const updateLogStatus = async (req, res, next) => {
     const log = intern.logs.find((log) => log._id == value.logId);
     return res.status(200).json(log);
   } catch (err) {
+    logger.warn(err.message)
     next(err);
   }
 };

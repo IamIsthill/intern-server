@@ -3,6 +3,9 @@ import { Intern } from "../models/interns.js";
 import { Validation } from "../validations/Validation.js";
 import { fetchFilesValidator } from "../validations/fileValidator.js";
 import Joi from "joi";
+import { logger as log } from "../services/logger.service.js";
+
+const logger = log('file-controller')
 
 export const internUploadDoc = async (req, res, next) => {
     try {
@@ -30,7 +33,6 @@ export const internUploadDoc = async (req, res, next) => {
             return
 
         }
-        console.log(req.file)
         const file = {
             buffer: req.file.buffer,
             type: req.file.mimetype,
@@ -43,6 +45,7 @@ export const internUploadDoc = async (req, res, next) => {
         return
 
     } catch (err) {
+        logger.warn(err.message)
         console.error(err.message)
         next(err)
     }
@@ -64,6 +67,7 @@ export const fetchFiles = async (req, res, next) => {
         const files = await File.find(value).lean()
         return res.status(200).json(files)
     } catch (err) {
+        logger.warn(err.message)
         next(err)
     }
 }

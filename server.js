@@ -18,11 +18,14 @@ import { WebSocketServer } from "./services/websocket.js";
 import { wsRouter } from "./routes/websockets.routes.js";
 import { fileRouter } from "./routes/file.route.js";
 import { limiter } from "./services/rateLimiter.js";
+import { logger as log } from "./services/logger.service.js";
+
+const logger = log()
+logger.info('Server starting')
 
 export const app = express();
 export const server = http.createServer(app)
 export const ws = new WebSocketServer({ server: server })
-
 
 ws.websocket.on("connection", wsRouter)
 

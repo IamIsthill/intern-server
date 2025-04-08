@@ -4,9 +4,10 @@ import { findTasksByInternId, createTasksValidator, findTaskAndUpdate } from "..
 import { createId } from "../utils/createId.js";
 import { internTasksValidator, supervisorUpdateTaskValidator, taskBodyValidator, supervisorIdValidator, taskIdValidator } from "../validations/taskValidator.js";
 import { Validation } from "../validations/Validation.js";
+import { logger as log } from "../services/logger.service.js";
 
 
-
+const logger = log('task-controller')
 
 export const getTasksByInternIdController = async (req, res, next) => {
     try {
@@ -36,6 +37,7 @@ export const createTask = async (req, res, next) => {
         if (err instanceof Error) {
             return res.status(400).json({ message: err.message })
         }
+        logger.warn(err.message)
         next(err)
     }
 }
@@ -70,6 +72,7 @@ export const updateTask = async (req, res, next) => {
         taskObject.status = value.status
         return res.status(200).json({ task: taskObject })
     } catch (err) {
+        logger.warn(err.message)
         next(err)
     }
 }
@@ -96,6 +99,7 @@ export const supervisorUpdateTask = async (req, res, next) => {
         const task = await findTaskAndUpdate(value)
         return res.status(200).json({ task: task })
     } catch (err) {
+        logger.warn(err.message)
         next(err)
 
     }
@@ -113,6 +117,7 @@ export const deleteTask = async (req, res, next) => {
         }
         return res.sendStatus(204)
     } catch (err) {
+        logger.warn(err.message)
         next(err)
     }
 }

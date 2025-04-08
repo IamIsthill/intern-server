@@ -9,7 +9,9 @@ import jwt from 'jsonwebtoken'
 import bcrypt from "bcryptjs";
 import { createToken } from "../utils/token.js";
 import { validatePassword } from '../utils/validatePassword.js'
+import { logger as log } from "../services/logger.service.js";
 
+const logger = log('password-controller')
 
 export const sendPasswordResetEmail = async (req, res, next) => {
   try {
@@ -107,6 +109,7 @@ export const sendPasswordResetEmail = async (req, res, next) => {
       .status(200)
       .json({ message: "Successfully sent password reset email" });
   } catch (err) {
+    logger.warn(err.message)
     console.log(err)
     if (err instanceof ValidationError) {
       next(err)
@@ -155,6 +158,7 @@ export const resetPassword = async (req, res, next) => {
 
     return res.status(200).json({ message: "Successfully updated password" });
   } catch (err) {
+    logger.warn(err.message)
     if (
       err instanceof jwt.TokenExpiredError ||
       err instanceof jwt.JsonWebTokenError
