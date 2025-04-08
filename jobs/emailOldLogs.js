@@ -14,6 +14,7 @@ cron.schedule('0 8 * * *', async () => {
         const threshold = Date.now() - 13 * 24 * 60 * 60 * 1000
 
         const oldLogs = files.filter(file => {
+            if (!file.includes('combined') && !file.includes('error')) return false
             const filePath = path.join(logsDir, file)
             const stats = fs.statSync(filePath) // read the metadata of the file
             return stats.mtimeMs < threshold

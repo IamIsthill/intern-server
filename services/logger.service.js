@@ -42,19 +42,23 @@ const customFormat = printf(({ level, message, timestamp, service }) => {
         message
     });
 });
+const loggers = {}
+
+const baseLogger = createLogger({
+    level: 'info',
+    format: combine(
+        timestamp(),
+        customFormat
+    ),
+    transports: [
+        errorTransport,
+        combinedTransport,
+    ],
+
+})
+
 
 export const logger = (service = 'server') => {
-    return createLogger({
-        level: 'info',
-        format: combine(
-            timestamp(),
-            customFormat
-        ),
-        defaultMeta: { service },
-        transports: [
-            errorTransport,
-            combinedTransport
-        ],
-    })
+    return baseLogger.child({ service })
 }
 
