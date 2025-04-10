@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express from "express";
-import http from 'http'
+import http from "http";
 import compression from "compression";
 import { connectDb, startApp, onDbError } from "./database/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -19,15 +19,16 @@ import { wsRouter } from "./routes/websockets.routes.js";
 import { fileRouter } from "./routes/file.route.js";
 import { limiter } from "./services/rateLimiter.js";
 import { logger as log } from "./services/logger.service.js";
+import { healthCheckRouter } from "./routes/health-check.routes.js";
 
-const logger = log()
-logger.info('Server starting')
+const logger = log();
+logger.info("Server starting");
 
 export const app = express();
-export const server = http.createServer(app)
-export const ws = new WebSocketServer({ server: server })
+export const server = http.createServer(app);
+export const ws = new WebSocketServer({ server: server });
 
-ws.websocket.on("connection", wsRouter)
+ws.websocket.on("connection", wsRouter);
 
 const port = 3000;
 
@@ -35,17 +36,18 @@ connectDb();
 app.use(compression());
 app.use(express.json());
 app.use(Cors());
-app.use(limiter)
-app.use('/password', passwordRouter)
+app.use(limiter);
+app.use("/password", passwordRouter);
 app.use("/auth", internAuthRouter);
 app.use("/a2kstaffs", staffAuthRouter);
+app.use("/healthcheck", healthCheckRouter);
 app.use(authenticateJWT);
 app.use("/interns", internRouter);
 app.use("/admin", adminRouter);
 app.use("/tasks", taskRouter);
 app.use("/supervisors", supervisorRouter);
 app.use("/departments", departmentRouter);
-app.use('/files', fileRouter)
+app.use("/files", fileRouter);
 app.use(errorHandler);
 
 startApp(server, port);
