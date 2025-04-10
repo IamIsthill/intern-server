@@ -1,10 +1,15 @@
 export const healthCheckController = (_req, res, _next) => {
+  const startTime = process.hrtime();
+  const endTime = process.hrtime(startTime);
+  const responseTimeMs = endTime[0] * 1000 + endTime[1] / 1000000;
+
   const healthcheck = {
     uptime: process.uptime(),
-    responsetime: process.hrtime(),
+    hrtime: process.hrtime(),
+    responseTime: responseTimeMs,
     memoryUsage: process.memoryUsage(),
     message: "OK",
-    timestamp: Date.now(),
+    timestamp: new Date().toISOString(),
   };
   try {
     res.send(healthcheck);
