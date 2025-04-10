@@ -25,7 +25,7 @@ import {
 import mongoose from "mongoose";
 import { logger as log } from "../services/logger.service.js";
 
-const logger = log('supervisor-controller')
+const logger = log("supervisor-controller");
 
 export const getAllSupervisors = async (req, res, next) => {
   try {
@@ -34,7 +34,7 @@ export const getAllSupervisors = async (req, res, next) => {
       .select(["-password", "-__v"]);
     return res.status(200).json({ supervisors: supervisors });
   } catch (err) {
-    logger.warn(err.message)
+    logger.warn(err.message);
     next(err);
   }
 };
@@ -57,7 +57,7 @@ export const registerSupervisor = async (req, res, next) => {
 
     return res.status(201).json(supervisor);
   } catch (err) {
-    logger.warn(err.message)
+    logger.warn(err.message);
     if (err instanceof Error) {
       return res.status(400).json({ message: err.message });
     }
@@ -90,7 +90,7 @@ export const updateSupervisorController = async (req, res, next) => {
       supervisor: result.supervisor,
     });
   } catch (err) {
-    logger.warn(err.message)
+    logger.warn(err.message);
     next(err);
   }
 };
@@ -134,7 +134,7 @@ export const updateSupervisorStatusController = async (req, res, next) => {
       supervisor: result.supervisor,
     });
   } catch (err) {
-    logger.warn(err.message)
+    logger.warn(err.message);
     return res.status(500).json({
       message: "Internal server error",
       error: err.message,
@@ -162,7 +162,7 @@ export const getSupervisorByIdController = async (req, res, next) => {
       data: supervisor,
     });
   } catch (error) {
-    logger.warn(err.message)
+    logger.warn(err.message);
     if (error.message === "Supervisor not found") {
       return res.status(404).json({
         success: false,
@@ -233,7 +233,7 @@ export const createReportController = async (req, res) => {
       report,
     });
   } catch (error) {
-    logger.warn(error.message)
+    logger.warn(error.message);
     console.error("Full error details:", error);
     res.status(500).json({
       message: "Error creating report",
@@ -266,7 +266,7 @@ export const getReportsbyInternIdController = async (req, res) => {
       reports,
     });
   } catch (error) {
-    logger.warn(error.message)
+    logger.warn(error.message);
     return res.status(500).json({
       message: "Internal Server Error",
       error: error.message,
@@ -316,7 +316,7 @@ export const updateReportController = async (req, res) => {
       report: updatedReport,
     });
   } catch (error) {
-    logger.warn(error.message)
+    logger.warn(error.message);
     console.error("Full error details:", error);
     return res.status(500).json({
       message: "Error updating report",
@@ -351,7 +351,7 @@ export const deleteReportController = async (req, res) => {
       message: "Report deleted successfully",
     });
   } catch (error) {
-    logger.warn(error.message)
+    logger.warn(error.message);
     console.error("Error in deleteReportController:", error);
     return res.status(500).json({
       success: false,
