@@ -47,7 +47,7 @@ app.use("/admin", adminRouter);
 app.use("/tasks", taskRouter);
 app.use("/supervisors", supervisorRouter);
 app.use("/departments", departmentRouter);
-app.use("/api", uploadRouter);
+app.use("/files", uploadRouter);
 
 app.use(errorHandler);
 
