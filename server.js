@@ -21,6 +21,7 @@ import { limiter } from "./services/rateLimiter.js";
 import { logger as log } from "./services/logger.service.js";
 import { healthCheckRouter } from "./routes/health-check.routes.js";
 import { uploadRouter } from "./routes/uploadRoutes.routes.js";
+import './jobs/emailOldLogs.js'
 
 const logger = log();
 logger.info("Server starting");
