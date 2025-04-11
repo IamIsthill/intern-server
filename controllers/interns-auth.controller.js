@@ -10,6 +10,9 @@ import {
 } from "../validations/interns-validators.js";
 import { BadRequestError } from "../utils/errors.js";
 import { validatePassword } from "../utils/validatePassword.js";
+import { logger as log } from "../services/logger.service.js";
+
+const logger = log('intern-auth-controller')
 
 //controller for registering intern, has validations if email or phone already exists
 export const registerInternController = async (req, res, next) => {
@@ -36,6 +39,7 @@ export const registerInternController = async (req, res, next) => {
     if (error instanceof Error) {
       return res.status(400).json({ message: error.message });
     }
+    logger.warn(error.message)
     next(error);
   }
 };
@@ -59,6 +63,9 @@ export const loginInternController = async (req, res, next) => {
       return res.status(403).json({ success: false, message: error.message });
     }
 
+    logger.warn(error.message)
+
+
     next(error);
   }
 };
@@ -81,6 +88,7 @@ export const checkEmailAvailability = async (req, res, next) => {
 
     res.status(200).json({ message: "Email is available" });
   } catch (error) {
+    logger.warn(error.message)
     next(error);
   }
 };
@@ -101,6 +109,7 @@ export const checkPhoneAvailability = async (req, res, next) => {
 
     res.status(200).json({ message: "Phone number is available" });
   } catch (error) {
+    logger.warn(error.message)
     next(error);
   }
 };

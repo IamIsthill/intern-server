@@ -3,6 +3,9 @@ import { loginSupervisorService } from "../services/staff-auth.services.js";
 import { loginSupervisorValidator } from "../validations/supervisor.validator.js";
 import { loginAdminValidator } from "../validations/adminValidator.js";
 import { BadRequestError } from "../utils/errors.js";
+import { logger as log } from "../services/logger.service.js";
+
+const logger = log('staff-auth-controller')
 
 export const loginSupervisorController = async (req, res, next) => {
   try {
@@ -23,6 +26,7 @@ export const loginSupervisorController = async (req, res, next) => {
 
     res.status(response.status).json(response.data);
   } catch (err) {
+    logger.warn(err.message)
     next(err);
   }
 };
@@ -47,6 +51,7 @@ export const adminLoginController = async (req, res, next) => {
 
     res.status(response.status).json(response.data);
   } catch (err) {
+    logger.warn(err.message)
     next(err);
   }
 };

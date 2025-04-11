@@ -3,32 +3,21 @@ import {
   findInterns,
   updateInternStatus,
   fetchInactiveInterns,
-  findInternByEmailAndUpdate,
   updateInternProfile,
   getInternById,
-  findInternByLogId
+  findInternByLogId,
 } from "../services/intern.services.js";
 import {
   getInternBySupervisorValidator,
   updateInternStatusValidator,
   getInactiveInternValidator,
-  sendEmailValidator,
-  resetPasswordValidator,
   updateInternProfileValidator,
-  logIdValidator
+  logIdValidator,
 } from "../validations/interns-validators.js";
-import { Intern } from "../models/interns.js";
 import { Validation } from "../validations/Validation.js";
-import { RESET_TOKEN } from "../config/index.js";
-import { sendEmail } from "../services/mail.js";
-import { throwError } from "../utils/errors.js";
-import { createToken } from "../utils/token.js";
+import { logger as log } from "../services/logger.service.js";
 
-import jwt from "jsonwebtoken";
-import { findInternByEmail } from "../services/interns-auth-services.js";
-import { validatePassword } from "../utils/validatePassword.js";
-import bcrypt from "bcryptjs";
-import { createId } from "../utils/createId.js";
+const logger = log('intern-controller')
 
 export const getAllInterns = async (req, res, next) => {
   try {
@@ -36,25 +25,29 @@ export const getAllInterns = async (req, res, next) => {
 
     return res.status(200).json({ interns: interns });
   } catch (err) {
+    logger.warn(err.message)
     next(err);
   }
 };
 
 export const getInternsBySupervisor = async (req, res, next) => {
   try {
-    const value = new Validation(getInternBySupervisorValidator, req.query).validate()
+    const value = new Validation(
+      getInternBySupervisorValidator,
+      req.query
+    ).validate();
 
     const interns = await findInterns({ supervisor: value.supervisor });
 
     return res.status(200).json({ interns: interns });
   } catch (err) {
+    logger.warn(err.message)
     next(err);
   }
 };
 
 export const updateInternController = async (req, res, next) => {
   try {
-
     const { id } = req.params;
     const { status } = req.body;
 
@@ -89,6 +82,7 @@ export const updateInternController = async (req, res, next) => {
       intern: result.intern,
     });
   } catch (err) {
+    logger.warn(err.message)
     console.error("Error in updateInternController:", err);
     return res.status(500).json({
       message: "Internal server error",
@@ -110,67 +104,11 @@ export const getInactiveInterns = async (req, res) => {
 
     return res.status(200).json(result);
   } catch (error) {
+    logger.warn(error.message)
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-export const sendPasswordResetEmail = async (req, res, next) => {
-  try {
-    const value = new Validation(sendEmailValidator, req.body).validate()
-
-    const { email } = value;
-
-    const foundIntern = await findInternByEmail(email);
-
-    if (!foundIntern)
-      return res.status(400).json({ message: "No account found" });
-
-    const token = createToken({ email: email }, RESET_TOKEN, '2h')
-
-
-    sendEmail(email, 'Reset link', `http://localhost:5173/intern/reset/${token}`)
-
-    return res
-      .status(200)
-      .json({ message: "Successfully sent password reset email" });
-  } catch (err) {
-    return res.status(400).json({ message: "Password reset email not sent" });
-  }
-};
-
-export const resetPassword = async (req, res, next) => {
-  try {
-    const value = new Validation(resetPasswordValidator, req.body).validate()
-
-    const { password, token } = value
-
-    validatePassword(password);
-
-    const data = jwt.verify(token, RESET_TOKEN);
-
-    const hashPassword = await bcrypt.hash(password, 10);
-
-    const foundIntern = await findInternByEmailAndUpdate(data.email, {
-      password: hashPassword,
-    });
-
-    if (!foundIntern)
-      return res.status(400).json({ message: "Account not found" });
-
-    return res.status(200).json({ message: "Successfully updated password" });
-  } catch (err) {
-    if (
-      err instanceof jwt.TokenExpiredError ||
-      err instanceof jwt.JsonWebTokenError
-    ) {
-      return res.status(401).json({ message: err.message });
-    }
-    if (err instanceof Error) {
-      return res.status(400).json({ message: err.message });
-    }
-    next(err);
-  }
-};
 
 export const updateInternProfileController = async (req, res, next) => {
   try {
@@ -210,6 +148,7 @@ export const updateInternProfileController = async (req, res, next) => {
       data: updatedIntern,
     });
   } catch (error) {
+    logger.warn(error.message)
     return res.status(500).json({
       success: false,
       message: error.message || "Internal server error",
@@ -243,22 +182,23 @@ export const getInternIdByController = async (req, res, next) => {
         message: "Intern not found",
       });
     }
-
+    logger.warn(error.message)
     next(error);
   }
 };
 
 export const updateLogStatus = async (req, res, next) => {
   try {
-    req.body.logId = req.params.logId
-    const value = new Validation(logIdValidator, req.body).validate()
-    const intern = await findInternByLogId(value.logId, value.read)
+    req.body.logId = req.params.logId;
+    const value = new Validation(logIdValidator, req.body).validate();
+    const intern = await findInternByLogId(value.logId, value.read);
 
     if (!intern)
-      return res.status(400).json({ message: "Unable to find specific log" })
-    const log = intern.logs.find(log => log._id == value.logId)
-    return res.status(200).json(log)
+      return res.status(400).json({ message: "Unable to find specific log" });
+    const log = intern.logs.find((log) => log._id == value.logId);
+    return res.status(200).json(log);
   } catch (err) {
-    next(err)
+    logger.warn(err.message)
+    next(err);
   }
-}
+};

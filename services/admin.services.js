@@ -103,3 +103,11 @@ export const getAdminById = async (id) => {
     throw new Error(error.message);
   }
 };
+
+export const findAdminByEmail = async (email) => {
+  return await Admin.findOne({ email }).lean()
+}
+
+export const findAdminByEmailAndUpdate = async (email, update) => {
+  return await Admin.findOneAndUpdate({ email: email }, { ...update });
+};

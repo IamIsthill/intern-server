@@ -1,5 +1,4 @@
 import { Admin } from "../models/Admin.js";
-import { Intern } from "../models/interns.js";
 import {
   findAllAccounts,
   findAndUpdateIntern,
@@ -20,6 +19,9 @@ import {
 } from "../services/interns-auth-services.js";
 import { validatePassword } from "../utils/validatePassword.js";
 import { Validation } from "../validations/Validation.js";
+import { logger as log } from "../services/logger.service.js";
+
+const logger = log('admin-controller')
 
 export const adminFindController = async (req, res, next) => {
   try {
@@ -39,6 +41,7 @@ export const adminFindController = async (req, res, next) => {
 
     return res.status(201).json(admin);
   } catch (e) {
+    logger.warn(e.message)
     next(e);
   }
 };
@@ -64,6 +67,7 @@ export const getRequestingInterns = async (req, res, next) => {
     const interns = await findPendingInternRequest();
     return res.status(200).json({ accounts: interns });
   } catch (err) {
+    logger.warn(err.message)
     next(err);
   }
 };
@@ -84,7 +88,7 @@ export const approveInternRequest = async (req, res, next) => {
 
     return res.status(200).json({ account: updatedIntern });
   } catch (e) {
-    console.log(e);
+    logger.warn(e.message)
     next(e);
   }
 };
@@ -108,6 +112,7 @@ export const createIntern = async (req, res, next) => {
 
     res.status(201).json({ message: "User created successfully", user });
   } catch (error) {
+    logger.warn(error.message)
     if (error instanceof Error) {
       return res.status(400).json({ message: error.message });
     }
@@ -159,6 +164,7 @@ export const updateAdminController = async (req, res, next) => {
       data: updatedAdmin,
     });
   } catch (error) {
+    logger.warn(error.message)
     return res.status(500).json({
       success: false,
       message: error.message || "Internal server error",
@@ -192,7 +198,7 @@ export const getAdminByIdController = async (req, res, next) => {
         message: "Admin not found",
       });
     }
-
+    logger.warn(error.message)
     next(error);
   }
 };

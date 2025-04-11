@@ -1,7 +1,7 @@
 import { Router } from 'express'
-import * as intern from '../controllers/intern.controller.js'
+import * as controller from '../controllers/password.controller.js'
 
 export const passwordRouter = Router()
 
-passwordRouter.post('/intern/reset', intern.sendPasswordResetEmail)
-passwordRouter.put('/intern/new', intern.resetPassword)
+passwordRouter.post('/reset', controller.sendPasswordResetEmail)
+passwordRouter.put('/new', controller.resetPassword)
