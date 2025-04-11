@@ -17,7 +17,7 @@ import { router as staffAuthRouter } from "./routes/staff-auth.routes.js";
 import { passwordRouter } from "./routes/password.routes.js";
 import { WebSocketServer } from "./services/websocket.js";
 import { wsRouter } from "./routes/websockets.routes.js";
-import { limiter } from "./services/rateLimiter.js";
+import { limiter, slowLimiter } from "./services/rateLimiter.js";
 import { logger as log } from "./services/logger.service.js";
 import { healthCheckRouter } from "./routes/health-check.routes.js";
 import { uploadRouter } from "./routes/uploadRoutes.routes.js";
@@ -39,6 +39,7 @@ app.use(compression());
 app.use(express.json());
 app.use(Cors());
 app.use(limiter);
+app.use(slowLimiter)
 app.use(setResponseHeaders)
 app.use("/password", passwordRouter);
 app.use("/auth", internAuthRouter);
