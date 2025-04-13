@@ -27,4 +27,10 @@ const fileSchema = new mongoose.Schema({
   },
 });
 
-export const File = mongoose.model("File", fileSchema, "files");
+// export const File = mongoose.model("File", fileSchema, "files");
+export let File
+if (mongoose.models.File) {
+  File = mongoose.model("File");
+} else {
+  File = mongoose.model("File", fileSchema, "files");
+}
