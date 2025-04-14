@@ -3,8 +3,9 @@ import { Supervisor } from '../../models/Supervisor.js'
 import { Intern } from '../../models/interns.js'
 import request from 'supertest'
 import mongoose from 'mongoose'
+import { testDb } from '../helper'
 
-vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
+testDb()
 vi.mock('../../middleware/auth.js', () => ({
     authenticateJWT: (req, res, next) => {
         req.user = {
@@ -244,7 +245,7 @@ describe('PUT /admin/accounts/intern-request', () => {
             _id: expect.any(String),
             email: expect.any(String),
             accountType: expect.any(String),
-            status: 'active',
+            status: 'inactive',
             firstName: expect.any(String),
             lastName: expect.any(String),
         }))
