@@ -6,9 +6,8 @@ import { faker } from '@faker-js/faker';
 import { createToken } from '../../utils/token.js';
 import { InternFactory, } from '../models/Intern.fake.js';
 import { createId } from '../../utils/createId.js';
-import 'dotenv/config'
-import { testDb } from '../helper/index.js';
 import { setup } from '../setup.js';
+import 'dotenv/config'
 
 vi.mock('../../middleware/auth.js', () => ({
     authenticateJWT: (req, res, next) => {
@@ -207,11 +206,11 @@ describe('POST /password/reset', () => {
 describe('PUT /password/intern/new', () => {
     const internFactory = new InternFactory(1)
     const url = '/password/new'
-    const token = createToken({ email: internFactory.interns[0].email, accountType: 'intern' }, RESET_TOKEN)
+    const token = createToken({ email: internFactory.interns[0].email, accountType: 'intern' }, RESET_TOKEN, '2h')
     const password = faker.internet.password({ pattern: /[A-Z]/, prefix: 'a1' })
     let data
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         await Intern.deleteMany({})
         await internFactory.create()
 
