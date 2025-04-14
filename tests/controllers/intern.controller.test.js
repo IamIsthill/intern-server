@@ -8,6 +8,7 @@ import { InternFactory, } from '../models/Intern.fake.js';
 import { createId } from '../../utils/createId.js';
 import 'dotenv/config'
 import { testDb } from '../helper/index.js';
+import { setup } from '../setup.js';
 
 vi.mock('../../middleware/auth.js', () => ({
     authenticateJWT: (req, res, next) => {
@@ -25,12 +26,12 @@ vi.mock('../../services/mail.js', () => (
     }
 ))
 
-testDb()
 
-
-const { app } = await import('../../server.js')
+const { app } = await import('../../app.js')
 const { sendEmail } = await import('../../services/mail.js')
 const RESET_TOKEN = process.env.RESET_TOKEN
+
+setup()
 
 
 describe('GET /interns/all', () => {

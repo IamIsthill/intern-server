@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import request from "supertest";
 import { Department } from "../../models/Department.js";
-
-vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
+import { setup } from "../setup.js";
 vi.mock('../../middleware/auth.js', () => ({
     authenticateJWT: (req, res, next) => {
         req.user = {
@@ -12,7 +11,8 @@ vi.mock('../../middleware/auth.js', () => ({
         next()
     }
 }))
-const { app } = await import('../../server.js')
+setup()
+const { app } = await import('../../app.js')
 
 
 describe('get all departments controller', () => {
