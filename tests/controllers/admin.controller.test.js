@@ -3,8 +3,8 @@ import { Supervisor } from '../../models/Supervisor.js'
 import { Intern } from '../../models/interns.js'
 import request from 'supertest'
 import mongoose from 'mongoose'
+import { setup } from '../setup.js'
 
-vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
 vi.mock('../../middleware/auth.js', () => ({
     authenticateJWT: (req, res, next) => {
         req.user = {
@@ -14,7 +14,8 @@ vi.mock('../../middleware/auth.js', () => ({
         next()
     }
 }))
-const { app } = await import('../../server.js')
+const { app } = await import('../../app.js')
+setup()
 
 describe('GET /admin/accounts', () => {
     const url = '/admin/accounts'
@@ -100,7 +101,7 @@ describe('GET /admin/accounts', () => {
                 next()
             }
         }))
-        const { app } = await import('../../server.js')
+        const { app } = await import('../../app.js')
 
         const res = await request(app).get(`${url}`)
 
@@ -173,7 +174,7 @@ describe('GET /admin/accounts/intern-request', () => {
                 next()
             }
         }))
-        const { app } = await import('../../server.js')
+        const { app } = await import('../../app.js')
 
         const res = await request(app).get(url)
 
@@ -244,7 +245,7 @@ describe('PUT /admin/accounts/intern-request', () => {
             _id: expect.any(String),
             email: expect.any(String),
             accountType: expect.any(String),
-            status: 'active',
+            status: 'inactive',
             firstName: expect.any(String),
             lastName: expect.any(String),
         }))

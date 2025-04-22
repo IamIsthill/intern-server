@@ -1,0 +1,10 @@
+export { taskRouter } from "./task.routes.js";
+export { adminRouter } from "./admin.routes.js";
+export { supervisorRouter } from "./supervisor.routes.js";
+export { departmentRouter } from "./department.routes.js";
+export { internRouter } from "./interns.routes.js";
+export { router as internAuthRouter } from "./interns-auth.routes.js";
+export { router as staffAuthRouter } from "./staff-auth.routes.js";
+export { passwordRouter } from "./password.routes.js";
+export { healthCheckRouter } from "./health-check.routes.js";
+export { uploadRouter } from "./uploadRoutes.routes.js";

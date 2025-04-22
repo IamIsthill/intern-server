@@ -3,9 +3,10 @@ import { validateAccess } from '../../middleware/access.js'
 import { JWT_SECRET } from '../../config/index.js'
 import jwt from 'jsonwebtoken'
 import request from 'supertest'
+import { setup } from '../setup.js'
 
-vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
-const { app } = await import('../../server.js')
+const { app } = await import('../../app.js')
+setup()
 
 describe('Access middleware', () => {
     const token = jwt.sign({ id: 1, email: 'foo@foo.com', accountType: 'admin' }, JWT_SECRET, { expiresIn: 60 * 60 })

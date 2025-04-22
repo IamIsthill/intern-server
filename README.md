@@ -1,4 +1,4 @@
-# A2K Internship Management System
+# A2K Internship Management System - Backend
 
 A web-based platform designed to streamline the management of internship programs. This system allows administrators to manage interns, departments, and supervisors efficiently while providing interns with tools to track their progress.
 
@@ -6,7 +6,7 @@ A web-based platform designed to streamline the management of internship program
 
 ## Table of Contents
 
-- [A2K Internship Management System](#a2k-internship-management-system)
+- [A2K Internship Management System - Backend](#a2k-internship-management-system---backend)
   - [Table of Contents](#table-of-contents)
   - [Project Description](#project-description)
   - [Who This Project Is For](#who-this-project-is-for)
@@ -69,13 +69,22 @@ Before using the **A2K Internship Management System**, ensure you have the follo
   ```bash
   npm install
   ```
-
+3. Go checkout [ImageKit](https://imagekit.io/) to get your very own keys and endpoint for image saving
 
 4. Setup the `.env` at the root of the project
   ```env
-  DATABASE_URI=your-db-connection
-  JWT_SECRET=your-secret-key
-  PORT=3000 
+    DATABASE_URI=your-db-connection      # The connection string for your MongoDB database.
+   JWT_SECRET=your-secret-key           # A secret key used for signing JSON Web Tokens for authentication. Keep this secure!
+   PORT=3000                            # The port on which the backend server will listen for incoming requests.
+   DEVELOPMENT=true                     # A flag to indicate if the application is running in development mode.
+
+   EMAIL_PASS=your-google-email-password # Password for the email account used for sending emails (e.g., password reset).
+   EMAIL=your-email                     # The email address used as the sender for system emails.
+   RESET_TOKEN=your-reset-key           # A secret key used for generating password reset tokens.
+
+   IMAGEKIT_PUBLIC_KEY=your-imagekit-public-key # Public key for your ImageKit.io account.
+   IMAGEKIT_PRIVATE_KEY=your-imagekit-private-key # Private key for your ImageKit.io account (keep this secret!).
+   IMAGEKIT_URL_ENDPOINT=your-imagekit-url-endpoint # The URL endpoint for your ImageKit.io account.
   ```
 
 ### Configuration

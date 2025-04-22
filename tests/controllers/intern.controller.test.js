@@ -6,14 +6,16 @@ import { faker } from '@faker-js/faker';
 import { createToken } from '../../utils/token.js';
 import { InternFactory, } from '../models/Intern.fake.js';
 import { createId } from '../../utils/createId.js';
+import { setup } from '../setup.js';
+import 'dotenv/config'
 
-vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
 vi.mock('../../middleware/auth.js', () => ({
     authenticateJWT: (req, res, next) => {
         req.user = {
-            email: 'foo@foo.com'
+            email: 'foo@foo.com',
         }
         next()
+
     }
 }))
 
@@ -23,9 +25,12 @@ vi.mock('../../services/mail.js', () => (
     }
 ))
 
-const { app } = await import('../../server.js')
+
+const { app } = await import('../../app.js')
 const { sendEmail } = await import('../../services/mail.js')
-const { RESET_TOKEN } = await import('../../config/index.js')
+const RESET_TOKEN = process.env.RESET_TOKEN
+
+setup()
 
 
 describe('GET /interns/all', () => {
@@ -35,6 +40,9 @@ describe('GET /interns/all', () => {
     beforeEach(async () => {
         await Intern.deleteMany({})
         await internFactory.create()
+
+        console.log('Database', process.env.DATABASE_URI)
+
     })
 
     it('returns 200 and all interns', async () => {
@@ -131,9 +139,9 @@ describe('GET /interns/find', () => {
 
 
 
-describe('POST /interns/password/reset', () => {
+describe('POST /password/reset', () => {
     const internFactory = new InternFactory(1)
-    const url = '/password/intern/reset'
+    const url = '/password/reset'
 
     beforeEach(async () => {
         vi.resetAllMocks()
@@ -197,11 +205,12 @@ describe('POST /interns/password/reset', () => {
 
 describe('PUT /password/intern/new', () => {
     const internFactory = new InternFactory(1)
-    const url = '/password/intern/new'
-    const token = createToken({ email: internFactory.interns[0].email }, RESET_TOKEN)
+    const url = '/password/new'
+    const token = createToken({ email: internFactory.interns[0].email, accountType: 'intern' }, RESET_TOKEN, '2h')
     const password = faker.internet.password({ pattern: /[A-Z]/, prefix: 'a1' })
     let data
-    beforeEach(async () => {
+
+    beforeAll(async () => {
         await Intern.deleteMany({})
         await internFactory.create()
 
@@ -213,9 +222,8 @@ describe('PUT /password/intern/new', () => {
 
     it('returns 200 and success message on succesful password change', async () => {
         const res = await request(app).put(url).send(data)
-
         expect(res.statusCode).toBe(200)
-        expect(res.body).toEqual(expect.objectContaining({
+        expect(res.body).toStrictEqual(expect.objectContaining({
             message: expect.any(String)
         }))
     })

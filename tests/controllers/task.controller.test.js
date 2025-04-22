@@ -4,9 +4,10 @@ import { Tasks } from "../../models/Tasks.js";
 import mongoose, { Mongoose } from 'mongoose'
 import { createId } from "../../utils/createId.js";
 import { faker } from "@faker-js/faker";
+import { setup } from "../setup.js";
 
-vi.stubEnv('DATABASE_URI', 'mongodb://localhost:27017/intern-server-test')
-const { app } = await import('../../server.js')
+setup()
+const { app } = await import('../../app.js')
 vi.mock('../../middleware/auth.js', () => ({
     authenticateJWT: (req, res, next) => {
         req.user = {
@@ -88,7 +89,7 @@ describe('GET /tasks/intern', () => {
             }
             next()
         })
-        const { app } = await import('../../server.js')
+        const { app } = await import('../../app.js')
         const res = await request(app).get(`${url}?internId=${internId}`)
 
         expect(res.statusCode).toBe(200)
@@ -115,7 +116,7 @@ describe('GET /tasks/intern', () => {
             }
             next()
         })
-        const { app } = await import('../../server.js')
+        const { app } = await import('../../app.js')
         const res = await request(app).get(`${url}?internId=${internId}`)
 
         expect(res.statusCode).toBe(200)
@@ -227,7 +228,7 @@ describe('POST /tasks', () => {
             }
             next()
         })
-        const { app } = await import('../../server.js')
+        const { app } = await import('../../app.js')
 
         const res = await request(app).post(url).send(mockTask)
 
@@ -250,7 +251,7 @@ describe('PUT /tasks/:taskid', async () => {
             next()
         }
     }))
-    const { app } = await import('../../server.js')
+    const { app } = await import('../../app.js')
     let mockTasks
 
     beforeEach(async () => {
