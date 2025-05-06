@@ -1229,7 +1229,7 @@ Allows an intern to update their own profile details.
 ### Endpoint
 
 ```http
-PUT /interns/update-profile/:id
+PUT /interns/update-intern/:id
 ```
 
 ### Description
@@ -1261,7 +1261,7 @@ This endpoint allows an intern to update their own profile information, such as 
 ### Request Example
 
 ```http
-PUT /interns/update-profile/67ebf698b0d4d8143ee09976
+PUT /interns/update-intern/67ebf698b0d4d8143ee09976
 Content-Type: application/json
 Authorization: Bearer <your-token>
 
