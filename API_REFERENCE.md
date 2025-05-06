@@ -1602,15 +1602,17 @@ The `Supervisor` schema is defined as follows:
 
 Use the following endpoints to interact with the Supervisor entities.
 
-| Method | Endpoint Name                                           | Description                                                                  |
-| ------ | ------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| GET    | [Get All Supervisors](#get-all-supervisors)             | Retrieve a list of all supervisors in the system.                            |
-| GET    | [Fetch Supervisor by ID](#fetch-supervisor-by-id)       | Retrieve the details of a specific supervisor using their unique identifier. |
-| PUT    | [Update Supervisor Profile](#update-supervisor-profile) | Update the profile details of a supervisor.                                  |
-| POST   | [Register Supervisor](#register-supervisor)             | Create a new supervisor account in the system.                               |
-| PUT    | [Update Supervisor Status](#update-supervisor-status)   | Update the status of a supervisor account.                                   |
-| POST   | [Create Report](#create-report)                         | Create a detailed report for an intern.                                      |
-| GET    | [Get Reports for an Intern](#get-reports-for-an-intern) | Retrieve all reports created for a specific intern.                          |
+| Method | Endpoint Name                                                 | Description                                                                  |
+| ------ | ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| GET    | [Get All Supervisors](#get-all-supervisors)                   | Retrieve a list of all supervisors in the system.                            |
+| GET    | [Fetch Supervisor by ID](#fetch-supervisor-by-id)             | Retrieve the details of a specific supervisor using their unique identifier. |
+| PUT    | [Update Supervisor Profile](#update-supervisor-profile)       | Update the profile details of a supervisor.                                  |
+| POST   | [Register Supervisor](#register-supervisor)                   | Create a new supervisor account in the system.                               |
+| PUT    | [Update Supervisor Status](#update-supervisor-status)         | Update the status of a supervisor account.                                   |
+| POST   | [Create Report](#create-report)                               | Create a detailed report for an intern.                                      |
+| GET    | [Get Reports for an Intern](#get-reports-for-an-intern)       | Retrieve all reports created for a specific intern.                          |
+| PUT    | [Update Reports for an Intern](#update-reports-for-an-intern) | Update the report details for a specific intern.                             |
+| DELETE | [Delete Reports for an Intern](#delete-reports-for-an-intern) | Delete the report of a specific intern.                                      |
 
 ## Get All Supervisors
 
@@ -2100,6 +2102,111 @@ Authorization: Bearer <your-token>
 {
   "success": false,
   "message": "No reports found for the specified intern"
+}
+```
+
+## Update Reports for an Intern
+
+### Endpoint
+
+```http
+PUT /supervisors/update-reports/:id
+```
+
+### Description
+
+This endpoint allows a supervisor to update the report details of a specific intern. It enables modifications to existing report data, such as feedback, suggestions, and performance ratings, allowing supervisors to refine their evaluations and keep the intern's progress records up to date.
+
+### Request Schema
+
+#### Path Parameters
+
+| Parameter | Type   | Required? | Description                          |
+| --------- | ------ | --------- | ------------------------------------ |
+| id        | string | Yes       | The unique identifier of the intern. |
+
+### Response Example
+
+```http
+PUT /supervisors/update-reports/67ebf698b0d4d8143ee09976
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+#### If reports are updated:
+
+```json
+{
+  "message": "Report updated successfully",
+  "report": {
+    "_id": "67f3294826a95fcddaaacc69",
+    "supervisor": "67ce8ce4013aa193e984a8a3",
+    "intern": "67d76bdf1c4b5af7a5d0ce5b",
+    "tasks": [],
+    "title": "Updated Title",
+    "description": "This is updated description of a report",
+    "feedback": "This report is good",
+    "suggestions": "No further suggestions",
+    "rating": 4,
+    "assignedInterns": [],
+    "createdAt": "2025-04-07T00:00:00.000Z",
+    "__v": 0
+  }
+}
+```
+
+#### If the intern do not have reports to update:
+
+```json
+{
+  "message": "Error updating report",
+  "error": "Report not found"
+}
+```
+
+## Delete Reports for an Intern
+
+### Endpoint
+
+```http
+DELETE /supervisors/delete-report/:id
+```
+
+### Description
+
+This endpoint allows a supervisor to delete a report associated with a specific intern. It removes the selected report from the system, helping supervisors manage and clean up report records as needed.
+
+### Request Schema
+
+#### Path Parameters
+
+| Parameter | Type   | Required? | Description                          |
+| --------- | ------ | --------- | ------------------------------------ |
+| id        | string | Yes       | The unique identifier of the intern. |
+
+### Response Example
+
+```http
+DELETE /supervisors/delete-report/67ebf698b0d4d8143ee09976
+Content-Type: application/json
+Authorization: Bearer <your-token>
+```
+
+#### If reports are deleted:
+
+```json
+{
+  "success": true,
+  "message": "Report deleted successfully"
+}
+```
+
+#### If there is not report found:
+
+```json
+{
+  "success": false,
+  "message": "Error deleting report"
 }
 ```
 
