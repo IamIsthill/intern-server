@@ -1514,7 +1514,7 @@ Reset password using the token received via email
 ### Endpoint
 
 ```http
-PUT /password/intern/new
+PUT /password/new
 ```
 
 ### Description
