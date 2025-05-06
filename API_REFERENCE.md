@@ -1822,7 +1822,7 @@ Update the profile details of a supervisor.
 ### Endpoint
 
 ```http
-PUT /supervisors/update-profile/:id
+PUT /supervisors/update-supervisor/:id
 ```
 
 ### Description
@@ -1854,7 +1854,7 @@ This endpoint allows a supervisor to update their profile information, such as t
 ### Request Example
 
 ```http
-PUT /supervisors/update-profile/67ca892acd4899978d1b6666
+PUT /supervisors/update-supervisor/67ca892acd4899978d1b6666
 Content-Type: application/json
 Authorization: Bearer <your-token>
 
