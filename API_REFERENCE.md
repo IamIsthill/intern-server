@@ -203,11 +203,65 @@ Use the following endpoints to interact with the Admin entity:
 
 | Method | Endpoint Name                                            | Description                              |
 | ------ | -------------------------------------------------------- | ---------------------------------------- |
+| GET    | [Find admin](#find-admin)                                | Retrieves admin details                  |
 | GET    | [Get all accounts](#get-all-accounts)                    | Retrieves all user accounts.             |
 | POST   | [Create intern account](#create-intern-account)          | Creates a new intern account.            |
 | GET    | [Requesting interns](#fetch-intern-request)              | Fetches pending intern requests.         |
 | PUT    | [Update an intern request status](#update-admin-profile) | Updates the status of an intern request. |
 | GET    | [Get admin by ID](#get-admin-by-id)                      | Retrieves admin details by ID.           |
+
+## Find Admin
+
+### Endpoint
+
+```text
+GET /admin/find
+```
+
+### Description
+
+This endpoint retrieves a specific admin account by email. It returns the admin's information excluding the password. If no matching account is found, it responds with an appropriate error message.
+
+### Request Schema
+
+### Query Parameters
+
+| Query parameter | Type   | Required? | Description                                 |
+| --------------- | ------ | --------- | ------------------------------------------- |
+| email           | string | Required  | The email of the admin account to retrieve. |
+
+### Request Example
+
+```http
+GET /admin/find
+Content-Type: application/json
+
+{
+  "email": "admin@example.com"
+}
+```
+
+### Response Example
+
+### If the admin exists:
+
+```json
+{
+  "_id": "67ce401b52ed9460ae35f74a",
+  "firstName": "Alice",
+  "lastName": "Smith",
+  "email": "alice@example.com",
+  "accountType": "admin"
+}
+```
+
+### If the admin does not exists:
+
+```json
+{
+  "message": "No account found"
+}
+```
 
 ## Get all accounts
 
