@@ -438,7 +438,7 @@ Approve or reject an intern's account request.
 ### Endpoint
 
 ```http
-PUT /accounts/intern-request
+PUT /admin/accounts/intern-request
 ```
 
 ### Description
@@ -463,7 +463,7 @@ This ensures that only verified interns are approved while filtering out unquali
 ### Request example
 
 ```http
-PUT /accounts/intern-request
+PUT /admin/accounts/intern-request
 Content-type: application/json
 
 {
