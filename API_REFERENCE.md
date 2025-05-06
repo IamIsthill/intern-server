@@ -2679,7 +2679,7 @@ An endpoint for the intern user to upload a document.
 ### Endpoint
 
 ```http
-POST /files/intern/:internId
+POST /files/upload/:internId
 ```
 
 ### Description
